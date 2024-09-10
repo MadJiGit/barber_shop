@@ -36,22 +36,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\NotBlank]
     #[Assert\Length(min: 3, minMessage: 'Your first name must be at least {{ limit }} characters long', )]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\NotBlank]
     #[Assert\Length(min: 3, minMessage: 'Your first name must be at least {{ limit }} characters long', )]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\NotBlank]
     #[Assert\Length(min: 3, minMessage: 'Your first name must be at least {{ limit }} characters long', )]
     private ?string $nick_name = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Assert\NotBlank]
     #[Assert\Regex(
         pattern: '/\w/',
         message: 'Your phone cannot contain a letter',
@@ -81,18 +77,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isUserIsAdmin(): bool
     {
         //        dd(array_values($this->getRoles()));
-        return in_array(Roles::ADMIN->name, array_values($this->getRoles()));
+        return in_array(Roles::ADMIN->value, $this->getRoles());
     }
 
     public function isUserIsSuperAdmin(): bool
     {
-        return in_array(Roles::SUPER_ADMIN->name, array_values($this->getRoles()));
+        return in_array(Roles::SUPER_ADMIN->value, $this->getRoles());
         //        return in_array(Roles::SUPER_ADMIN->value, $this->getRoles());
     }
 
     public function isClient(): bool
     {
-        return in_array(Roles::CLIENT->name, array_values($this->getRoles()));
+        return in_array(Roles::CLIENT->value, $this->getRoles());
         //        return in_array(Roles::CLIENT->value, $this->getRoles());
     }
 

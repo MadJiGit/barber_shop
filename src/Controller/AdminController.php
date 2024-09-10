@@ -3,7 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Roles;
+use App\Entity\User;
+use App\Form\UserFormType;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,5 +44,51 @@ class AdminController extends AbstractController
             //            'isSuperAdmin' => $isAuthUserSuperAdmin,
             //            'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/list_all_clients', name: 'list_all_clients')]
+    public function listAllClients(): Response
+    {
+        $allClients = $this->userRepository->getAllClients();
+//        $user = new User();
+//        $form = $this->createForm(UserFormType::class, $user);
+
+//        dd($allClients);
+
+
+        $form_tab = array();
+        $form_tab_2 = array();
+
+        $form_tab = array_keys($allClients[0]);
+//        foreach($allClients as $client => $value){
+//            $form_tab[] = $value;
+//        }
+
+        foreach($allClients as $client){
+//            echo '<pre>' . var_export($client . ' => ' . $value, true) . '</pre>';
+//            echo '<pre>' . var_export($client, true) . '</pre>';
+//            echo '<pre>' . var_export($value, true) . '</pre>';
+
+          $form_tab_2[] = $client;
+//            $form = $this->createForm(UserFormType::class, new User());
+        }
+
+//        echo '<pre>' . var_export($test, true) . '</pre>';
+//        echo '<pre>' . var_export($form_tab, true) . '</pre>';
+//        echo '<pre>' . var_export($form_tab_2[0], true) . '</pre>';
+//        exit();
+//        dd($allClients);
+
+        return $this->render('admin/view_all_clients.html.twig', [
+            'fields' => $form_tab,
+            'clients' => $form_tab_2,
+//            'form' => $form
+        ]);
+    }
+
+    #[Route('/list_all_barbers', name: 'list_all_barbers')]
+    public function listAllBarbers(): Response
+    {
+        dd("BARBERS");
     }
 }

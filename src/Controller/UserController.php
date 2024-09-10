@@ -30,8 +30,8 @@ class UserController extends AbstractController
 
         $authUser = parent::getUser();
 
-        $isAuthUserAdmin = $authUser->isUserIsAdmin();
-        $isAuthUserSuperAdmin = $authUser->isUserIsSuperAdmin();
+        $isAuthUserAdmin = $authUser ? $authUser->isUserIsAdmin() : false;
+        $isAuthUserSuperAdmin = $authUser ? $authUser->isUserIsSuperAdmin() : false;
 
         if (!$user) {
             throw $this->createNotFoundException('There is no user');

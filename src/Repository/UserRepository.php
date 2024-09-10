@@ -49,15 +49,50 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //        ;
     //    }
 
+    public function getAllClients(): array
+    {
+        $client = Roles::CLIENT->value;
+
+        if (true) {
+            return $this->createQueryBuilder('u')
+                ->select('u.id',
+                    'u.email',
+                    'u.roles',
+                    'u.first_name',
+                    'u.last_name',
+                    'u.nick_name',
+                    'u.phone',
+                    'u.date_added',
+                    'u.date_banned',
+                    'u.date_last_update')
+            ->andWhere('u.roles like :role')
+            ->setParameter('role', '%'.$client.'%')
+            ->getQuery()
+            ->getArrayResult();
+        } else {
+            $qb = $this->createQueryBuilder('u');
+            $qb->andWhere(
+                $qb->expr()->like('u.roles', ':role')
+            )
+               ->setParameter('role', '%'.$client.'%')
+               ->getQuery()
+               ->getArrayResult();
+
+            return $qb;
+        }
+    }
+
     public function isUserIsAdmin($id): bool
     {
         $user = $this->findOneById($id);
+
         return in_array(Roles::ADMIN, $user->getRoles());
     }
 
     public function isUserIsSuperAdmin($id): bool
     {
         $user = $this->findOneById($id);
+
         return in_array(Roles::SUPER_ADMIN, $user->getRoles());
     }
 

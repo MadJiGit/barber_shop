@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Roles;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class RegistrationController extends AbstractController
 
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setRoles([Roles::CLIENT->value]);
 
             $entityManager->persist($user);
             $entityManager->flush();

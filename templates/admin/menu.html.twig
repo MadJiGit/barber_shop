@@ -7,5 +7,11 @@
     <h1>
         HELLO {{ user.nickName ? user.nickName : user.email }}
     </h1>
-    <h3>CHOSE YOUR BARBER and RESERVE YOUR APPOINTMENT</h3>
+    <h3>ADMIN MENU</h3>
+    <form style="display:inline">
+    <div>
+        <a style="margin-left: 10px" href="{{ path('list_all_clients') }}">List clients</a>
+        <a style="margin-left: 20px" href="{{ path('list_all_barbers') }}">List barbers</a>
+    </div>
+    </form>
 {% endblock %}
