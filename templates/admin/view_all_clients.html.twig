@@ -1,9 +1,9 @@
-{% extends '/base.html.twig' %}
-{% block title_sign_in_out_reg %}
-    {% include '/login_button.html.twig' %}
-{% endblock %}
-
+{#{% extends '/base.html.twig' %}#}
+{% include 'base.html.twig' %}
+{% include 'back_button.html.twig' %}
 {% block body %}
+{#    {% include 'admin/menu.html.twig' %}#}
+{#    <button onClick="window.history.back();" type="button">Go back</button>#}
 {% block stylesheets  %}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 {% endblock %}
@@ -19,11 +19,12 @@
     <tbody>
     {% for client in clients %}
     <tr>
+
         <td>{{ client.id }}</td>
         <td>{{ client.email }}</td>
         <td>
         {% for role in client.roles %}
-            {{ role }}
+            {{ role|lower }}
         {% endfor %}
         </td>
         <td>{{ client.first_name }}</td>
@@ -33,6 +34,9 @@
         <td>{{ client.date_added|date('d-m-Y') }}</td>
         <td>{{ client.date_banned|date('d-m-Y') }}</td>
         <td>{{ client.date_last_update|date('d-m-Y') }}</td>
+        {% if user.userIsSuperAdmin %}
+            <td><a href={{ path('admin_user_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
+    {% endif %}
     <tr>
     {% endfor %}
     </tbody>

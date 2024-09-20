@@ -1,12 +1,7 @@
-{% extends 'base.html.twig' %}
-{% block title_sign_in_out_reg %}
-    {% include 'login_button.html.twig' %}
-{% endblock %}
-
+{#{% include 'base.html.twig' %}#}
+{% include 'admin/menu.html.twig' %}
+{#{%  include 'back_button.html.twig' %}#}
 {% block body %}
-    <h1>
-        HELLO {{ user.nickName ? user.nickName : user.email }}
-    </h1>
     <h3>CHOSE YOUR BARBER and RESERVE YOUR APPOINTMENT</h3>
 {% endblock %}
 

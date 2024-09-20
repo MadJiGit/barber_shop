@@ -1,9 +1,12 @@
-{% extends 'base.html.twig' %}
-
+{#{% include 'base.html.twig' %}#}
+{% include 'back_button.html.twig' %}
+{#{%  include 'admin/menu.html.twig' %}#}
+<div>
 {% block header_line %}
-            HOME PAGE
+        HOME PAGE
 {% endblock %}
-{% block title_sign_in_out_reg %}
-    {% include 'login_button.html.twig' %}
-    {% include 'register_button.html.twig' %}
-{% endblock %}
+</div>
+{#{% block title_sign_in_out_reg %}#}
+{#    {% include 'login_button.html.twig' %}#}
+{#    {% include 'register_button.html.twig' %}#}
+{#{% endblock %}#}

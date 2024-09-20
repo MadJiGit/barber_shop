@@ -49,9 +49,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //        ;
     //    }
 
-    public function getAllClients(): array
+    public function getAllRolesByRolesName(string $role): array
     {
-        $client = Roles::CLIENT->value;
+        //        dd($role);
 
         if (true) {
             return $this->createQueryBuilder('u')
@@ -65,8 +65,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     'u.date_added',
                     'u.date_banned',
                     'u.date_last_update')
-            ->andWhere('u.roles like :role')
-            ->setParameter('role', '%'.$client.'%')
+            ->andWhere('u.roles LIKE :role')
+            ->setParameter('role', '%'.$role.'%')
             ->getQuery()
             ->getArrayResult();
         } else {
@@ -74,9 +74,80 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $qb->andWhere(
                 $qb->expr()->like('u.roles', ':role')
             )
-               ->setParameter('role', '%'.$client.'%')
-               ->getQuery()
-               ->getArrayResult();
+                ->setParameter('role', '%'.$role.'%')
+                ->getQuery()
+                ->getArrayResult();
+
+            return $qb;
+        }
+    }
+
+    public function getWithNoRole(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u.id',
+                'u.email',
+                'u.roles',
+                'u.first_name',
+                'u.last_name',
+                'u.nick_name',
+                'u.phone',
+                'u.date_added',
+                'u.date_banned',
+                'u.date_last_update')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getAllBarbers(): array
+    {
+        $barber = Roles::BARBER->value;
+
+        return $this->createQueryBuilder('u')
+            ->select('u.id',
+                'u.email',
+                'u.roles',
+                'u.first_name',
+                'u.last_name',
+                'u.nick_name',
+                'u.phone',
+                'u.date_added',
+                'u.date_banned',
+                'u.date_last_update')
+            ->where('u.roles like :role')
+            ->setParameter('role', '%'.$barber.'%')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getAllClients(): array
+    {
+        $role = Roles::CLIENT->value;
+
+        if (true) {
+            return $this->createQueryBuilder('u')
+                ->select('u.id',
+                    'u.email',
+                    'u.roles',
+                    'u.first_name',
+                    'u.last_name',
+                    'u.nick_name',
+                    'u.phone',
+                    'u.date_added',
+                    'u.date_banned',
+                    'u.date_last_update')
+                ->andWhere('u.roles LIKE :role')
+                ->setParameter('role', '%'.$role.'%')
+                ->getQuery()
+                ->getArrayResult();
+        } else {
+            $qb = $this->createQueryBuilder('u');
+            $qb->andWhere(
+                $qb->expr()->like('u.roles', ':role')
+            )
+                ->setParameter('role', '%'.$role.'%')
+                ->getQuery()
+                ->getArrayResult();
 
             return $qb;
         }

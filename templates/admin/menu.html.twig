@@ -1,17 +1,28 @@
-{% extends 'base.html.twig' %}
+{%  include 'base.html.twig' %}
 {% block admin_menu %}
-    {% include 'login_button.html.twig' %}
-{% endblock %}
-
-{% block body %}
-    <h1>
-        HELLO {{ user.nickName ? user.nickName : user.email }}
-    </h1>
-    <h3>ADMIN MENU</h3>
-    <form style="display:inline">
-    <div>
-        <a style="margin-left: 10px" href="{{ path('list_all_clients') }}">List clients</a>
-        <a style="margin-left: 20px" href="{{ path('list_all_barbers') }}">List barbers</a>
-    </div>
+    <form class="menu_buttons">
+        <div>
+            {% include 'back_button.html.twig'  %}
+            {% if user is defined %}
+                <h1>
+                    HELLO {{ user.nickName ? user.nickName : user.email }}
+                </h1>
+{#                {% if user.isUserIsSuperAdmin is define && user.isUserIsSuperAdmin %}#}
+                {% if user.isUserIsSuperAdmin is defined and user.isUserIsSuperAdmin %}
+                    <h3>ADMIN MENU</h3>
+                    <a href="{{ path('list_all_clients') }}"><button type="button">List clients</button></a>
+                    <a href="{{ path('list_all_barbers') }}"><button type="button">List barbers</button></a>
+                    <a href="{{ path('list_without_role') }}"><button type="button">List with no roles</button></a>
+                {% endif %}
+{#                <a href="{{ path('app_logout') }}">Logout</a>#}
+{#            {% else %}#}
+{#                <a href="{{ path('app_login') }}">Login</a>#}
+{#                <a href="{{ path('app_register') }}">Register</a>#}
+            {% endif %}
+        </div>
     </form>
+{% endblock %}
+{% block back_button %}
+{% endblock %}
+{% block body %}
 {% endblock %}

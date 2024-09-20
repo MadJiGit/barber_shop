@@ -1,21 +1,24 @@
-{% extends 'base.html.twig' %}
+{#{% extends 'base.html.twig' %}#}
+{#{% include 'admin/menu.html.twig' %}#}
 
-{% block title %}Log in!{% endblock %}
+{#{% block title %}Log in!{% endblock %}#}
 
-{% block title_sign_in_out_reg %}
-    {% include 'register_button.html.twig' %}
-{% endblock %}
+{#{% block title_sign_in_out_reg %}#}
+{#    {% include 'register_button.html.twig' %}#}
+{#{% endblock %}#}
+{% include 'back_button.html.twig' %}
 {% block body %}
+    <h1>Log in</h1>
 <form method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+{#    {% if app.user %}#}
+{#        <div class="mb-3">#}
+{#            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>#}
+{#        </div>#}
+{#    {% endif %}#}
 
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     <label for="inputEmail">Email</label>

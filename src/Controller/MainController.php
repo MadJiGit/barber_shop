@@ -23,6 +23,8 @@ class MainController extends AbstractController
     #[Route('/', name: 'main', methods: ['GET'])]
     public function index($name = null): Response
     {
+        $authUser = parent::getUser();
+//        dd($authUser);
         return $this->render('main/homepage.html.twig', ['name' => $name]);
     }
 
@@ -31,6 +33,13 @@ class MainController extends AbstractController
     {
         if (!$username) {
             throw $this->createNotFoundException('There is no user');
+        }
+
+//        $user = $this->userRepository->findOneBy(['email' => $username], []);
+        $user = parent::getUser();
+
+        if ($user->isUserIsSuperAdmin()) {
+            return $this->redirectToRoute('user_admin', ['id' => $user->getId()]);
         }
 
         return $this->redirectToRoute('appointment', ['username' => $username]);
@@ -52,10 +61,6 @@ class MainController extends AbstractController
 
         if (!$user->getFirstName()) {
             return $this->redirectToRoute('user_edit', ['id' => $user->getId()]);
-        }
-
-        if ($user->isUserIsSuperAdmin()) {
-            return $this->redirectToRoute('user_admin', ['id' => $user->getId()]);
         }
 
         return $this->render('form/appointment_form.html.twig', ['user' => $user, 'error' => $error]);

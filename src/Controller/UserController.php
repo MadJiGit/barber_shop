@@ -44,7 +44,8 @@ class UserController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
+//        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             $user->setFirstName($form->get('first_name')->getData());
             $user->setLastName($form->get('last_name')->getData());
             $user->setNickName($form->get('nick_name')->getData());

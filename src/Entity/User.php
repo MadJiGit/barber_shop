@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -72,6 +73,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->setDateAdded();
+        $this->setDateLastUpdate();
+        $this->setRoles();
     }
 
     public function isUserIsAdmin(): bool
@@ -121,23 +124,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
-     *
-     * @return list<string>
      */
     public function getRoles(): array
     {
+        //                dd($this->roles);
         return $this->roles;
+        //        if (is_array($this->roles)) {
+        //            return $this->roles;
+        //        } elseif ($this->roles && ($this->roles instanceof Collection)) {
+        //            return $this->roles->toArray();
+        //        } else {
+        //            return [];
+        //        }
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRolesObjects(): array
+    {
+        //        dd($this->roles);
+        //        return $this->roles;
+        if (is_array($this->roles)) {
+            return $this->roles;
+        } elseif ($this->roles && ($this->roles instanceof Collection)) {
+            return $this->roles->toArray();
+        } else {
+            return [];
+        }
     }
 
     /**
      * @param list<string> $roles
      */
-    public function setRoles(array $roles): static
+    public function setRoles(?array $roles = null): static
     {
-        $this->roles = $roles;
+//        dd($roles);
+        if ($roles) {
+            $this->addRole($roles);
+        } else {
+            $this->addRole([Roles::CLIENT->value]);
+        }
 
         return $this;
     }
+
+    private function addRole(array $role): void
+    {
+        $this->roles = $role;
+    }
+
+//    private function addRole(string $role): void
+//    {
+//        $this->roles[] = $role;
+//    }
 
     /**
      * @see PasswordAuthenticatedUserInterface
@@ -228,7 +268,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->date_banned?->format('d-M-Y H:i:s');
     }
 
-    public function setDateBanned(\DateTimeInterface $date_banned): static
+    public function setDateBanned(?\DateTimeInterface $date_banned = null): static
     {
         $this->date_banned = $date_banned;
 
@@ -237,12 +277,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDateLastUpdate(): ?string
     {
-        return $this->date_last_update->format('d-M-Y H:i:s');
+        return null == $this->date_last_update ? '' : $this->date_last_update->format('d-M-Y H:i:s');
     }
 
-    public function setDateLastUpdate(\DateTimeInterface $date_last_update): static
+    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
-        $this->date_last_update = $date_last_update;
+        if ($date_last_update) {
+            $this->date_last_update = new \DateTime('now');
+        } else {
+            $this->date_last_update = $date_last_update;
+        }
 
         return $this;
     }

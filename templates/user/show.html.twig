@@ -1,39 +1,14 @@
-{% extends '/base.html.twig' %}
-{% block title_sign_in_out_reg %}
-    {% include '/login_button.html.twig' %}
-{% endblock %}
+{% include '/admin/menu.html.twig' %}
+{#{% block title_sign_in_out_reg %}#}
+{#    {% include '/login_button.html.twig' %}#}
+{#{% endblock %}#}
+{% include 'back_button.html.twig' %}
 
 {% block body %}
-    <h1>
-       HELLO {{ user.nickName ? user.nickName : user.email }}
-    </h1>
-{#    <h3>CHOSE YOUR BARBER and RESERVE YOUR APPOINTMENT</h3>#}
-
-{#    <form method="post">#}
-{#        {% if error %}#}
-{#            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>#}
-{#        {% endif %}#}
-
-{#        {% if app.user %}#}
-{#            <div class="mb-3">#}
-
-{#            </div>#}
-{#        {% endif %}#}
+{#    <h1>#}
+{#       HELLO {{ user.nickName ? user.nickName : user.email }}#}
+{#    </h1>#}
 <div>
-    {% if isSuperAdmin %}
-{#        {{ form_row(form.roles) }}#}
-        <h1>ONLY FOR ADMINS</h1>
-        {{ form_start(form) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.first_name) }}
-        {{ form_row(form.last_name) }}
-        {{ form_row(form.nick_name) }}
-        {{ form_row(form.phone) }}
-        {{ form_row(form.date_added) }}
-        {{ form_row(form.date_banned) }}
-        {{ form_row(form.save) }}
-        {{ form_end(form) }}
-    {% else %}
         {{ form_start(form) }}
         {{ form_row(form.email) }}
         {{ form_row(form.first_name) }}
@@ -42,41 +17,11 @@
         {{ form_row(form.phone) }}
         {{ form_row(form.date_added) }}
         {{ form_row(form.save) }}
-        {{ form_end(form) }}
-    {% endif %}
-
-{#        {{ form_widget(form.email) }}#}
-{#            <div class="form-error">#}
-{#                {{ form_errors(form) }}#}
-{#            </div>#}
-{#            <button class="btn btn-lg btn-primary" type="submit">#}
-{#                Update#}
-{#            </button>#}
-{#        <h1 class="h3 mb-3 font-weight-normal">Please fill the form</h1>#}
-{#        <label for="email">email</label>#}
-{#        <input type="text" value="{{ user.email }}" name="email" id="email" disabled="disabled" class="form-control" required autofocus><br><br>#}
-{#        <label for="inputFirstName">First name</label>#}
-{#        <input type="text" name="firstName" id="inputFirstName" class="form-control" required autofocus><br><br>#}
-{#        <label for="inputLastName">Last name</label>#}
-{#        <input type="text" name="lastName" id="inputLastName" class="form-control" required autofocus><br><br>#}
-{#        <label for="inputNickName">Nick name</label>#}
-{#        <input type="text" name="nickName" id="inputNickName" class="form-control" required autofocus><br><br>#}
-{#        <label for="inputPhone">phone</label>#}
-{#        <input type="text" name="phone" id="inputPhone" class="form-control" required autofocus><br><br>#}
-{#        <label for="inputPassword">Password</label>#}
-{#        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required><br><br>#}
-
-{#        <input type="hidden" name="_csrf_token"#}
-{#               value="{{ csrf_token('authenticate') }}"#}
-{#        >#}
-
-{#        <div class="checkbox mb-3">#}
-{#            <label>#}
-{#                <input type="checkbox" name="_remember_me"> Remember me#}
-{#            </label>#}
-{#        </div>#}
-
-
-{#    </form>#}
+{#    {% if isSuperAdmin %}#}
+{#        {{ form_row(form.role) }}#}
+{#        {{ form_row(form.date_banned) }}#}
+{#        {{ form_row(form.date_last_update) }}#}
+{#    {% endif %}#}
+        {{ form_end(form, {'render_rest': false}) }}
 </div>
 {% endblock %}

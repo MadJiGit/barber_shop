@@ -1,0 +1,40 @@
+{#{% extends '/base.html.twig' %}#}
+{#{% include 'admin/menu.html.twig' %}#}
+{#{% block title_sign_in_out_reg %}#}
+{#    {% include '/login_button.html.twig' %}#}
+{#{% endblock %}#}
+
+{% block body %}
+{#    <h1>#}
+{#        HELLO {{ admin.nickName ? admin.nickName : admin.email }}#}
+{#    </h1>#}
+    <div>
+{#        {% if isSuperAdmin %}#}
+            <h1>ONLY FOR ADMINS</h1>
+        <h2>EDIT USER {{ user.nickName }}</h2>
+            {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.first_name) }}
+            {{ form_row(form.last_name) }}
+            {{ form_row(form.nick_name) }}
+            {{ form_row(form.phone) }}
+            {{ form_row(form.date_added) }}
+            {{ form_row(form.date_banned) }}
+            {{ form_row(form.date_last_update) }}
+            {{ form_row(form.roles) }}
+{#            {% for role in form.roles %}#}
+{#                {{ role }}#}
+{#            {% endfor %}#}
+{#        <label>add new role:</label>#}
+{#        <select name="role">#}
+{#            <option>{{ if custom_user_roles  }}</option>#}
+{#            {% for role in all_roles %}#}
+{#                <option value="{{ role.name }}"{% if role.name == custom_user_roles %} selected="selected"{% endif %}>{{ role.name }}</option>#}
+{#            {% endfor %}#}
+{#        </select>#}
+            {{ form_row(form.save) }}
+            {{ form_end(form, {'render_rest': false}) }}
+
+{#        {{ form.custom_role_2 }}#}
+    </div>
+{% endblock %}
