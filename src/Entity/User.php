@@ -95,6 +95,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         //        return in_array(Roles::CLIENT->value, $this->getRoles());
     }
 
+    public function isBarber(): bool
+    {
+        return in_array(Roles::BARBER->value, $this->getRoles());
+        //        return in_array(Roles::CLIENT->value, $this->getRoles());
+    }
+
     public function getId(): ?int
     {
         return $this->id;

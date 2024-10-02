@@ -36,7 +36,7 @@
         <td>{{ client.date_last_update|date('d-m-Y') }}</td>
         {% if user.userIsSuperAdmin %}
             <td><a href={{ path('admin_user_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
-    {% endif %}
+        {% endif %}
     <tr>
     {% endfor %}
     </tbody>
