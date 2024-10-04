@@ -16,6 +16,25 @@ class ProcedureRepository extends ServiceEntityRepository
         parent::__construct($registry, Procedure::class);
     }
 
+    public function getAllProcedures(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select(
+                'u.id',
+                'u.type',
+                'u.available',
+                'u.price_master',
+                'u.price_junior',
+                'u.duration_master',
+                'u.duration_junior',
+                'u.date_added',
+                'u.date_stopped',
+                'u.date_last_update')
+            ->orderBy('u.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     //    /**
     //     * @return Procedure[] Returns an array of Procedure objects
     //     */

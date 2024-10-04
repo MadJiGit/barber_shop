@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Procedure;
 use App\Entity\Roles;
 use App\Entity\User;
+use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
+use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,19 +18,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class AdminController extends AbstractController
 {
     private UserRepository $userRepository;
+    private ProcedureRepository $procedureRepository;
     private EntityManagerInterface $em;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository)
+    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ProcedureRepository $procedureRepository)
     {
         $this->em = $em;
         $this->userRepository = $userRepository;
-    }
-
-    public function add_data_to_query_origin(array &$dbsubquery, array &$dbparams, string $param_type, string $column, ?string $value): void
-    {
-        $dbsubquery[] = $column;
-        $dbparams[0] .= $param_type;
-        $dbparams[] = $value;
+        $this->procedureRepository = $procedureRepository;
     }
 
     #[Route('/user_admin/{id}', name: 'user_admin')]
@@ -70,17 +68,12 @@ class AdminController extends AbstractController
         $all = $this->userRepository->getWithNoRole();
         $all_list = [];
 
-        //        $all = $this->userRepository->findOneBy(['roles' => 'BARBER']);
-
-        $usersWithRoles = [];
-        //        dd($all);
         foreach ($all as $u => $v) {
             if (empty($v['roles'])) {
                 $all_list[] = $v;
             }
         }
 
-        //        exit();
         $header_row = array_keys($all[0]);
         $header_row[] = 'edit';
 
@@ -132,7 +125,9 @@ class AdminController extends AbstractController
             $user->setRoles($temp_roles);
             $user->setDateLastUpdate(new \DateTime('now'));
 
+            $this->em->persist($user);
             $this->em->flush();
+            $this->em->clear();
 
             return $this->redirectToRoute('user_admin',
                 ['id' => parent::getUser()->getId()]
@@ -245,6 +240,13 @@ class AdminController extends AbstractController
         //        while ($t = $res->fetch_assoc()) {
         //            echo '<pre>'.var_export($t, true).'</pre>';
         //        }
+    }
+
+    public function add_data_to_query_origin(array &$dbsubquery, array &$dbparams, string $param_type, string $column, ?string $value): void
+    {
+        $dbsubquery[] = $column;
+        $dbparams[0] .= $param_type;
+        $dbparams[] = $value;
     }
 
     #[Route('/test', name: 'test')]

@@ -8,7 +8,6 @@
         <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">show barber appointments</button></a></td>
     {% endif %}
 
-
     {% if user.isClient and user.nickname %}
         <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">reserve barber</button></a></td>
     {% endif %}

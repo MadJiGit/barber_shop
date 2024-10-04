@@ -10,9 +10,12 @@
 {#                {% if user.isUserIsSuperAdmin is define && user.isUserIsSuperAdmin %}#}
                 {% if user.isUserIsSuperAdmin is defined and user.isUserIsSuperAdmin %}
                     <h3>ADMIN MENU</h3>
-                    <a href="{{ path('list_all_clients') }}"><button type="button">List clients</button></a>
-                    <a href="{{ path('list_all_barbers') }}"><button type="button">List barbers</button></a>
-                    <a href="{{ path('list_without_role') }}"><button type="button">List with no roles</button></a>
+                    <a href="{{ path('list_all_clients') }}"><button type="button" class="button success_btn">List clients</button></a>
+                    <a href="{{ path('list_all_barbers') }}"><button type="button" class="button success_btn">List barbers</button></a>
+                    <a href="{{ path('list_without_role') }}"><button type="button" class="button success_btn">List with no roles</button></a>
+                    {% if user.isUserIsSuperAdmin %}
+                        <a href="{{ path('procedure_show', {id: user.id}) }}"><button type="button" class="button success_btn">Procedure panel</button></a>
+                    {% endif %}
                 {% endif %}
 {#                <a href="{{ path('app_logout') }}">Logout</a>#}
 {#            {% else %}#}

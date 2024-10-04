@@ -52,7 +52,9 @@ class UserController extends AbstractController
             $user->setPhone($form->get('phone')->getData());
             $user->setDateLastUpdate(new \DateTime('now'));
 
+            $this->em->persist($user);
             $this->em->flush();
+            $this->em->clear();
 
             return $this->redirectToRoute('appointment',
                 //                ['id' => $user->getId(), 'nickname' => $user->getNickName()]);
