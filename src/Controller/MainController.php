@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Appointments;
+use App\Entity\Procedure;
 use App\Entity\User;
+use App\Form\AppointmentFormType;
 use App\Repository\AppointmentsRepository;
+use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,11 +15,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use function Symfony\Component\Clock\now;
 
 class MainController extends AbstractController
 {
     private UserRepository $userRepository;
     private AppointmentsRepository $appointmentRepository;
+    private ProcedureRepository $procedureRepository;
     private EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $em)
@@ -24,41 +29,104 @@ class MainController extends AbstractController
         $this->em = $em;
         $this->userRepository = $em->getRepository(User::class);
         $this->appointmentRepository = $em->getRepository(Appointments::class);
+        $this->procedureRepository = $em->getRepository(Procedure::class);
     }
 
     #[Route('/', name: 'main', methods: ['GET'])]
     public function index($name = null): Response
     {
         $authUser = parent::getUser();
+        $user = '';
+        if ($authUser) {
+            $user = $this->userRepository->findOneBy(['email' => $authUser->getUserIdentifier()]);
+        }
 
-        return $this->render('main/homepage.html.twig', ['name' => $name]);
+        echo '<pre>'.var_export($authUser, true).'</pre>';
+        echo '<pre>'.var_export($user, true).'</pre>';
+        //        exit;
+
+        return $this->render('main/homepage.html.twig',
+            [
+                'name' => $name,
+                'user' => $user,
+            ]);
+        //        return $this->render('public/index.php', ['name' => $name]);
     }
 
     #[Route('/user/{username}', name: 'user', methods: ['GET'])]
     public function user($username = null): Response
     {
         if (!$username) {
-            throw $this->createNotFoundException('There is no user');
+                throw $this->createNotFoundException('There is no user');
         }
 
         $user = parent::getUser();
 
         if ($user->isUserIsSuperAdmin()) {
-            return $this->redirectToRoute('user_admin', ['id' => $user->getId()]);
+            return $this->redirectToRoute('admin_menu', ['id' => $user->getId()]);
         }
 
-        return $this->redirectToRoute('appointment', ['id' => $user->getId()]);
+        return $this->redirectToRoute('main', ['id' => $user->getId()]);
     }
 
-    #[Route('/barber_appointments/{id}', name: 'barber_appointments', methods: ['GET'])]
-    public function barber_appointments($id): Response
+    #[Route('/barber_appointments/{id}', name: 'barber_appointments', methods: ['GET', 'POST'])]
+    public function barber_appointments(Request $request, $id = ''): Response
     {
         // TODO table with barber's appointments
         $error = '';
         $user = $this->checkIfUserExistAndHasNickname($id);
+        $barbers = $this->userRepository->getAllBarbers();
+        $allAppointments = $this->appointmentRepository->findAll();
+        $procedures = $this->procedureRepository->getAllProcedures();
 
-        var_dump('barber\'s appointments will be there after a while.... id '.$id);
-        exit;
+        $appointment = new Appointments();
+
+        $form = $this->createForm(AppointmentFormType::class, $appointment);
+
+        try {
+            $form->handleRequest($request);
+        } catch (\Exception $e) {
+            echo 'failed : '.$e->getMessage();
+        }
+
+        // TODO show all barbers
+        // TODO show all procedures type
+        // TODO show calendar with hours
+
+        if ($form->isSubmitted()) {
+            echo '<pre>'.var_export($form->getData(), true).'</pre>';
+            exit;
+            //            $procedure->setDateAdded();
+            //            $procedure->setDateLastUpdate();
+            //
+            //            $this->em->persist($procedure);
+            //            $this->em->flush();
+            //            $this->em->clear();
+            //
+            //            return $this->redirectToRoute('appointment',
+            //                ['id' => $user->getId()]);
+        }
+
+        //        echo '<pre>'.var_export($user, true).'</pre>';
+        // //        echo '<pre>'.var_export($barbers, true).'</pre>';
+        //        echo '<pre>'.var_export($allAppointments, true).'</pre>';
+        //        exit;
+
+        $today = now();
+        $today = $today->format('Y-m-d');
+
+        return $this->render('form/appointment_form.html.twig',
+            [
+                'form' => $form,
+                'user' => $user,
+                'appointment' => $appointment,
+                'error' => $error,
+                'barbers' => $barbers,
+                'procedures' => $procedures,
+                'appointments' => $allAppointments,
+                'today' => $today
+
+            ]);
     }
 
     #[Route('/appointment/{id}', name: 'appointment', methods: ['GET'])]
@@ -85,8 +153,14 @@ class MainController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
+        echo '<pre>'.var_export($form->getData(), true).'</pre>';
+        echo '<pre>'.var_export($appointment, true).'</pre>';
+        exit;
+
         return $this->render('form/appointment_form.html.twig',
-            ['user' => $user,
+            [
+                'form' => $form,
+                'user' => $user,
                 'appointment' => $appointment,
                 'error' => $error]);
     }

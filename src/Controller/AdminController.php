@@ -28,7 +28,7 @@ class AdminController extends AbstractController
         $this->procedureRepository = $procedureRepository;
     }
 
-    #[Route('/user_admin/{id}', name: 'user_admin')]
+    #[Route('/admin_menu/{id}', name: 'admin_menu')]
     public function adminUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
@@ -37,12 +37,12 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('user', ['username' => $user->getEmail()]);
         }
 
-        return $this->render('admin/menu.html.twig', [
+        return $this->render('admin/admin_menu.html.twig', [
             'user' => $user,
         ]);
     }
 
-    #[Route('/list_all_clients', name: 'list_all_clients')]
+    #[Route('/view_all_clients', name: 'view_all_clients')]
     public function listAllClients(Request $request): Response
     {
         $allClients = $this->userRepository->getAllRolesByRolesName(Roles::CLIENT->value);
@@ -129,7 +129,7 @@ class AdminController extends AbstractController
             $this->em->flush();
             $this->em->clear();
 
-            return $this->redirectToRoute('user_admin',
+            return $this->redirectToRoute('admin_menu',
                 ['id' => parent::getUser()->getId()]
             );
         }
