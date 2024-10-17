@@ -1,7 +1,10 @@
 {#{% include 'base.html.twig' %}#}
-{% include 'admin/menu.html.twig' %}
-{#{%  include 'back_button.html.twig' %}#}
+{% include 'admin/admin_menu.html.twig' %}
+{#{%  include 'go_back_logout_buttons.html.twig' %}#}
+
+{#{% include '../src/js/date_control.js' %}#}
 {% block body %}
+
     <h3>CHOSE YOUR BARBER and RESERVE YOUR APPOINTMENT</h3>
 
     {% if user.isBarber %}
@@ -9,6 +12,50 @@
     {% endif %}
 
     {% if user.isClient and user.nickname %}
+
+{#        {% if user %}#}
+{#            {{ form_start(form) }}#}
+{#            {{ form_end(form) }}#}
+{#        {% endif %}#}
+        {% block javascripts %}
+{#                {{ parent() }}#}
+                <script>
+                    $(document).ready('load', function(){
+                        alert('hellooo');
+                    });
+                    //
+                    // left_arrow.addEventListener("click", function (){
+                    //     console.log('heeeelp me');
+                    //     alert('hellooo');
+                    // })
+
+
+
+                </script>
+            <div class="date-control">
+{#                <a id="take_out_a_day_arrow" href=""><p><i class="arrow left" id="arrow_left"></i></p></a>#}
+                <button class="arrow_buttons" id="take_out_a_day_arrow"><i class="arrow left" id="arrow_left"></i></button>
+                <label class="date-control-label" for="start">Start date:</label>
+                <input class="date-control-input" type="date"
+                       id="calendar"
+                       name="appointment_start"
+                       value="{{ "now"|date(today)}}"
+                       min="{{ "now"|date(today)}}"
+                       max="{{ "now"|date("2025-12-31")}}"
+                />
+                <button class="arrow_buttons" id="add_a_day_arrow" ><i class="arrow right" id="arrow_right"></i></button>
+{#                <button  id="arrow_right" class="arrow right"></button>#}
+{#                <a id="add_a_day_arrow" href=""><p><i class="arrow right" id="arrow_right"></i></p></a>#}
+            </div>
+
+        {% endblock %}
+        {%  for barber in barbers  %}
+            <li>{{ barber.nick_name }}</li>
+        {% endfor %}
+        {%  for procedure in procedures  %}
+            <li>{{ procedure.type }}</li>
+        {% endfor %}
+
         <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">reserve barber</button></a></td>
     {% endif %}
 
