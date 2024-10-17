@@ -1,3 +1,62 @@
+/*.date-control {*/
+/*    !*bottom: 0;*!*/
+/*    width: 15%;*/
+/*    display: flex;*/
+/*}*/
+
+/*.date-control-label{*/
+/*    width: 150px;*/
+/*    height: 20px;*/
+/*    float: left;*/
+/*    margin: 10% 0 0 45%;*/
+/*}*/
+/*.date-control-input{*/
+/*    margin: 15px;*/
+/*}*/
+
+/*.date-control a {*/
+/*    width: 20px;*/
+/*    height: 20px;*/
+/*    margin: 0 15px;*/
+/*}*/
+
+/*.date-control i {*/
+/*    width: 10%;*/
+/*}*/
+
+.arrow_buttons:hover {
+    /*transform: translate(10px, 5px);*/
+    color: #56DB3A;
+}
+
+.arrow_buttons {
+    color: #56DB3A;
+}
+
+.date-control {
+    display: flex;
+    gap: 10px;
+    /*justify-content: center;*/
+    align-items: center;
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
 .styled-table {
     border-collapse: collapse;
     margin: 25px 0;
@@ -5,12 +64,14 @@
     font-family: sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
 }
 
 .styled-table thead tr {
     background-color: #009879;
     color: #ffffff;
-    text-align: left;
+    text-align: center;
 }
 
 .styled-table th,

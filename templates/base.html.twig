@@ -3,13 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+{#        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">#}
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-        {% endblock %}
-        {% block javascripts %}
+            <link rel="shortcut icon" href="#">
         {% endblock %}
     </head>
     <body>
+        {% block javascripts %}
+{#            <link rel="javascript" href="{{ asset('js/date_control.js') }}">#}
+            <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+            <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+            <script src="{{ asset('js/date_control.js') }}"></script>
+        {% endblock %}
+        {% block body %}
+        {% endblock %}
     </body>
 </html>
