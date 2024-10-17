@@ -1,4 +1,4 @@
-{% include 'admin/menu.html.twig' %}
+{% include 'admin/admin_menu.html.twig' %}
 {% block body %}
     <h3>MANAGE APPOINTMENT</h3>
 
@@ -32,7 +32,6 @@
                                                             onclick="return confirm('Сигурни ли сте, че искате да изтриете тази услуга?')">delete</button></a></td>
             <tr>
                 {% endfor %}
-                {#            <td><a href={{ path('procedure_add', {id: procedure.id} ) }}><button type="button">edit</button></a></td> #}
             </tbody>
         </table>
     {% endblock %}

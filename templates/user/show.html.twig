@@ -1,13 +1,7 @@
-{% include '/admin/menu.html.twig' %}
-{#{% block title_sign_in_out_reg %}#}
-{#    {% include '/login_button.html.twig' %}#}
-{#{% endblock %}#}
-{% include 'back_button.html.twig' %}
+{% include '/admin/admin_menu.html.twig' %}
+{% include '/buttons/go_back_logout_buttons.html.twig' %}
 
 {% block body %}
-{#    <h1>#}
-{#       HELLO {{ user.nickName ? user.nickName : user.email }}#}
-{#    </h1>#}
 <div>
         {{ form_start(form) }}
         {{ form_row(form.email) }}
@@ -17,11 +11,6 @@
         {{ form_row(form.phone) }}
         {{ form_row(form.date_added) }}
         {{ form_row(form.save) }}
-{#    {% if isSuperAdmin %}#}
-{#        {{ form_row(form.role) }}#}
-{#        {{ form_row(form.date_banned) }}#}
-{#        {{ form_row(form.date_last_update) }}#}
-{#    {% endif %}#}
         {{ form_end(form, {'render_rest': false}) }}
 </div>
 {% endblock %}

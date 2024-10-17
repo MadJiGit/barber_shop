@@ -1,9 +1,6 @@
-{#{% extends '/base.html.twig' %}#}
 {% include 'base.html.twig' %}
-{% include 'back_button.html.twig' %}
+{% include 'buttons/go_back_logout_buttons.html.twig' %}
 {% block body %}
-{#    {% include 'admin/menu.html.twig' %}#}
-{#    <button onClick="window.history.back();" type="button">Go back</button>#}
 {% block stylesheets  %}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 {% endblock %}

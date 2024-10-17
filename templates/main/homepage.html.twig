@@ -1,12 +1,30 @@
-{#{% include 'base.html.twig' %}#}
-{% include 'back_button.html.twig' %}
-{#{%  include 'admin/menu.html.twig' %}#}
+{#{% block stylesheets %}#}
+{#        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker.css">#}
+{#{% endblock %}#}
+{#{% block javascripts %}#}
+{#        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>#}
+{#        <script>#}
+{#                jQuery(document).ready(function() {#}
+{#                        $('.js-datepicker').datepicker();#}
+{#                });#}
+{#        </script>#}
+{#{% endblock %}#}
 <div>
 {% block header_line %}
+        <div></div>
+        {% if user is null or user is empty %}
+                {{ dump(user) }}
+                {% include 'buttons/login_register_buttons.html.twig' %}
+        {% else %}
+                {{ dump(user) }}
+                {% include 'buttons/go_back_logout_buttons.html.twig' %}
+        {% endif %}
         HOME PAGE
+</div>
+<div>
+        {% if user is not null and user is not empty %}
+                <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">reserve barber</button></a></td>
+        {% endif %}
+</div>
 {% endblock %}
 </div>
-{#{% block title_sign_in_out_reg %}#}
-{#    {% include 'login_button.html.twig' %}#}
-{#    {% include 'register_button.html.twig' %}#}
-{#{% endblock %}#}

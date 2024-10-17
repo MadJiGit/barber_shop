@@ -2,7 +2,7 @@
 {% block admin_menu %}
     <form class="menu_buttons">
         <div>
-            {% include 'back_button.html.twig'  %}
+            {% include 'buttons/go_back_logout_buttons.html.twig'  %}
             {% if user is defined %}
                 <h1>
                     HELLO {{ user.nickName ? user.nickName : user.email }}
@@ -10,7 +10,7 @@
 {#                {% if user.isUserIsSuperAdmin is define && user.isUserIsSuperAdmin %}#}
                 {% if user.isUserIsSuperAdmin is defined and user.isUserIsSuperAdmin %}
                     <h3>ADMIN MENU</h3>
-                    <a href="{{ path('list_all_clients') }}"><button type="button" class="button success_btn">List clients</button></a>
+                    <a href="{{ path('view_all_clients') }}"><button type="button" class="button success_btn">List clients</button></a>
                     <a href="{{ path('list_all_barbers') }}"><button type="button" class="button success_btn">List barbers</button></a>
                     <a href="{{ path('list_without_role') }}"><button type="button" class="button success_btn">List with no roles</button></a>
                     {% if user.isUserIsSuperAdmin %}

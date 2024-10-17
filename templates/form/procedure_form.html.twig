@@ -1,6 +1,4 @@
-{#{% include 'base.html.twig' %}#}
-{% include 'admin/menu.html.twig' %}
-{#{%  include 'back_button.html.twig' %}#}
+{% include '/admin/admin_menu.html.twig' %}
 {% block body %}
     <h3>MANAGE APPOINTMENT</h3>
 
@@ -8,7 +6,4 @@
         {{ form_start(form) }}
         {{ form_end(form) }}
     {% endif %}
-
-{#    {% include 'admin/view_all_procedures.html.twig' %}#}
-
 {% endblock %}
