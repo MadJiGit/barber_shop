@@ -35,28 +35,45 @@
             <div class="date-control">
 {#                <a id="take_out_a_day_arrow" href=""><p><i class="arrow left" id="arrow_left"></i></p></a>#}
                 <button class="arrow_buttons" id="take_out_a_day_arrow"><i class="arrow left" id="arrow_left"></i></button>
-                <label class="date-control-label" for="start">Start date:</label>
+                <label class="date-control-label" for="calendar">Start date:</label>
                 <input class="date-control-input" type="date"
-                       id="calendar"
-                       name="appointment_start"
-                       value="{{ "now"|date(today)}}"
-                       min="{{ "now"|date(today)}}"
-                       max="{{ "now"|date("2025-12-31")}}"
+                                                     id="calendar"
+                                                     name="appointment_start"
+                                                     value="{{ "now"|date(today)}}"
+                                                     min="{{ "now"|date(today)}}"
+                                                     max="{{ "now"|date("2025-12-31")}}"
                 />
                 <button class="arrow_buttons" id="add_a_day_arrow" ><i class="arrow right" id="arrow_right"></i></button>
-{#                <button  id="arrow_right" class="arrow right"></button>#}
-{#                <a id="add_a_day_arrow" href=""><p><i class="arrow right" id="arrow_right"></i></p></a>#}
             </div>
-
         {% endblock %}
-        {%  for barber in barbers  %}
-            <li>{{ barber.nick_name }}</li>
-        {% endfor %}
-        {%  for procedure in procedures  %}
-            <li>{{ procedure.type }}</li>
-        {% endfor %}
+        <div class="drop_down_menu">
+            <label for="barbers" class="barbers_label">Избери барбър</label>
+            <select name="barbers" id="barbers" class="barbers_select">
+                {%  for barber in barbers  %}
+                   <option value="{{ barber.id }}"> {{ barber.nick_name }}</option>
+                {% endfor %}
+            </select>
+            <label for="procedures" class="procedures_label">Услуга</label>
+            <select name="procedures" id="procedures" class="procedures_select">
+                {%  for procedure in procedures  %}
+                    <option value="{{ procedure.id }}">{{ procedure.type }}</option>
+                {% endfor %}
+            </select>
 
-        <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">reserve barber</button></a></td>
+            <table class="appointment-control" id="appointment-control" border="1">
+                <tr>
+                {%  for key, value in table  %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+                </tr>
+                <tr>
+                {%  for key, value in table  %}
+                    <td><input class="form-control" type="image" src="{{ asset('/assets/hair-cut-tool-small.png') }}" value="{{ key }}" alt=""></td>
+                {% endfor %}
+                </tr>
+            </table>
+        </div>
+        <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">Запази час</button></a></td>
     {% endif %}
 
 {% endblock %}

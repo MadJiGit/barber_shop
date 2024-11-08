@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+
 use function Symfony\Component\Clock\now;
 
 class MainController extends AbstractController
@@ -41,23 +42,18 @@ class MainController extends AbstractController
             $user = $this->userRepository->findOneBy(['email' => $authUser->getUserIdentifier()]);
         }
 
-        echo '<pre>'.var_export($authUser, true).'</pre>';
-        echo '<pre>'.var_export($user, true).'</pre>';
-        //        exit;
-
         return $this->render('main/homepage.html.twig',
             [
                 'name' => $name,
                 'user' => $user,
             ]);
-        //        return $this->render('public/index.php', ['name' => $name]);
     }
 
     #[Route('/user/{username}', name: 'user', methods: ['GET'])]
     public function user($username = null): Response
     {
         if (!$username) {
-                throw $this->createNotFoundException('There is no user');
+            throw $this->createNotFoundException('There is no user');
         }
 
         $user = parent::getUser();
@@ -76,10 +72,19 @@ class MainController extends AbstractController
         $error = '';
         $user = $this->checkIfUserExistAndHasNickname($id);
         $barbers = $this->userRepository->getAllBarbers();
-        $allAppointments = $this->appointmentRepository->findAll();
+        //        $allAppointments = $this->appointmentRepository->findAll();
+        $allAppointments = $this->appointmentRepository->getAllAppointments();
         $procedures = $this->procedureRepository->getAllProcedures();
 
         $appointment = new Appointments();
+
+        //        echo '<pre>'.var_export($barbers[0]['nick_name'], true).'</pre>';
+        //        echo '<pre>'.var_export($allAppointments[0], true).'</pre>';
+        //        echo '<pre>'.var_export($user, true).'</pre>';
+        //        echo '<pre>'.var_export($procedures, true).'</pre>';
+        //        echo '<pre>'.var_export($allAppointments, true).'</pre>';
+        //                    exit;
+        //        exit();
 
         $form = $this->createForm(AppointmentFormType::class, $appointment);
 
@@ -92,6 +97,7 @@ class MainController extends AbstractController
         // TODO show all barbers
         // TODO show all procedures type
         // TODO show calendar with hours
+        //            echo '<pre>'.var_export($barbers, true).'</pre>';
 
         if ($form->isSubmitted()) {
             echo '<pre>'.var_export($form->getData(), true).'</pre>';
@@ -107,13 +113,21 @@ class MainController extends AbstractController
             //                ['id' => $user->getId()]);
         }
 
-        //        echo '<pre>'.var_export($user, true).'</pre>';
-        // //        echo '<pre>'.var_export($barbers, true).'</pre>';
-        //        echo '<pre>'.var_export($allAppointments, true).'</pre>';
-        //        exit;
+        //        echo '<pre>'.var_export($today, true).'</pre>';
+        //        echo '<pre>'.var_export($table, true).'</pre>';
+        //        exit();
 
         $today = now();
         $today = $today->format('Y-m-d');
+        $table = ['10:00' => '',
+            '11:00' => '',
+            '12:00' => '',
+            '13:00' => '',
+            '14:00' => '',
+            '15:00' => '',
+            '16:00' => '',
+            '17:00' => '',
+        ];
 
         return $this->render('form/appointment_form.html.twig',
             [
@@ -124,8 +138,8 @@ class MainController extends AbstractController
                 'barbers' => $barbers,
                 'procedures' => $procedures,
                 'appointments' => $allAppointments,
-                'today' => $today
-
+                'today' => $today,
+                'table' => $table,
             ]);
     }
 
@@ -145,7 +159,9 @@ class MainController extends AbstractController
         $user = $this->checkIfUserExistAndHasNickname($id);
 
         $appointment = $this->appointmentRepository->findBy(['client_id' => $id], []) ?? false;
-
+        //        $appointment = $this->appointmentRepository->findClientById($id) ?? false;
+        echo '<pre>'.var_export($appointment, true).'</pre>';
+        exit;
         $form = $this->createForm(AppointmentFormType::class, $appointment);
         try {
             $form->handleRequest($request);
@@ -171,6 +187,7 @@ class MainController extends AbstractController
     public function checkIfUserExistAndHasNickname(int $id): RedirectResponse|User
     {
         $user = $this->userRepository->findOneBy(['id' => $id], []);
+        //        $user = $this->userRepository->findOneById($id);
 
         if (!$user) {
             throw $this->createNotFoundException('There is no user');

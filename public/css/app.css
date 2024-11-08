@@ -24,6 +24,21 @@
 /*    width: 10%;*/
 /*}*/
 
+.appointment-control {
+    margin: 30px 30px 0 0;
+}
+
+.drop_down_menu {
+    margin: 30px 30px 30px 0;
+}
+.barbers_label {
+    margin: 0 0 10px 0;
+}
+
+.procedures_label {
+    margin: 0 0 10px 10px;
+}
+
 .arrow_buttons:hover {
     /*transform: translate(10px, 5px);*/
     color: #56DB3A;

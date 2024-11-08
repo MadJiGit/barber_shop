@@ -64,11 +64,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_last_update = null;
 
-    #[ORM\OneToOne(mappedBy: 'barber', cascade: ['persist', 'remove'])]
-    private ?Appointments $barber = null;
-
-    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
-    private ?Appointments $client = null;
+//    //    #[ORM\OneToOne(mappedBy: 'barber', cascade: ['persist', 'remove'])]
+//    //    #[ORM\ManyToMany(targetEntity: Appointments::class, inversedBy: 'id')]
+//    #[ORM\ManyToMany(targetEntity: Appointments::class, mappedBy: 'barber')]
+//    //    #[ORM\Column(Appointments::class)]
+//    //    private ?Appointments $barber = null;
+//    private $barber;
+//
+//    // //    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
+//    #[ORM\ManyToMany(targetEntity: Appointments::class, mappedBy: 'client')]
+//    //    #[ORM\Column(Appointments::class)]
+//    private $client;
+//
+//    private $appointments;
 
     public function __construct()
     {
@@ -165,7 +173,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function setRoles(?array $roles = null): static
     {
-//        dd($roles);
+        //        dd($roles);
         if ($roles) {
             $this->addRole($roles);
         } else {
@@ -180,10 +188,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $role;
     }
 
-//    private function addRole(string $role): void
-//    {
-//        $this->roles[] = $role;
-//    }
+    //    private function addRole(string $role): void
+    //    {
+    //        $this->roles[] = $role;
+    //    }
 
     /**
      * @see PasswordAuthenticatedUserInterface
