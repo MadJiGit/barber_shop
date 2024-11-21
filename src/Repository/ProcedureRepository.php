@@ -55,6 +55,16 @@ class ProcedureRepository extends ServiceEntityRepository
                 ->getArrayResult();
     }
 
+    public function findOneProcedureById($id): Procedure
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Procedure[] Returns an array of Procedure objects
     //     */

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\AppointmentHours;
 use App\Entity\Appointments;
 use App\Entity\Procedure;
+use App\Entity\Roles;
 use App\Entity\User;
 use App\Form\AppointmentFormType;
 use App\Repository\AppointmentsRepository;
@@ -68,23 +70,13 @@ class MainController extends AbstractController
     #[Route('/barber_appointments/{id}', name: 'barber_appointments', methods: ['GET', 'POST'])]
     public function barber_appointments(Request $request, $id = ''): Response
     {
-        // TODO table with barber's appointments
         $error = '';
-        $user = $this->checkIfUserExistAndHasNickname($id);
+        $client = $this->checkIfUserExistAndHasNickname($id);
         $barbers = $this->userRepository->getAllBarbers();
-        //        $allAppointments = $this->appointmentRepository->findAll();
         $allAppointments = $this->appointmentRepository->getAllAppointments();
         $procedures = $this->procedureRepository->getAllProcedures();
 
         $appointment = new Appointments();
-
-        //        echo '<pre>'.var_export($barbers[0]['nick_name'], true).'</pre>';
-        //        echo '<pre>'.var_export($allAppointments[0], true).'</pre>';
-        //        echo '<pre>'.var_export($user, true).'</pre>';
-        //        echo '<pre>'.var_export($procedures, true).'</pre>';
-        //        echo '<pre>'.var_export($allAppointments, true).'</pre>';
-        //                    exit;
-        //        exit();
 
         $form = $this->createForm(AppointmentFormType::class, $appointment);
 
@@ -94,45 +86,49 @@ class MainController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
-        // TODO show all barbers
-        // TODO show all procedures type
-        // TODO show calendar with hours
-        //            echo '<pre>'.var_export($barbers, true).'</pre>';
+        $picked_value = $_POST['pickedHours'] ?? '';
+
+        //        echo '<pre>'.var_export(date('Y-m-d H:i:s'), true).'</pre>';
+        $clientAppointments = $this->appointmentRepository->findAllAppointmentsOfClientWithId(6);
+        $barberAppointments = $this->appointmentRepository->findAllAppointmentsOfBarberWithId(1);
+        foreach ($clientAppointments as $r) {
+//            echo '<pre>'.var_export($r->getDate(), true).'</pre>';
+        }
+        foreach ($barberAppointments as $b) {
+//            echo '<pre>'.var_export($b->getDate(), true).'</pre>';
+        }
+//        exit;
 
         if ($form->isSubmitted()) {
-            echo '<pre>'.var_export($form->getData(), true).'</pre>';
-            exit;
-            //            $procedure->setDateAdded();
-            //            $procedure->setDateLastUpdate();
-            //
-            //            $this->em->persist($procedure);
-            //            $this->em->flush();
-            //            $this->em->clear();
-            //
-            //            return $this->redirectToRoute('appointment',
-            //                ['id' => $user->getId()]);
-        }
+            $procedure = $this->procedureRepository->findOneProcedureById($_POST['procedures']);
+            $barber = $this->userRepository->findOneById($_POST['barbers']);
+            $dateAppointment = new \DateTimeImmutable($_POST['appointment_start'].' '.$_POST['pickedHours']);
+            $duration = $this->getDurationOfProcedure($procedure, $barber);
 
-        //        echo '<pre>'.var_export($today, true).'</pre>';
-        //        echo '<pre>'.var_export($table, true).'</pre>';
-        //        exit();
+            $appointment->setClient($client);
+            $appointment->setBarber($barber);
+            $appointment->setProcedureType($procedure);
+            $appointment->setDate($dateAppointment);
+            $appointment->setDateAdded();
+            $appointment->setDuration($duration);
+
+            $this->em->persist($appointment);
+            $this->em->flush();
+            $this->em->clear();
+
+            return $this->redirectToRoute('barber_appointments',
+                ['id' => $client->getId()]);
+        }
 
         $today = now();
         $today = $today->format('Y-m-d');
-        $table = ['10:00' => '',
-            '11:00' => '',
-            '12:00' => '',
-            '13:00' => '',
-            '14:00' => '',
-            '15:00' => '',
-            '16:00' => '',
-            '17:00' => '',
-        ];
+        $table = AppointmentHours::getAppointmentHours();
 
         return $this->render('form/appointment_form.html.twig',
             [
+                'picked_value' => $picked_value,
                 'form' => $form,
-                'user' => $user,
+                'user' => $client,
                 'appointment' => $appointment,
                 'error' => $error,
                 'barbers' => $barbers,
@@ -198,5 +194,28 @@ class MainController extends AbstractController
         }
 
         return $user;
+    }
+
+    private function getDurationOfProcedure(Procedure $procedure, User $barber): int|bool
+    {
+        $roles = array_values($barber->getRoles());
+        if (in_array(Roles::BARBER_JUNIOR->value, $roles)) {
+            return $procedure->getDurationJunior();
+        } elseif (in_array(Roles::BARBER->value, $roles)) {
+            return $procedure->getDurationMaster();
+        }
+
+        return false;
+    }
+
+    private function getProcedure(array $procedures, int $id): Procedure|bool
+    {
+        foreach ($procedures as $pro) {
+            if ($pro['id'] = $id) {
+                return $pro;
+            }
+        }
+
+        return false;
     }
 }

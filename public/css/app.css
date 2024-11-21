@@ -28,6 +28,21 @@
     margin: 30px 30px 0 0;
 }
 
+.form-control {
+    margin: 5px 5px 5px 5px;
+}
+
+.form-control:focus {
+    background-color: #f0006c;
+}
+
+.form-control:hover {
+    /*background-color: #d4c200;*/
+    background-color: #f0006c;
+    /*color: #56DB3A;*/
+    transform: translateY(-2px);
+}
+
 .drop_down_menu {
     margin: 30px 30px 30px 0;
 }

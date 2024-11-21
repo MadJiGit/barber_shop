@@ -26,22 +26,22 @@ class Appointments
     #[ORM\Column]
     private ?int $duration = null;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: "id")]
-    #[ORM\JoinColumn(name: "client_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: "App\Entity\User", inversedBy: 'id')]
+    #[ORM\JoinColumn(name: 'client_id', referencedColumnName: 'id')]
     private User $client;
 
     #[ORM\ManyToOne(targetEntity: "App\Entity\User")]
-    #[ORM\JoinColumn(name: "barber_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: 'barber_id', referencedColumnName: 'id')]
     private User $barber;
-//    //    #[ManyToMany(targetEntity: User::class, inversedBy: 'id')]
-//    //    #[ManyToMany(inversedBy: 'barber', cascade: ['persist', 'remove'])]
-//    //    #[ORM\JoinColumn(nullable: false)]
-//    private $client;
+    //    //    #[ManyToMany(targetEntity: User::class, inversedBy: 'id')]
+    //    //    #[ManyToMany(inversedBy: 'barber', cascade: ['persist', 'remove'])]
+    //    //    #[ORM\JoinColumn(nullable: false)]
+    //    private $client;
 
-//    //    #[ManyToMany(targetEntity: User::class, inversedBy: 'id')]
-//    //    #[ManyToMany(inversedBy: 'barber', cascade: ['persist', 'remove'])]
-//    //    #[ORM\JoinColumn(nullable: false)]
-//    private $barber;
+    //    //    #[ManyToMany(targetEntity: User::class, inversedBy: 'id')]
+    //    //    #[ManyToMany(inversedBy: 'barber', cascade: ['persist', 'remove'])]
+    //    //    #[ORM\JoinColumn(nullable: false)]
+    //    private $barber;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_added = null;
@@ -126,8 +126,11 @@ class Appointments
         return $this->date_added;
     }
 
-    public function setDateAdded(\DateTimeInterface $date_added): static
+    public function setDateAdded(?\DateTimeInterface $date_added = null): static
     {
+        if (empty($date_added)) {
+            $date_added = new \DateTime('now');
+        }
         $this->date_added = $date_added;
 
         return $this;
@@ -138,8 +141,11 @@ class Appointments
         return $this->date_update;
     }
 
-    public function setDateUpdate(?\DateTimeInterface $date_update): static
+    public function setDateUpdate(?\DateTimeInterface $date_update = null): static
     {
+        if (empty($date_update)) {
+            $date_update = new \DateTime('now');
+        }
         $this->date_update = $date_update;
 
         return $this;
@@ -150,8 +156,11 @@ class Appointments
         return $this->date_canceled;
     }
 
-    public function setDateCanceled(?\DateTimeInterface $date_canceled): static
+    public function setDateCanceled(?\DateTimeInterface $date_canceled = null): static
     {
+        if (empty($date_canceled)) {
+            $date_canceled = new \DateTime('now');
+        }
         $this->date_canceled = $date_canceled;
 
         return $this;
@@ -162,8 +171,11 @@ class Appointments
         return $this->date_last_update;
     }
 
-    public function setDateLastUpdate(?\DateTimeInterface $date_last_update): static
+    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
+        if (empty($date_last_update)) {
+            $date_last_update = new \DateTime('now');
+        }
         $this->date_last_update = $date_last_update;
 
         return $this;

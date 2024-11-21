@@ -3,12 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Appointments;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\AbstractQuery;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * @extends ServiceEntityRepository<Appointments>
@@ -16,42 +14,79 @@ use Doctrine\ORM\AbstractQuery;
 class AppointmentsRepository extends ServiceEntityRepository
 {
     private EntityManagerInterface $entityManager;
+
     public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Appointments::class);
         $this->entityManager = $entityManager;
     }
 
-    public function getAllAppointments()
+    public function getAllAppointments(): array
     {
         $res = $this->entityManager->createQueryBuilder()
                 ->select('ub.nick_name')
                 ->from(Appointments::class, 'a')
                 ->leftJoin('a.barber', 'ub')
                 ->getQuery()
-                ->getArrayResult()
-        ;
-
-//            echo '<pre>'.var_export($res, true).'</pre>';
-//        exit();
-
-//                ->getArrayResult();
-
-//        $q = $this->entityManager->createQuery("
-//                SELECT a
-//                FROM appointments a JOIN user u
-//                WHERE a.barber_id = u.id
-//        ");
-
-//        $q->setParameter(6);
-//        return $q->getResult();
+                ->getArrayResult();
 
         return $res;
     }
 
+    /**
+     * @return Appointments[] Returns an array of Appointments objects
+     */
+    #[Route('/repo_test/{id}', name: 'repo_test')]
+    public function findAllAppointmentsOfClientWithId($id): array
+    {
+        $date = date('Y-m-d');
+        //        return
+        $res = $this->createQueryBuilder('a')
+        ->where('a.client = :id')
+        ->andWhere('a.date > :date')
+        ->setParameter('id', $id)
+        ->setParameter('date', $date)
+        ->orderBy('a.date', 'DESC')
+        ->setMaxResults(10)
+        ->getQuery()
+//            ->getResult()
+        ;
+
+        //        echo '<pre>'.var_export($res->getSQL(), true).'</pre>';
+        //        exit;
+        return $res->getResult();
+    }
+
+    /**
+     * @return Appointments[] Returns an array of Appointments objects
+     */
+    public function findAllAppointmentsOfBarberWithId($id): array
+    {
+        $date = date('Y-m-d');
+        //        return
+        $res = $this->createQueryBuilder('a')
+            ->where('a.barber = :id')
+            ->andWhere('a.date > :date')
+            ->setParameter('id', $id)
+            ->setParameter('date', $date)
+            ->orderBy('a.date', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+//            ->getResult()
+        ;
+
+        //        echo '<pre>'.var_export($res->getSQL(), true).'</pre>';
+        //        exit;
+        return $res->getResult();
+    }
+
+    public function saveAppointment(array $data)
+    {
+    }
+
     public function findClientById(int $id)
     {
-        var_dump("helllooo");
+        var_dump('helllooo');
     }
     //    /**
     //     * @return Appointments[] Returns an array of Appointments objects

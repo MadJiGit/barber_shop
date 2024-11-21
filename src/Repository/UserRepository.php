@@ -178,12 +178,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findOneById($id): User
     {
-        echo '<pre>'.var_export($id, true).'</pre>';
-        exit;
+//        echo '<pre>'.var_export($id, true).'</pre>';
+//        exit;
 
 
 
-        if (false) {
+        if (true) {
             return $this->createQueryBuilder('u')
                 ->andWhere('u.id = :id')
                 ->setParameter('id', $id)

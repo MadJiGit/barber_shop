@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class AppointmentFormType extends AbstractType
 {
@@ -74,7 +76,19 @@ class AppointmentFormType extends AbstractType
 //                'multiple' => true,
 // //                'expanded' => true,
 //            ])
-            ->add('save', SubmitType::class, ['label' => 'Запиши']);
+            ->add('save', SubmitType::class, ['label' => 'Потвърди часа']);
+
+//        $builder->addEventListener(
+//            FormEvents::PRE_SET_DATA,
+//            function (FormEvent $event): void {
+//                $form = $event->getForm();
+//
+//                $data = $event->getData();
+//
+//
+//            }
+//        );
+
     }
 
     private function getProcedures(array $getAllProceduresTypes): array
