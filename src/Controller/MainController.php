@@ -100,6 +100,8 @@ class MainController extends AbstractController
 //        exit;
 
         if ($form->isSubmitted()) {
+
+            $this->addFlash('success', 'You reserve a appointment!');
             $procedure = $this->procedureRepository->findOneProcedureById($_POST['procedures']);
             $barber = $this->userRepository->findOneById($_POST['barbers']);
             $dateAppointment = new \DateTimeImmutable($_POST['appointment_start'].' '.$_POST['pickedHours']);

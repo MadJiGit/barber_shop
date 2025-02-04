@@ -24,6 +24,11 @@
 /*    width: 10%;*/
 /*}*/
 
+.barber_rows {
+    /*margin: 15px 0 0 30px;*/
+    margin: 1rem 0 0 1rem;
+}
+
 .appointment-control {
     margin: 30px 30px 0 0;
 }
