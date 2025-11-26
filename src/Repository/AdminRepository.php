@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Roles;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,7 +18,7 @@ class AdminRepository extends ServiceEntityRepository
 
     public function getAllClients(): array
     {
-        $super_admin = Roles::SUPER_ADMIN->value;
+        $super_admin = 'ROLE_SUPER_ADMIN';
 
         return $this->createQueryBuilder('u')
             ->andWhere('u.roles = :role')

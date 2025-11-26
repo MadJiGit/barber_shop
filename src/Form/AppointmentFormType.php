@@ -72,17 +72,17 @@ class AppointmentFormType extends AbstractType
             'BARBER_MASTER' => [],
             'BARBER' => [],
         ];
-        foreach ($getAllBarbers as $key => $value) {
-            //            echo '<pre>'.var_export($value, true).'</pre>';
-            //            echo '<pre>'.var_export(in_array('BARBER', $value['roles']), true).'</pre>';
-            //            exit();
-            if (!empty($value['nick_name'])) {
-                if (in_array('BARBER_JUNIOR', $value['roles'])) {
-                    $res['BARBER_JUNIOR'][$value['nick_name']] = $value['nick_name'];
-                } elseif (in_array('BARBER_MASTER', $value['roles'])) {
-                    $res['BARBER_MASTER'][$value['nick_name']] = $value['nick_name'];
-                } elseif (in_array('BARBER', $value['roles'])) {
-                    $res['BARBER'][$value['nick_name']] = $value['nick_name'];
+        foreach ($getAllBarbers as $barber) {
+            // $barber is now a User object
+            $nickName = $barber->getNickName();
+            if (!empty($nickName)) {
+                $roles = $barber->getRoles();
+                if (in_array('ROLE_BARBER_JUNIOR', $roles)) {
+                    $res['BARBER_JUNIOR'][$nickName] = $nickName;
+                } elseif (in_array('ROLE_BARBER_SENIOR', $roles)) {
+                    $res['BARBER_MASTER'][$nickName] = $nickName;
+                } elseif (in_array('ROLE_BARBER', $roles)) {
+                    $res['BARBER'][$nickName] = $nickName;
                 }
             }
         }

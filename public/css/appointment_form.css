@@ -1,0 +1,191 @@
+/* ================================================
+   Appointment Booking Form Styles
+   ================================================ */
+
+.appointment-booking-section {
+    background: #f9f9f9;
+    min-height: 600px;
+}
+
+/* Form Cards */
+.form-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+}
+
+.form-card-title {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.form-card-title i {
+    color: #d4a373;
+    margin-right: 10px;
+}
+
+/* Date Control */
+.date-control-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.date-arrow-btn {
+    background: #d4a373;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-arrow-btn:hover {
+    background: #b88c5f;
+    transform: scale(1.1);
+}
+
+.date-control-input {
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    min-width: 200px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.date-control-input:focus {
+    outline: none;
+    border-color: #d4a373;
+}
+
+/* Custom Select */
+.custom-select {
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.custom-select:focus {
+    outline: none;
+    border-color: #d4a373;
+    box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
+}
+
+/* Time Slots Grid */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.time-slot-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 20px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-slot-btn:hover {
+    border-color: #d4a373;
+    background: #fdf8f3;
+    transform: translateY(-3px);
+}
+
+.time-slot-btn.active {
+    background: #d4a373;
+    border-color: #d4a373;
+    color: white;
+}
+
+.time-slot-btn.active i {
+    color: white;
+}
+
+.time-slot-btn i {
+    font-size: 1.5rem;
+    color: #d4a373;
+}
+
+.time-slot-btn span {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Selected Time Display */
+.selected-time-display {
+    background: #f0f8ff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #d4a373;
+}
+
+.selected-time-display strong {
+    color: #333;
+    margin-right: 10px;
+}
+
+.selected-time-display span {
+    color: #d4a373;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Submit Button */
+.btn-lg {
+    padding: 18px 50px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+}
+
+/* Alert */
+.alert-warning {
+    padding: 40px;
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .date-control-wrapper {
+        flex-direction: row;
+    }
+
+    .date-control-input {
+        min-width: 150px;
+    }
+}

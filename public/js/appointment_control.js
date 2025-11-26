@@ -14,6 +14,12 @@ $(document).ready(function(event){
     // let tableHours = fetchAppointmentHours();
     // fetchAppointmentHours();
     let pickedHours = document.getElementById('pickedHours');
+
+    // Exit early if pickedHours element doesn't exist (not on appointment page)
+    if (!pickedHours) {
+        return;
+    }
+
     let pickedHoursValue = pickedHours.value;
 
     // let key2 = getKeyByValue1(tableHours, pickedHoursValue);

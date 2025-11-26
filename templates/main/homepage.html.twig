@@ -1,30 +1,299 @@
-{#{% block stylesheets %}#}
-{#        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/css/bootstrap-datepicker.css">#}
-{#{% endblock %}#}
-{#{% block javascripts %}#}
-{#        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.0/js/bootstrap-datepicker.min.js"></script>#}
-{#        <script>#}
-{#                jQuery(document).ready(function() {#}
-{#                        $('.js-datepicker').datepicker();#}
-{#                });#}
-{#        </script>#}
-{#{% endblock %}#}
-<div>
-{% block header_line %}
-        <div></div>
-        {% if user is null or user is empty %}
-                {{ dump(user) }}
-                {% include 'buttons/login_register_buttons.html.twig' %}
-        {% else %}
-                {{ dump(user) }}
-                {% include 'buttons/go_back_logout_buttons.html.twig' %}
-        {% endif %}
-        HOME PAGE
-</div>
-<div>
-        {% if user is not null and user is not empty %}
-                <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">reserve barber</button></a></td>
-        {% endif %}
-</div>
+{% extends 'base.html.twig' %}
+
+{% block title %}Barber Shop - Professional Hair Styling & Grooming{% endblock %}
+
+{% block body %}
+    <!--? Slider Area Start -->
+    <div class="slider-area position-relative fix">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height d-flex align-items-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-9 col-md-11 col-sm-10">
+                            <div class="hero__caption">
+                                <span data-animation="fadeInUp" data-delay="0.2s">Welcome to Our Barber Shop</span>
+                                <h1 data-animation="fadeInUp" data-delay="0.5s">Our Hair Style Makes You Look Elegant</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Stroke Text -->
+        <div class="stock-text">
+            <h2>Professional Grooming</h2>
+            <h2>Professional Grooming</h2>
+        </div>
+        <!-- Call to Action Arrow -->
+        <div class="thumb-content-box">
+            {% if app.user %}
+                <a href="{{ path('barber_appointments', {id: app.user.id}) }}" class="thumb-content-link">
+                    <div class="thumb-content">
+                        <h3>Make an Appointment Now</h3>
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                </a>
+            {% else %}
+                <a href="#guest-booking" class="thumb-content-link">
+                    <div class="thumb-content">
+                        <h3>Make an Appointment Now</h3>
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Slider Area End -->
+
+    <!--? About Area Start -->
+    <section class="about-area section-padding30 position-relative">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-11">
+                    <div class="about-img">
+                        <img src="{{ asset('assets/img/gallery/about.png') }}" alt="About Us">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="about-caption">
+                        <div class="section-tittle section-tittle3 mb-35">
+                            <span>About Our Company</span>
+                            <h2>Professional Barbering Experience</h2>
+                        </div>
+                        <p class="mb-30 pera-bottom">
+                            We provide professional hair styling and grooming services with experienced barbers.
+                            Book your appointment online and enjoy our premium services in a modern, comfortable environment.
+                        </p>
+                        <p class="pera-top mb-50">
+                            Our team of skilled professionals is dedicated to giving you the perfect look that matches your style and personality.
+                        </p>
+                        {% if not app.user %}
+                            <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About Shape -->
+        <div class="about-shape">
+            <img src="{{ asset('assets/img/gallery/about-shape.png') }}" alt="">
+        </div>
+    </section>
+    <!-- About Area End -->
+
+    <!--? Services Area Start -->
+    <section class="service-area pb-170">
+        <div class="container">
+            <!-- Section Title -->
+            <div class="row d-flex justify-content-center">
+                <div class="col-xl-7 col-lg-8 col-md-11 col-sm-11">
+                    <div class="section-tittle text-center mb-90">
+                        <span>Professional Services</span>
+                        <h2>Our Best Services That We're Offering</h2>
+                    </div>
+                </div>
+            </div>
+            <!-- Services Grid -->
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-6">
+                    <div class="services-caption text-center mb-30">
+                        <div class="service-icon">
+                            <i class="flaticon-healthcare-and-medical"></i>
+                        </div>
+                        <div class="service-cap">
+                            <h4><a href="#">Stylish Hair Cut</a></h4>
+                            <p>Professional men's haircuts, kids cuts, and modern styling tailored to your preference.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-6">
+                    <div class="services-caption active text-center mb-30">
+                        <div class="service-icon">
+                            <i class="flaticon-fitness"></i>
+                        </div>
+                        <div class="service-cap">
+                            <h4><a href="#">Hot Towel Shave</a></h4>
+                            <p>Traditional hot towel shave experience with premium products for ultimate relaxation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-6">
+                    <div class="services-caption text-center mb-30">
+                        <div class="service-icon">
+                            <i class="flaticon-clock"></i>
+                        </div>
+                        <div class="service-cap">
+                            <h4><a href="#">Beard Styling</a></h4>
+                            <p>Expert beard trimming, shaping, and grooming to complement your look perfectly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Services Area End -->
+
+    <!--? Booking Section for Guests -->
+    {% if not app.user %}
+    <section id="guest-booking" class="appointment-area section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
+                    <div class="section-tittle text-center mb-60">
+                        <span>Book Without Account</span>
+                        <h2>Make an Appointment</h2>
+                        <p class="mt-20">No registration needed - just fill in your details and pick a time!</p>
+                    </div>
+
+                    <div class="appointment-info-box">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <p>You'll receive a confirmation email with your appointment details</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-link"></i>
+                            <p>Manage your booking via the link in the email (cancel or reschedule)</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user-plus"></i>
+                            <p>Want to track your appointments? <a href="{{ path('app_register') }}">Create an account</a></p>
+                        </div>
+                    </div>
+
+                    <div class="guest-booking-placeholder text-center mt-60">
+                        <div class="placeholder-content">
+                            <i class="fas fa-calendar-check fa-3x mb-20"></i>
+                            <h4>Guest Booking Form Coming Soon</h4>
+                            <p class="mb-30">We're building a simple booking form for guests. In the meantime, please create an account to book appointments.</p>
+                            <a href="{{ path('app_register') }}" class="btn header-btn">Create Account Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!--? Pricing Area Start -->
+    <section class="pricing-area section-padding30 fix">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-55">
+                        <span>Pricing Plans</span>
+                        <h2>Our Affordable Pricing</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="properties pb-30">
+                        <div class="properties-caption">
+                            <h3>Basic Package</h3>
+                            <div class="price">
+                                <span class="amount">$25</span>
+                                <span class="duration">/ Haircut</span>
+                            </div>
+                            <ul class="pricing-features">
+                                <li>Professional Haircut</li>
+                                <li>Hair Wash</li>
+                                <li>Basic Styling</li>
+                                <li>30-40 minutes</li>
+                            </ul>
+                            {% if app.user %}
+                                <a href="{{ path('barber_appointments', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                            {% else %}
+                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="properties pb-30">
+                        <div class="properties-caption">
+                            <h3>Premium Package</h3>
+                            <div class="price">
+                                <span class="amount">$40</span>
+                                <span class="duration">/ Service</span>
+                            </div>
+                            <ul class="pricing-features">
+                                <li>Premium Haircut & Styling</li>
+                                <li>Hair Treatment</li>
+                                <li>Beard Styling</li>
+                                <li>Hot Towel Service</li>
+                                <li>45-55 minutes</li>
+                            </ul>
+                            {% if app.user %}
+                                <a href="{{ path('barber_appointments', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                            {% else %}
+                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="properties pb-30">
+                        <div class="properties-caption">
+                            <h3>Deluxe Package</h3>
+                            <div class="price">
+                                <span class="amount">$60</span>
+                                <span class="duration">/ Full Service</span>
+                            </div>
+                            <ul class="pricing-features">
+                                <li>Premium Haircut & Coloring</li>
+                                <li>Deep Hair Treatment</li>
+                                <li>Beard Sculpting</li>
+                                <li>Hot Towel Shave</li>
+                                <li>Head Massage</li>
+                                <li>90+ minutes</li>
+                            </ul>
+                            {% if app.user %}
+                                <a href="{{ path('barber_appointments', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                            {% else %}
+                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Pricing Area End -->
+
+    <!--? Testimonials Area Start -->
+    <div class="testimonial-area fix">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-80">
+                        <span>Testimonials</span>
+                        <h2>What Our Clients Say</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="testimonial-active dot-style">
+                        <!-- Single Testimonial -->
+                        <div class="single-testimonial text-center">
+                            <div class="testimonial-caption">
+                                <div class="testimonial-top-cap">
+                                    <p>"Excellent service! The barbers are highly skilled and the atmosphere is very professional. I've been a regular customer for over a year now."</p>
+                                </div>
+                                <div class="testimonial-founder d-flex align-items-center justify-content-center">
+                                    <div class="founder-text">
+                                        <span>John Smith</span>
+                                        <p>Regular Client</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Testimonials Area End -->
+
 {% endblock %}
-</div>

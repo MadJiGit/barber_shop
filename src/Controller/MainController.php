@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\AppointmentHours;
 use App\Entity\Appointments;
 use App\Entity\Procedure;
-use App\Entity\Roles;
 use App\Entity\User;
 use App\Form\AppointmentFormType;
 use App\Repository\AppointmentsRepository;
@@ -67,8 +66,16 @@ class MainController extends AbstractController
         return $this->redirectToRoute('main', ['id' => $user->getId()]);
     }
 
+    /**
+     * Display and handle appointment booking form
+     *
+     * @param Request $request
+     * @param int|string $id Client user ID
+     * @return Response
+     * @throws \DateMalformedStringException
+     */
     #[Route('/barber_appointments/{id}', name: 'barber_appointments', methods: ['GET', 'POST'])]
-    public function barber_appointments(Request $request, $id = ''): Response
+    public function barber_appointments(Request $request, int|string $id = ''): Response
     {
         $error = '';
         $client = $this->checkIfUserExistAndHasNickname($id);
@@ -83,28 +90,22 @@ class MainController extends AbstractController
         try {
             $form->handleRequest($request);
         } catch (\Exception $e) {
-            echo 'failed : '.$e->getMessage();
+            $this->addFlash('error', 'Failed to process form: '.$e->getMessage());
+            return $this->redirectToRoute('barber_appointments', ['id' => $client->getId()]);
         }
 
-        $picked_value = $_POST['pickedHours'] ?? '';
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->addFlash('success', 'You reserved an appointment!');
 
-        //        echo '<pre>'.var_export(date('Y-m-d H:i:s'), true).'</pre>';
-        $clientAppointments = $this->appointmentRepository->findAllAppointmentsOfClientWithId(6);
-        $barberAppointments = $this->appointmentRepository->findAllAppointmentsOfBarberWithId(1);
-        foreach ($clientAppointments as $r) {
-//            echo '<pre>'.var_export($r->getDate(), true).'</pre>';
-        }
-        foreach ($barberAppointments as $b) {
-//            echo '<pre>'.var_export($b->getDate(), true).'</pre>';
-        }
-//        exit;
+            // Get data from request instead of $_POST
+            $procedureId = $request->request->get('procedures');
+            $barberId = $request->request->get('barbers');
+            $appointmentStart = $request->request->get('appointment_start');
+            $pickedHours = $request->request->get('pickedHours');
 
-        if ($form->isSubmitted()) {
-
-            $this->addFlash('success', 'You reserve a appointment!');
-            $procedure = $this->procedureRepository->findOneProcedureById($_POST['procedures']);
-            $barber = $this->userRepository->findOneById($_POST['barbers']);
-            $dateAppointment = new \DateTimeImmutable($_POST['appointment_start'].' '.$_POST['pickedHours']);
+            $procedure = $this->procedureRepository->findOneProcedureById($procedureId);
+            $barber = $this->userRepository->findOneById($barberId);
+            $dateAppointment = new \DateTimeImmutable($appointmentStart.' '.$pickedHours);
             $duration = $this->getDurationOfProcedure($procedure, $barber);
 
             $appointment->setClient($client);
@@ -128,7 +129,6 @@ class MainController extends AbstractController
 
         return $this->render('form/appointment_form.html.twig',
             [
-                'picked_value' => $picked_value,
                 'form' => $form,
                 'user' => $client,
                 'appointment' => $appointment,
@@ -150,42 +150,28 @@ class MainController extends AbstractController
         return $this->render('form/appointment_form.html.twig', ['user' => $user, 'error' => $error]);
     }
 
-    #[Route('/add_appointment/{$id}', name: 'add_appointment', methods: ['GET'])]
-    public function addAppointment(Request $request, $id): Response
+    /**
+     * Alternative appointment creation route (currently not used)
+     * This method needs proper implementation or should be removed
+     */
+    #[Route('/add_appointment/{id}', name: 'add_appointment', methods: ['GET', 'POST'])]
+    public function addAppointment(Request $request, int $id): Response
     {
-        $error = '';
-        $user = $this->checkIfUserExistAndHasNickname($id);
-
-        $appointment = $this->appointmentRepository->findBy(['client_id' => $id], []) ?? false;
-        //        $appointment = $this->appointmentRepository->findClientById($id) ?? false;
-        echo '<pre>'.var_export($appointment, true).'</pre>';
-        exit;
-        $form = $this->createForm(AppointmentFormType::class, $appointment);
-        try {
-            $form->handleRequest($request);
-        } catch (\Exception $e) {
-            echo 'failed : '.$e->getMessage();
-        }
-
-        echo '<pre>'.var_export($form->getData(), true).'</pre>';
-        echo '<pre>'.var_export($appointment, true).'</pre>';
-        exit;
-
-        return $this->render('form/appointment_form.html.twig',
-            [
-                'form' => $form,
-                'user' => $user,
-                'appointment' => $appointment,
-                'error' => $error]);
+        // Redirect to main appointment booking route
+        return $this->redirectToRoute('barber_appointments', ['id' => $id]);
     }
 
     /**
-     * @return RedirectResponse|int
+     * Check if user exists and has required profile information
+     * Redirects to profile edit if first name is missing
+     *
+     * @param int $id User ID
+     * @return User
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function checkIfUserExistAndHasNickname(int $id): RedirectResponse|User
     {
         $user = $this->userRepository->findOneBy(['id' => $id], []);
-        //        $user = $this->userRepository->findOneById($id);
 
         if (!$user) {
             throw $this->createNotFoundException('There is no user');
@@ -201,9 +187,9 @@ class MainController extends AbstractController
     private function getDurationOfProcedure(Procedure $procedure, User $barber): int|bool
     {
         $roles = array_values($barber->getRoles());
-        if (in_array(Roles::BARBER_JUNIOR->value, $roles)) {
+        if (in_array('ROLE_BARBER_JUNIOR', $roles)) {
             return $procedure->getDurationJunior();
-        } elseif (in_array(Roles::BARBER->value, $roles)) {
+        } elseif (in_array('ROLE_BARBER', $roles) || in_array('ROLE_BARBER_SENIOR', $roles)) {
             return $procedure->getDurationMaster();
         }
 
@@ -213,7 +199,7 @@ class MainController extends AbstractController
     private function getProcedure(array $procedures, int $id): Procedure|bool
     {
         foreach ($procedures as $pro) {
-            if ($pro['id'] = $id) {
+            if ($pro['id'] == $id) {
                 return $pro;
             }
         }

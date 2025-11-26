@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Procedure;
-use App\Entity\Roles;
 use App\Entity\User;
 use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
@@ -32,7 +31,7 @@ class AdminController extends AbstractController
     public function adminUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
-        if (!in_array(Roles::SUPER_ADMIN->value, $user->getRoles())) {
+        if (!in_array('ROLE_SUPER_ADMIN', $user->getRoles())) {
             // TODO exceptions need here
             return $this->redirectToRoute('user', ['username' => $user->getEmail()]);
         }
@@ -45,7 +44,7 @@ class AdminController extends AbstractController
     #[Route('/view_all_clients', name: 'view_all_clients')]
     public function listAllClients(Request $request): Response
     {
-        $allClients = $this->userRepository->getAllRolesByRolesName(Roles::CLIENT->value);
+        $allClients = $this->userRepository->getAllRolesByRolesName('ROLE_CLIENT');
         $clients_list = [];
 
         $header_row = array_keys($allClients[0]);
@@ -134,7 +133,16 @@ class AdminController extends AbstractController
             );
         }
         $all_user_roles['name'] = $user->getRoles()[0] ?? null;
-        $all_roles = Roles::cases();
+        $all_roles = [
+            'ROLE_SUPER_ADMIN' => 'Super Admin',
+            'ROLE_ADMIN' => 'Admin',
+            'ROLE_MANAGER' => 'Manager',
+            'ROLE_RECEPTIONIST' => 'Receptionist',
+            'ROLE_BARBER_SENIOR' => 'Senior Barber',
+            'ROLE_BARBER' => 'Barber',
+            'ROLE_BARBER_JUNIOR' => 'Junior Barber',
+            'ROLE_CLIENT' => 'Client',
+        ];
 
         return $this->render('admin/user_edit.html.twig', [
             'user' => $user,

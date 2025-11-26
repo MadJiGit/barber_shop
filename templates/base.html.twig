@@ -1,32 +1,185 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-{#        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">#}
-            <link rel="icon" type="image/x-icon" href="../favicon.png">
-            <link rel="icon" type="image/png" sizes="32x32" href="../favicon.png">
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-{#            <link rel="shortcut icon" type="image/png" href="/public/assets/favicon_barbershop.png">#}
-{#            <link rel="shortcut icon" type="image/png" href={{ asset('assets/favicon_barbershop.png') }}>#}
-{#            <link rel="shortcut icon" type="image/png" href={{ asset('assets/bs_1.png') }}>#}
-{#            <link rel="shortcut icon" type="image/png" href={{ asset('assets/favicon.ico') }}>#}
-{#            <link rel="icon" type="image/png"type="image/png" href="../favicon.ico">#}
-{#            <link rel="icon" type="image/png" sizes="32x32" href="../favicon.png">#}
-{#            <link rel="shortcut icon" type="ico" href={{ 'favicon.ico' }}>#}
-        {% endblock %}
-    </head>
-    <body>
-        {% block javascripts %}
-{#            <link rel="javascript" href="{{ asset('js/date_control.js') }}">#}
-            <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-            <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-            <script src="{{ asset('js/date_control.js') }}"></script>
-            <script src="{{ asset('js/appointment_control.js') }}"></script>
-        {% endblock %}
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{% block title %}Barber Shop - Book Your Appointment{% endblock %}</title>
+    <meta name="description" content="Professional barber shop appointment booking system">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.png') }}">
+
+    {% block stylesheets %}
+        <!-- Template CSS -->
+        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/slicknav.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/flaticon.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/gijgo.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/animated-headline.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/fontawesome-all.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/themify-icons.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/slick.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/nice-select.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+        <!-- Custom CSS overrides -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="{{ asset('assets/img/logo/loder.png') }}" alt="Loading">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader End -->
+
+    {% block header %}
+        <header>
+            <div class="header-area header-transparent pt-20">
+                <div class="main-header header-sticky">
+                    <div class="container-fluid">
+                        <div class="row align-items-center">
+                            <!-- Logo -->
+                            <div class="col-xl-2 col-lg-2 col-md-1">
+                                <div class="logo">
+                                    <a href="{{ path('main') }}">
+                                        <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Barber Shop Logo">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-xl-10 col-lg-10 col-md-10">
+                                <div class="menu-main d-flex align-items-center justify-content-end">
+                                    <!-- Main Menu -->
+                                    <div class="main-menu f-right d-none d-lg-block">
+                                        <nav>
+                                            <ul id="navigation">
+                                                <li><a href="{{ path('main') }}">Home</a></li>
+                                                {% if app.user %}
+                                                    <li><a href="{{ path('barber_appointments', {id: app.user.id}) }}">Book Appointment</a></li>
+                                                    <li><a href="{{ path('user_edit', {id: app.user.id}) }}">Profile</a></li>
+                                                    {% if is_granted('ROLE_ADMIN') %}
+                                                        <li><a href="{{ path('admin_menu', {id: app.user.id}) }}">Admin</a></li>
+                                                    {% endif %}
+                                                    <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                                                {% else %}
+                                                    <li><a href="{{ path('app_login') }}">Login</a></li>
+                                                    <li><a href="{{ path('app_register') }}">Register</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    {% if not app.user %}
+                                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                            <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- Mobile Menu -->
+                            <div class="col-12">
+                                <div class="mobile_menu d-block d-lg-none"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    {% endblock %}
+
+    <main>
         {% block body %}
         {% endblock %}
-    </body>
+    </main>
+
+    {% block footer %}
+        <footer>
+            <div class="footer-area">
+                <div class="container">
+                    <div class="footer-top footer-padding">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-8 col-sm-10">
+                                <div class="single-footer-caption text-center">
+                                    <!-- Logo -->
+                                    <div class="footer-logo">
+                                        <a href="{{ path('main') }}">
+                                            <img src="{{ asset('assets/img/logo/logo2_footer.png') }}" alt="Barber Shop">
+                                        </a>
+                                    </div>
+                                    <!-- Social -->
+                                    <div class="footer-social">
+                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                        <a href="#"><i class="fab fa-twitter"></i></a>
+                                        <a href="#"><i class="fab fa-instagram"></i></a>
+                                        <a href="#"><i class="fas fa-globe"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-xl-9 col-lg-8">
+                                <div class="footer-copy-right">
+                                    <p>&copy; {{ 'now'|date('Y') }} Barber Shop. All rights reserved.</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-4">
+                                <!-- Back to top -->
+                                <div class="footer-back-link text-right">
+                                    <a href="#" class="back-link">Back to top <i class="ti-angle-up"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
+
+    <!-- Scroll Up -->
+    <div id="back-top">
+        <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+    </div>
+
+    {% block javascripts %}
+        <!-- Template JS -->
+        <script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
+        <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
+        <script src="{{ asset('assets/js/popper.min.js') }}"></script>
+        <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.slicknav.min.js') }}"></script>
+        <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+        <script src="{{ asset('assets/js/slick.min.js') }}"></script>
+        <script src="{{ asset('assets/js/wow.min.js') }}"></script>
+        <script src="{{ asset('assets/js/animated.headline.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.magnific-popup.js') }}"></script>
+        <script src="{{ asset('assets/js/gijgo.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.nice-select.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.sticky.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.counterup.min.js') }}"></script>
+        <script src="{{ asset('assets/js/waypoints.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.countdown.min.js') }}"></script>
+        <script src="{{ asset('assets/js/hover-direction-snake.min.js') }}"></script>
+        <script src="{{ asset('assets/js/contact.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.form.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.validate.min.js') }}"></script>
+        <script src="{{ asset('assets/js/mail-script.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.ajaxchimp.min.js') }}"></script>
+        <script src="{{ asset('assets/js/plugins.js') }}"></script>
+        <script src="{{ asset('assets/js/main.js') }}"></script>
+
+        <!-- Custom JS -->
+        <script src="{{ asset('js/date_control.js') }}"></script>
+        <script src="{{ asset('js/appointment_control.js') }}"></script>
+    {% endblock %}
+</body>
 </html>

@@ -1,112 +1,190 @@
-{% include 'admin/admin_menu.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Your Appointment - Barber Shop{% endblock %}
 
 {% block body %}
+    <!--? Breadcrumb Area Start -->
+    <div class="slider-area">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 text-center">
+                            <h2>Book Your Appointment</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Area End -->
 
-    <h3>CHOSE YOUR BARBER and RESERVE YOUR APPOINTMENT</h3>
+    <!--? Appointment Booking Section Start -->
+    <section class="appointment-booking-section section-padding30">
+        <div class="container">
+            {% if user.isBarber %}
+                <div class="row mb-30">
+                    <div class="col-12">
+                        <a href="{{ path('barber_appointments', {id: user.id}) }}" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt"></i> View My Appointments
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
 
-    {% if user.isBarber %}
-        <td><a href={{ path('barber_appointments', {id: user.id} ) }}><button type="button">show barber appointments</button></a></td>
-    {% endif %}
+            {% if user.isClient and user.firstName %}
+                <div class="row justify-content-center">
+                    <div class="col-xl-10 col-lg-11">
+                        <!-- Section Title -->
+                        <div class="section-tittle text-center mb-50">
+                            <span>Select Your Preferences</span>
+                            <h2>Choose Barber, Service & Time</h2>
+                        </div>
 
-    {% if user.isClient and user.nickname %}
-{#        <form id="appointment_form" method="post">#}
-        <p class="barber_rows">{{ form_start(form) }}</p>
-        <p class="barber_rows">{{ form_errors(form) }}</p>
-        <p class="barber_rows">{{ form_help(form) }}</p>
-        <p class="barber_rows">{{ form_row(form._token) }}</p>
-{#        <p class="barber_rows">{{ form_rest(form) }}</p>#}
-        <p class="barber_rows">{{ form_row(form.procedure_type) }}</p>
-        <p class="barber_rows">{{ form_row(form.date) }}</p>
-        {%  for barber in barbers  %}
-            <p class="barber_rows">{{ " " ~ barber.nick_name }}</p>
+                        <!-- Appointment Form -->
+                        <form id="appointment_form" method="post" class="appointment-form">
+                            {{ form_row(form._token) }}
 
-        {% endfor %}
-{#        {{ form_row(form.barber) }}#}
-<p class="barber_rows">{{ form_row(form.save) }}</p>
-        <p class="barber_rows">{{ form_end(form, {'render_rest': false,  'attr': {'class': 'form_class'}}) }}</p>
-    {% endif  %}
+                            <div class="row">
+                                <!-- Date Selection -->
+                                <div class="col-lg-12 mb-40">
+                                    <div class="form-card">
+                                        <h4 class="form-card-title">
+                                            <i class="far fa-calendar"></i> Select Date
+                                        </h4>
+                                        <div class="date-control-wrapper">
+                                            <button class="date-arrow-btn" type="button" id="take_out_a_day_arrow">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <input class="date-control-input"
+                                                   type="date"
+                                                   id="calendar"
+                                                   name="appointment_start"
+                                                   value="{{ today }}"
+                                                   min="{{ today }}"
+                                                   max="2025-12-31"
+                                            />
+                                            <button class="date-arrow-btn" type="button" id="add_a_day_arrow">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Barber Selection -->
+                                <div class="col-lg-6 mb-40">
+                                    <div class="form-card">
+                                        <h4 class="form-card-title">
+                                            <i class="fas fa-user-tie"></i> Choose Your Barber
+                                        </h4>
+                                        <select name="barbers" id="barbers" class="custom-select">
+                                            <option value="">Select a barber...</option>
+                                            {% for barber in barbers %}
+                                                <option value="{{ barber.id }}">
+                                                    {{ barber.firstName }} {{ barber.lastName }}
+                                                    {% if barber.isBarberSenior %}(Senior){% endif %}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Service Selection -->
+                                <div class="col-lg-6 mb-40">
+                                    <div class="form-card">
+                                        <h4 class="form-card-title">
+                                            <i class="fas fa-cut"></i> Select Service
+                                        </h4>
+                                        <select name="procedures" id="procedures" class="custom-select">
+                                            <option value="">Select a service...</option>
+                                            {% for procedure in procedures %}
+                                                <option value="{{ procedure.id }}">
+                                                    {{ procedure.type }} - ${{ procedure.priceMaster }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Time Selection -->
+                                <div class="col-lg-12 mb-40">
+                                    <div class="form-card">
+                                        <h4 class="form-card-title">
+                                            <i class="far fa-clock"></i> Select Time
+                                        </h4>
+
+                                        <input type="hidden" name="pickedHours" id="pickedHours" value=""/>
+
+                                        <div class="time-slots-grid">
+                                            {% for key, value in table %}
+                                                <button type="button"
+                                                        class="time-slot-btn"
+                                                        id="hour_select_{{ key }}"
+                                                        data-time="{{ value }}"
+                                                        onclick="pickHour('{{ value }}')">
+                                                    <i class="far fa-clock"></i>
+                                                    <span>{{ value }}</span>
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+
+                                        <div class="selected-time-display mt-3">
+                                            <strong>Selected Time:</strong>
+                                            <span id="selected-time-display">Not selected</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="col-lg-12 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-check"></i> Reserve Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <!-- User needs to complete profile -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="alert alert-warning">
+                            <h4>Complete Your Profile</h4>
+                            <p>Please complete your profile information before booking an appointment.</p>
+                            <a href="{{ path('user_edit', {id: user.id}) }}" class="btn btn-primary mt-3">
+                                Complete Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    <!-- Appointment Booking Section End -->
 
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/appointment_form.css') }}">
+{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Update pickHour function to show selected time
+        function pickHour(time) {
+            document.getElementById('pickedHours').value = time;
+            document.getElementById('selected-time-display').textContent = time;
 
-{#        {% block javascripts %}#}
-{#            <div class="date-control">#}
-{#                <a id="take_out_a_day_arrow" href=""><p><i class="arrow left" id="arrow_left"></i></p></a>#}
-{#                <button class="arrow_buttons" id="take_out_a_day_arrow"><i class="arrow left" id="arrow_left"></i></button>#}
-{#                <label class="date-control-label" for="calendar">Start date:</label>#}
-{#                <input class="date-control-input" type="date"#}
-{#                                                     id="calendar"#}
-{#                                                     name="appointment_start"#}
-{#                                                     value="{{ "now"|date(today)}}"#}
-{#                                                     min="{{ "now"|date(today)}}"#}
-{#                                                     max="{{ "now"|date("2025-12-31")}}"#}
-{#                />#}
-{#                <button class="arrow_buttons" id="add_a_day_arrow" ><i class="arrow right" id="arrow_right"></i></button>#}
-{#            </div>#}
-{#        {% endblock %}#}
-{#        <div class="drop_down_menu">#}
-{#            <label for="barbers" class="barbers_label">Избери барбър</label>#}
-{#            <select name="barbers" id="barbers" class="barbers_select">#}
-{#                {%  for barber in barbers  %}#}
-{#                   <option id="barbers_id" value="{{ barber.id }}"> {{ barber.nick_name }}</option>#}
-{#                {% endfor %}#}
-{#            </select>#}
-{#            <label for="procedures" class="procedures_label">Услуга</label>#}
-{#            <select name="procedures" id="procedures" class="procedures_select">#}
-{#                {%  for procedure in procedures  %}#}
-{#                    <option value="{{ procedure.id }}">{{ procedure.type }}</option>#}
-{#                {% endfor %}#}
-{#            </select>#}
-{#<br>#}
-{#            <label for="pickedHours">Избери час час</label>#}
-{#            <input type="text" name="pickedHours" id="pickedHours" readonly="readonly" style="color: #787878" value="{{ picked_value }}"/>#}
-{#            <table class="appointment-control" id="appointment-control" border="1">#}
-{#                <tr>#}
-{#                {%  for key, value in table  %}#}
-{#                    <th>{{ value }}</th>#}
-{#                {% endfor %}#}
-{#                </tr>#}
-{#                <tr>#}
-{#                {%  for key, value in table  %}#}
-{#                    <td><input class="form-control"#}
-{#                               id="hour_select_{{ key }}"#}
-{#                               name="hour_select"#}
-{#                               type="image"#}
-{#                               src="{{ asset('/assets/hair-cut-tool-small.png') }}"#}
-{#                               onclick="pickHour(`{{ [key, value]|json_encode }}`)"#}
-{#                               onclick="pickHour(`{{ value }}`)"#}
-{#                               value="{{ value }}" alt="">#}
-{#                    </td>#}
-{#                {% endfor %}#}
+            // Remove active class from all time slots
+            document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-{#                    <td><input class="form-control"#}
-{#                               id="hour_select_1"#}
-{#                               name="hour_select_1"#}
-{#                               type="image"#}
-{#                               src="{{ asset('/assets/hair-cut-tool-small.png') }}"#}
-{#                               onclick="pickHour(1)"#}
-{#                               value="1" alt="">#}
-{#                    </td>#}
-{#                    <td><input class="form-control"#}
-{#                               id="hour_select_2"#}
-{#                               name="hour_select_1"#}
-{#                               type="image"#}
-{#                               src="{{ asset('/assets/hair-cut-tool-small.png') }}"#}
-{#                               onclick="pickHour(2)"#}
-{#                               value="2" alt="">#}
-{#                    </td>#}
-{#                </tr>#}
-{#            </table>#}
-{#        </div>#}
-
-{#        {{ form_row(form.save) }}#}
-{#        {{ form_end(form, {'render_rest': false}) }}#}
-{#        <td><a id="appointment_form_id" href={{ path('barber_appointments', {id: user.id} ) }}>#}
-{#        </a></td>#}
-{#        <button type="submit" id="appointment_form_button" onclick="redirectToControlLer('{{ user.id }}', '{{ path('barber_appointments', {'id': user.id}) }}')">Запази час</button>#}
-{#    </form>#}
-{#    {% endif  %}#}
-
-{#{% endblock %}#}
-
+            // Add active class to clicked button
+            event.target.closest('.time-slot-btn').classList.add('active');
+        }
+    </script>
+{% endblock %}

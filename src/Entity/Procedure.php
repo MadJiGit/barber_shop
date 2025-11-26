@@ -20,32 +20,29 @@ class Procedure
     #[Assert\Length(min: 5, minMessage: 'Your procedure name must be at least {{ limit }} characters long', )]
     private ?string $type = null;
 
-    #[ORM\Column]
-    private ?float $price_master = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $price_master = null;
 
-    #[ORM\Column]
-    private ?float $price_junior = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $price_junior = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $duration_master = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $duration_junior = null;
 
-    #[ORM\Column]
-    private ?bool $available = null;
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $available = true;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_added = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $date_added = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_last_update = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $date_last_update = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_stopped = null;
-
-    #[ORM\OneToOne(mappedBy: 'procedure_type', cascade: ['persist', 'remove'])]
-    private ?Appointments $appointments = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $date_stopped = null;
 
     public function getId(): ?int
     {
@@ -107,23 +104,6 @@ class Procedure
     public function setDurationJunior(int $duration_junior): static
     {
         $this->duration_junior = $duration_junior;
-
-        return $this;
-    }
-
-    public function getAppointments(): ?Appointments
-    {
-        return $this->appointments;
-    }
-
-    public function setAppointments(Appointments $appointments): static
-    {
-        // set the owning side of the relation if necessary
-        if ($appointments->getProcedureType() !== $this) {
-            $appointments->setProcedureType($this);
-        }
-
-        $this->appointments = $appointments;
 
         return $this;
     }

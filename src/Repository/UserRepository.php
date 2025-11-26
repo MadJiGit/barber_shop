@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Roles;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -101,28 +100,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getAllBarbers(): array
     {
-        $barber = Roles::BARBER->value;
+        $barber = 'ROLE_BARBER';
 
         return $this->createQueryBuilder('u')
-            ->select('u.id',
-                'u.email',
-                'u.roles',
-                'u.first_name',
-                'u.last_name',
-                'u.nick_name',
-                'u.phone',
-                'u.date_added',
-                'u.date_banned',
-                'u.date_last_update')
             ->where('u.roles like :role')
             ->setParameter('role', '%'.$barber.'%')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 
     public function getAllClients(): array
     {
-        $role = Roles::CLIENT->value;
+        $role = 'ROLE_CLIENT';
 
         if (true) {
             return $this->createQueryBuilder('u')
@@ -157,14 +146,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $user = $this->findOneById($id);
 
-        return in_array(Roles::ADMIN, $user->getRoles());
+        return in_array('ROLE_ADMIN', $user->getRoles());
     }
 
     public function isUserIsSuperAdmin($id): bool
     {
         $user = $this->findOneById($id);
 
-        return in_array(Roles::SUPER_ADMIN, $user->getRoles());
+        return in_array('ROLE_SUPER_ADMIN', $user->getRoles());
     }
 
     public function findOneByEmail($email): ?User

@@ -2,8 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Roles;
-use App\Entity\RolesNew;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\ChoiceList;
@@ -28,7 +26,16 @@ class UserFormType extends AbstractType
                 ])
                 ->add('roles', ChoiceType::class, [
                     'label' => 'Права',
-                    'choices' => RolesNew::getRoles(),
+                    'choices' => [
+                        'Super Admin' => 'ROLE_SUPER_ADMIN',
+                        'Admin' => 'ROLE_ADMIN',
+                        'Manager' => 'ROLE_MANAGER',
+                        'Receptionist' => 'ROLE_RECEPTIONIST',
+                        'Senior Barber' => 'ROLE_BARBER_SENIOR',
+                        'Barber' => 'ROLE_BARBER',
+                        'Junior Barber' => 'ROLE_BARBER_JUNIOR',
+                        'Client' => 'ROLE_CLIENT',
+                    ],
                     'multiple' => true,
                     'expanded' => true,
 
