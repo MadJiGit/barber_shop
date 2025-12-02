@@ -48,7 +48,7 @@ function openDayModal(date) {
         })
         .catch(error => {
             console.error('Error loading schedule:', error);
-            alert('Грешка при зареждане на графика');
+            Toast.error('Грешка при зареждане на графика');
             modal.modal('hide');
         });
 }
@@ -141,15 +141,25 @@ function saveSchedule() {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            alert('Графикът е запазен успешно!');
+            Toast.success('Графикът е запазен успешно!');
             $('#dayScheduleModal').modal('hide');
-            location.reload(); // Reload to show updated calendar
+            // Preserve active tab on reload
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTab = urlParams.get('tab') || 'calendar';
+                const year = urlParams.get('year') || '';
+                const month = urlParams.get('month') || '';
+                let url = window.location.pathname + '?tab=' + currentTab;
+                if (year) url += '&year=' + year;
+                if (month) url += '&month=' + month;
+                window.location.href = url;
+            }, 1000);
         } else {
-            alert('Грешка: ' + (result.error || 'Неизвестна грешка'));
+            Toast.error(result.error || 'Неизвестна грешка');
         }
     })
     .catch(error => {
         console.error('Error saving schedule:', error);
-        alert('Грешка при запазване на графика');
+        Toast.error('Грешка при запазване на графика');
     });
 }

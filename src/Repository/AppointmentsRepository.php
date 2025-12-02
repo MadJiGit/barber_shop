@@ -80,14 +80,100 @@ class AppointmentsRepository extends ServiceEntityRepository
         return $res->getResult();
     }
 
-    public function saveAppointment(array $data)
+    /**
+     * Save an appointment to the database
+     *
+     * @param Appointments $appointment
+     * @param bool $flush Whether to flush immediately (default: true)
+     * @return void
+     */
+    public function save(Appointments $appointment, bool $flush = true): void
     {
+        $this->entityManager->persist($appointment);
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
     }
 
+    /**
+     * Remove an appointment from the database
+     *
+     * @param Appointments $appointment
+     * @param bool $flush Whether to flush immediately (default: true)
+     * @return void
+     */
+    public function remove(Appointments $appointment, bool $flush = true): void
+    {
+        $this->entityManager->remove($appointment);
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * Find client by ID (unused - should use UserRepository instead)
+     * @deprecated Use UserRepository::findOneById() instead
+     */
     public function findClientById(int $id)
     {
-        var_dump('helllooo');
+        // TODO: Remove this method - use UserRepository instead
+        return null;
     }
+
+    /**
+     * Find appointments for a barber on a specific date
+     *
+     * @param \App\Entity\User $barber
+     * @param \DateTimeImmutable $date
+     * @return Appointments[]
+     */
+    public function findByBarberAndDate($barber, \DateTimeImmutable $date): array
+    {
+        $startOfDay = $date->setTime(0, 0, 0);
+        $endOfDay = $date->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->where('a.barber = :barber')
+            ->andWhere('a.date >= :startOfDay')
+            ->andWhere('a.date <= :endOfDay')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('barber', $barber)
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay)
+            ->setParameter('cancelled', 'cancelled')
+            ->orderBy('a.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find appointments for a client on a specific date
+     *
+     * @param \App\Entity\User $client
+     * @param \DateTimeImmutable $date
+     * @return Appointments[]
+     */
+    public function findByClientAndDate($client, \DateTimeImmutable $date): array
+    {
+        $startOfDay = $date->setTime(0, 0, 0);
+        $endOfDay = $date->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('a')
+            ->where('a.client = :client')
+            ->andWhere('a.date >= :startOfDay')
+            ->andWhere('a.date <= :endOfDay')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('client', $client)
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay)
+            ->setParameter('cancelled', 'cancelled')
+            ->orderBy('a.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Appointments[] Returns an array of Appointments objects
     //     */
@@ -103,13 +189,154 @@ class AppointmentsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Appointments
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Get occupied time slots for a specific date
+     * Returns array indexed by barber ID, containing arrays of occupied time strings
+     * INCLUDES: appointments + excluded_slots from barber_schedule_exception
+     *
+     * @param string $date Date in Y-m-d format
+     * @return array [barberId => ['09:00', '10:00', ...]]
+     */
+    public function getOccupiedSlotsByDate(string $date): array
+    {
+        $startOfDay = new \DateTimeImmutable($date . ' 00:00:00');
+        $endOfDay = new \DateTimeImmutable($date . ' 23:59:59');
+
+        // Get appointments for this date
+        $appointments = $this->createQueryBuilder('a')
+            ->where('a.date >= :startOfDay')
+            ->andWhere('a.date <= :endOfDay')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay)
+            ->setParameter('cancelled', 'cancelled')
+            ->getQuery()
+            ->getResult();
+
+        // Group by barber ID and format times
+        $occupiedSlots = [];
+        foreach ($appointments as $appointment) {
+            $barberId = $appointment->getBarber()->getId();
+            $startTime = $appointment->getDate();
+
+            if (!isset($occupiedSlots[$barberId])) {
+                $occupiedSlots[$barberId] = [];
+            }
+
+            // Get procedure duration based on barber level
+            $barber = $appointment->getBarber();
+            $procedure = $appointment->getProcedureType();
+            $duration = $barber->isBarberJunior()
+                ? $procedure->getDurationJunior()
+                : $procedure->getDurationMaster();
+
+            // Add all 30-minute slots that this appointment occupies
+            $slotsNeeded = (int) ceil($duration / 30);
+            for ($i = 0; $i < $slotsNeeded; $i++) {
+                $slotTime = clone $startTime;
+                $slotTime = $slotTime->modify('+' . ($i * 30) . ' minutes');
+                $occupiedSlots[$barberId][] = $slotTime->format('H:i');
+            }
+        }
+
+        // Also get excluded slots from barber_schedule_exception
+        $em = $this->getEntityManager();
+        $exceptions = $em->getRepository(\App\Entity\BarberScheduleException::class)
+            ->findBy(['date' => new \DateTimeImmutable($date)]);
+
+        foreach ($exceptions as $exception) {
+            $barberId = $exception->getBarber()->getId();
+
+            // If barber is not available at all this day
+            if (!$exception->getIsAvailable()) {
+                // Mark entire day as occupied (all possible slots)
+                if (!isset($occupiedSlots[$barberId])) {
+                    $occupiedSlots[$barberId] = [];
+                }
+                // Add marker that entire day is unavailable
+                $occupiedSlots[$barberId][] = '__FULL_DAY_OFF__';
+                continue;
+            }
+
+            // If barber has excluded specific slots
+            if ($exception->getExcludedSlots()) {
+                if (!isset($occupiedSlots[$barberId])) {
+                    $occupiedSlots[$barberId] = [];
+                }
+
+                foreach ($exception->getExcludedSlots() as $excludedSlot) {
+                    $occupiedSlots[$barberId][] = $excludedSlot;
+                }
+            }
+        }
+
+        return $occupiedSlots;
+    }
+
+    /**
+     * Find all upcoming appointments for a barber
+     *
+     * @param \App\Entity\User $barber
+     * @param bool $includeToday Include today's appointments
+     * @return Appointments[]
+     */
+    public function findUpcomingAppointmentsByBarber($barber, bool $includeToday = true): array
+    {
+        $now = new \DateTimeImmutable('now');
+        $startDate = $includeToday ? $now->setTime(0, 0, 0) : $now;
+
+        return $this->createQueryBuilder('a')
+            ->where('a.barber = :barber')
+            ->andWhere('a.date >= :startDate')
+            ->andWhere('a.status != :cancelled')
+            ->setParameter('barber', $barber)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('cancelled', 'cancelled')
+            ->orderBy('a.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find all appointments for a barber within date range
+     *
+     * @param \App\Entity\User $barber
+     * @param \DateTimeImmutable|null $startDate
+     * @param \DateTimeImmutable|null $endDate
+     * @param string|null $status Filter by status (confirmed, cancelled, completed)
+     * @return Appointments[]
+     */
+    public function findBarberAppointments(
+        $barber,
+        ?\DateTimeImmutable $startDate = null,
+        ?\DateTimeImmutable $endDate = null,
+        ?string $status = null
+    ): array {
+        $qb = $this->createQueryBuilder('a');
+
+        // Only filter by barber if provided (null = all barbers)
+        if ($barber !== null) {
+            $qb->where('a.barber = :barber')
+                ->setParameter('barber', $barber);
+        }
+
+        if ($startDate) {
+            $qb->andWhere('a.date >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $qb->andWhere('a.date < :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+
+        if ($status) {
+            $qb->andWhere('a.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        return $qb->orderBy('a.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

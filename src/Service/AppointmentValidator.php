@@ -14,10 +14,14 @@ use DateTimeImmutable;
 class AppointmentValidator
 {
     private AppointmentsRepository $appointmentsRepository;
+    private BarberScheduleService $scheduleService;
 
-    public function __construct(AppointmentsRepository $appointmentsRepository)
-    {
+    public function __construct(
+        AppointmentsRepository $appointmentsRepository,
+        BarberScheduleService $scheduleService
+    ) {
         $this->appointmentsRepository = $appointmentsRepository;
+        $this->scheduleService = $scheduleService;
     }
 
     /**
@@ -138,7 +142,18 @@ class AppointmentValidator
             $errors[] = 'Не можете да запазите час в миналото.';
         }
 
-        // Check barber availability
+        // Check if barber is working at this time
+        if (!$this->scheduleService->isBarberWorkingAt($barber, $startTime)) {
+            $errors[] = 'Избраният бръснар не работи в този час.';
+        }
+
+        // Check if appointment end time is within working hours
+        $endTime = $startTime->modify("+{$duration} minutes");
+        if (!$this->scheduleService->isBarberWorkingAt($barber, $endTime->modify('-1 minute'))) {
+            $errors[] = 'Процедурата няма да приключи преди края на работното време на бръснаря.';
+        }
+
+        // Check barber availability (conflicts with other appointments)
         if (!$this->isBarberAvailable($barber, $startTime, $duration, $excludeAppointment)) {
             $errors[] = 'Избраният бръснар е зает в този час.';
         }

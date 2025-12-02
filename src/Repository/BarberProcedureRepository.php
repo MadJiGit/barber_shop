@@ -29,7 +29,7 @@ class BarberProcedureRepository extends ServiceEntityRepository
         $now = new \DateTimeImmutable('now');
 
         $qb = $this->createQueryBuilder('bp')
-            ->select('p')
+            ->select('bp, p')
             ->join('bp.procedure', 'p')
             ->where('bp.barber = :barber')
             ->andWhere('bp.can_perform = :can_perform')
@@ -40,7 +40,10 @@ class BarberProcedureRepository extends ServiceEntityRepository
             ->setParameter('now', $now)
             ->orderBy('p.type', 'ASC');
 
-        return $qb->getQuery()->getResult();
+        $results = $qb->getQuery()->getResult();
+
+        // Extract just the procedures from the BarberProcedure entities
+        return array_map(fn($bp) => $bp->getProcedure(), $results);
     }
 
     /**
@@ -54,7 +57,7 @@ class BarberProcedureRepository extends ServiceEntityRepository
         $now = new \DateTimeImmutable('now');
 
         $qb = $this->createQueryBuilder('bp')
-            ->select('u')
+            ->select('bp, u')
             ->join('bp.barber', 'u')
             ->where('bp.procedure = :procedure')
             ->andWhere('bp.can_perform = :can_perform')
@@ -67,7 +70,10 @@ class BarberProcedureRepository extends ServiceEntityRepository
             ->setParameter('is_barber', true)
             ->orderBy('u.first_name', 'ASC');
 
-        return $qb->getQuery()->getResult();
+        $results = $qb->getQuery()->getResult();
+
+        // Extract just the barbers from the BarberProcedure entities
+        return array_map(fn($bp) => $bp->getBarber(), $results);
     }
 
     /**

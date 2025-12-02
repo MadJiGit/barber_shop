@@ -182,7 +182,7 @@
                                                     </td>
                                                     <td class="text-center" style="white-space: nowrap;">
                                                         {% if isFuture and appointment.status == 'confirmed' %}
-                                                            <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
+                                                            <a href="{{ path('client_reschedule_appointment', {id: appointment.id}) }}"
                                                                class="btn btn-warning btn-xs mr-1"
                                                                style="padding: 2px 6px; font-size: 12px;"
                                                                title="Промяна на час">
@@ -218,10 +218,10 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/user_profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/client_profile.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/user_show.js') }}"></script>
+    <script src="{{ asset('js/client_profile.js') }}"></script>
 {% endblock %}

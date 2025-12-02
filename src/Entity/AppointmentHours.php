@@ -16,6 +16,7 @@ class AppointmentHours
         '6' => '15:00',
         '7' => '16:00',
         '8' => '17:00',
+//        '9' => '18:00',
     ];
 
     public static function getAppointmentHours(): array
@@ -43,29 +44,3 @@ class AppointmentHours
         return self::getAppointmentIdByHour($hour) ?? false;
     }
 }
-//
-//if ('POST' === $_SERVER['REQUEST_METHOD']) {
-//    echo '<pre>'.var_export($_SERVER['REQUEST_METHOD'], true).'</pre>';
-//    echo '<pre>'.var_export($_POST, true).'</pre>';
-//exit();
-//    $method = $_POST;
-//    $funcName = $method['functionName'];
-//    // Include the class
-//    require_once 'AppointmentHours.php';
-//    $classInstance = new AppointmentHours();
-//
-//    // Get the data sent from JavaScript
-//    $name = $method['name'];
-//
-//    // Call the class function
-//    if ('getAppointmentHours' == $funcName) {
-//        $response = $classInstance::getAppointmentHours();
-//    } else {
-//                echo '<pre>'.var_export("ne e tazi funkciq", true).'</pre>';
-//                exit;
-//    }
-//
-//    // Return the response
-//    echo json_encode(['message' => $response]);
-//    exit;
-//}

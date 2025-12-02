@@ -11,7 +11,6 @@ function completeAppointment(appointmentId) {
         return;
     }
 
-    // TODO: Implement AJAX call to complete appointment
     fetch(`/barber/appointment/${appointmentId}/complete`, {
         method: 'POST',
         headers: {
@@ -21,15 +20,20 @@ function completeAppointment(appointmentId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Часът е отбележен като завършен!');
-            location.reload();
+            Toast.success('Часът е отбележен като завършен!');
+            // Preserve active tab on reload
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTab = urlParams.get('tab') || 'appointments';
+                window.location.href = window.location.pathname + '?tab=' + currentTab;
+            }, 1000);
         } else {
-            alert('Грешка: ' + (data.error || 'Неизвестна грешка'));
+            Toast.error(data.error || 'Неизвестна грешка');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Грешка при завършване на час');
+        Toast.error('Грешка при завършване на час');
     });
 }
 
@@ -41,7 +45,6 @@ function cancelBarberAppointment(appointmentId) {
         return;
     }
 
-    // TODO: Implement AJAX call to cancel appointment
     fetch(`/barber/appointment/${appointmentId}/cancel`, {
         method: 'POST',
         headers: {
@@ -51,14 +54,19 @@ function cancelBarberAppointment(appointmentId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Часът е отменен успешно!');
-            location.reload();
+            Toast.success('Часът е отменен успешно!');
+            // Preserve active tab on reload
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentTab = urlParams.get('tab') || 'appointments';
+                window.location.href = window.location.pathname + '?tab=' + currentTab;
+            }, 1000);
         } else {
-            alert('Грешка: ' + (data.error || 'Неизвестна грешка'));
+            Toast.error(data.error || 'Неизвестна грешка');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Грешка при отменяне на час');
+        Toast.error('Грешка при отменяне на час');
     });
 }

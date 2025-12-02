@@ -261,7 +261,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->nick_name;
     }
 
-    public function setNickName(string $nick_name): static
+    public function setNickName(?string $nick_name): static
     {
         $this->nick_name = $nick_name;
 
@@ -273,7 +273,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->phone;
     }
 
-    public function setPhone(string $phone): static
+    public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
 
@@ -378,5 +378,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this->token_expires_at < new \DateTimeImmutable('now');
+    }
+
+    /**
+     * Get barber title in Bulgarian based on role
+     */
+    public function getBarberTitleBg(): string
+    {
+        if ($this->isBarberSenior()) {
+            return 'Старши Бръснар';
+        }
+        if ($this->isBarberJunior()) {
+            return 'Младши Бръснар';
+        }
+        if ($this->isBarber()) {
+            return 'Бръснар';
+        }
+
+        return '';
     }
 }

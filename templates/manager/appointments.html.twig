@@ -8,6 +8,22 @@
 {% endblock %}
 
 {% block body %}
+<!--? Hero Start -->
+<div class="slider-area2">
+    <div class="slider-height2 d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap hero-cap2 pt-70 text-center">
+                        <h2>Управление на резервации</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+
 <div class="container-fluid mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
@@ -202,7 +218,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editAppointmentForm">
+                <form id="editAppointmentForm" data-validate>
                     <input type="hidden" id="edit_appointment_id">
 
                     <div class="row">
@@ -229,7 +245,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="edit_date">Дата: *</label>
-                                <input type="date" class="form-control" id="edit_date" required>
+                                <input type="date" class="form-control" id="edit_date" required min="{{ 'now'|date('Y-m-d') }}" data-future-only>
                             </div>
                         </div>
                         <div class="col-md-4">

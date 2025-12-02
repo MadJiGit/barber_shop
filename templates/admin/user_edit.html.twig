@@ -1,18 +1,158 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактиране на профил - Barber Shop{% endblock %}
+
 {% block body %}
-    <div>
-            <h1>ONLY FOR ADMINS</h1>
-        <h2>EDIT USER {{ user.nickName }}</h2>
-            {{ form_start(form) }}
-            {{ form_row(form.email) }}
-            {{ form_row(form.first_name) }}
-            {{ form_row(form.last_name) }}
-            {{ form_row(form.nick_name) }}
-            {{ form_row(form.phone) }}
-            {{ form_row(form.date_added) }}
-            {{ form_row(form.date_banned) }}
-            {{ form_row(form.date_last_update) }}
-            {{ form_row(form.roles) }}
-            {{ form_row(form.save) }}
-            {{ form_end(form, {'render_rest': false}) }}
+    <!--? Hero Start -->
+    <div class="slider-area2">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 pt-70 text-center">
+                            <h2>{% if is_granted('ROLE_ADMIN') %}Редактиране на потребител{% else %}Моят профил{% endif %}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Hero End -->
+
+    <!--? User Edit Section Start -->
+    <section class="user-edit-section section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
+                    <!-- User Info Card -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h4 class="mb-0 text-center" style="color: #d4a574;">
+                                <i class="fas fa-user-edit"></i>
+                                {% if user.nickName %}
+                                    {{ user.nickName }}
+                                {% else %}
+                                    {{ user.email }}
+                                {% endif %}
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {{ form_start(form, {'attr': {'class': 'user-edit-form', 'novalidate': 'novalidate'}}) }}
+
+                            <div class="row">
+                                <!-- Email -->
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-envelope text-muted"></i> Email
+                                    </label>
+                                    {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'example@email.com'}}) }}
+                                    {{ form_errors(form.email) }}
+                                </div>
+
+                                <!-- First Name -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-user text-muted"></i> Име
+                                    </label>
+                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Име'}}) }}
+                                    {{ form_errors(form.first_name) }}
+                                </div>
+
+                                <!-- Last Name -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-user text-muted"></i> Фамилия
+                                    </label>
+                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Фамилия'}}) }}
+                                    {{ form_errors(form.last_name) }}
+                                </div>
+
+                                <!-- Nickname -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-signature text-muted"></i> Прякор
+                                    </label>
+                                    {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Прякор'}}) }}
+                                    {{ form_errors(form.nick_name) }}
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label font-weight-bold">
+                                        <i class="fas fa-phone text-muted"></i> Телефон
+                                    </label>
+                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg', 'placeholder': '+359 888 123 456'}}) }}
+                                    {{ form_errors(form.phone) }}
+                                </div>
+
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <!-- Admin Only Fields -->
+                                    <div class="col-12 mt-4 mb-3">
+                                        <hr>
+                                        <h5 class="text-center" style="color: #d4a574;">
+                                            <i class="fas fa-shield-alt"></i> Администраторски настройки
+                                        </h5>
+                                    </div>
+
+                                    <!-- Roles -->
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label font-weight-bold">
+                                            <i class="fas fa-user-tag text-muted"></i> Роли
+                                        </label>
+                                        {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.roles) }}
+                                    </div>
+
+                                    <!-- Date Added (readonly) -->
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold text-muted">
+                                            <i class="fas fa-calendar-plus"></i> Дата на регистрация
+                                        </label>
+                                        {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
+                                    </div>
+
+                                    <!-- Date Banned -->
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold text-muted">
+                                            <i class="fas fa-ban"></i> Дата на ban
+                                        </label>
+                                        {{ form_widget(form.date_banned, {'attr': {'class': 'form-control', 'readonly': true}}) }}
+                                    </div>
+
+                                    <!-- Date Last Update (readonly) -->
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label font-weight-bold text-muted">
+                                            <i class="fas fa-sync-alt"></i> Последна промяна
+                                        </label>
+                                        {{ form_widget(form.date_last_update, {'attr': {'class': 'form-control', 'readonly': true}}) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center mt-4">
+                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'Запази промените'}) }}
+                            </div>
+
+                            {{ form_end(form, {'render_rest': false}) }}
+                        </div>
+                    </div>
+
+                    <!-- Back Button -->
+                    <div class="text-center">
+                        <a href="{{ path('main') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Обратно към начало
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- User Edit Section End -->
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/admin_profile_edit.css') }}">
 {% endblock %}

@@ -44,29 +44,31 @@ class ManagerController extends AbstractController
     public function dashboard(): Response
     {
         $today = new \DateTimeImmutable('today');
+        $tomorrow = $today->modify('+1 day');
         $startOfWeek = $today->modify('monday this week');
-        $endOfWeek = $today->modify('sunday this week');
+        $endOfWeek = $today->modify('sunday this week')->modify('+1 day');
         $startOfMonth = new \DateTimeImmutable('first day of this month');
+        $endOfMonth = $startOfMonth->modify('+1 month');
 
-        // Today's appointments
+        // Today's appointments (from 00:00:00 today to 00:00:00 tomorrow)
         $todayAppointments = $this->appointmentsRepository->findBarberAppointments(
             barber: null,
             startDate: $today,
-            endDate: $today->modify('+1 day')
+            endDate: $tomorrow
         );
 
-        // This week's appointments
+        // This week's appointments (from Monday to end of Sunday)
         $weekAppointments = $this->appointmentsRepository->findBarberAppointments(
             barber: null,
             startDate: $startOfWeek,
-            endDate: $endOfWeek->modify('+1 day')
+            endDate: $endOfWeek
         );
 
-        // This month's appointments
+        // This month's appointments (from 1st to end of month)
         $monthAppointments = $this->appointmentsRepository->findBarberAppointments(
             barber: null,
             startDate: $startOfMonth,
-            endDate: $startOfMonth->modify('+1 month')
+            endDate: $endOfMonth
         );
 
         // Get all barbers for stats
@@ -192,15 +194,25 @@ class ManagerController extends AbstractController
     }
 
     /**
-     * Update appointment (AJAX)
+     * Update appointment (AJAX) - Creates new appointment and cancels old one
      */
     #[Route('/appointment/{id}/update', name: 'manager_appointment_update', methods: ['POST'])]
     public function updateAppointment(int $id, Request $request): Response
     {
-        $appointment = $this->appointmentsRepository->find($id);
+        $oldAppointment = $this->appointmentsRepository->find($id);
 
-        if (!$appointment) {
+        if (!$oldAppointment) {
             return $this->json(['success' => false, 'error' => 'Часът не е намерен.'], 404);
+        }
+
+        // BLOCK EDITING OF PAST APPOINTMENTS - Check if ORIGINAL appointment is in the past
+        $now = new \DateTimeImmutable('now');
+        if ($oldAppointment->getDate() < $now) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Не можете да променяте минали часове! Оригиналният час беше на ' .
+                           $oldAppointment->getDate()->format('d.m.Y H:i') . ', който вече е изминал.'
+            ], 400);
         }
 
         $data = json_decode($request->getContent(), true);
@@ -225,46 +237,56 @@ class ManagerController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Невалидна дата или час.'], 400);
         }
 
+        // Prevent creating appointments in the past
+        if ($newDateTime < $now) {
+            return $this->json(['success' => false, 'error' => 'Не можете да запазите час в миналото.'], 400);
+        }
+
         // Determine duration based on barber seniority
         $duration = $barber->isBarberSenior() || $barber->isBarber()
             ? $procedure->getDurationMaster()
             : $procedure->getDurationJunior();
 
-        // Validate appointment (exclude current appointment from conflict check)
+        // Validate new appointment (exclude old appointment from conflict check)
         $errors = $this->appointmentValidator->validateAppointment(
-            client: $appointment->getClient(),
+            client: $oldAppointment->getClient(),
             barber: $barber,
             startTime: $newDateTime,
             duration: $duration,
-            excludeAppointment: $appointment
+            excludeAppointment: $oldAppointment
         );
 
         if (!empty($errors)) {
             return $this->json(['success' => false, 'error' => implode(' ', $errors)], 400);
         }
 
-        // Update appointment
-        $appointment->setBarber($barber);
-        $appointment->setProcedureType($procedure);
-        $appointment->setDate($newDateTime);
-        $appointment->setDuration($duration);
+        // AUDIT TRAIL: Cancel old appointment and create new one
+        // Step 1: Cancel the old appointment
+        $oldAppointment->setStatus('cancelled');
+        $oldAppointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $oldAppointment->setCancellationReason('Презаписан час от мениджър');
+        $oldAppointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $this->em->persist($oldAppointment);
 
-        if (isset($data['status'])) {
-            $appointment->setStatus($data['status']);
-        }
+        // Step 2: Create NEW appointment with new details
+        $newAppointment = new \App\Entity\Appointments();
+        $newAppointment->setClient($oldAppointment->getClient());
+        $newAppointment->setBarber($barber);
+        $newAppointment->setProcedureType($procedure);
+        $newAppointment->setDate($newDateTime);
+        $newAppointment->setDuration($duration);
+        $newAppointment->setStatus($data['status'] ?? 'confirmed');
+        $newAppointment->setNotes($data['notes'] ?? 'Презаписан от час #' . $oldAppointment->getId());
+        $newAppointment->setDateAdded(new \DateTimeImmutable('now'));
+        $newAppointment->setDateLastUpdate(new \DateTimeImmutable('now'));
 
-        if (isset($data['notes'])) {
-            $appointment->setNotes($data['notes']);
-        }
-
-        $appointment->setDateLastUpdate(new \DateTimeImmutable('now'));
-
-        $this->em->persist($appointment);
+        $this->em->persist($newAppointment);
         $this->em->flush();
 
         return $this->json([
             'success' => true,
-            'message' => 'Часът е обновен успешно!',
+            'message' => 'Часът е презаписан успешно! Старият час е отменен.',
+            'new_appointment_id' => $newAppointment->getId(),
         ]);
     }
 
@@ -300,6 +322,85 @@ class ManagerController extends AbstractController
         return $this->json([
             'success' => true,
             'message' => 'Часът е отменен успешно!',
+        ]);
+    }
+
+    /**
+     * Get all available procedures (API endpoint for AJAX)
+     */
+    #[Route('/api/procedures', name: 'manager_api_procedures', methods: ['GET'])]
+    public function getProcedures(): Response
+    {
+        $procedures = $this->em->getRepository(\App\Entity\Procedure::class)
+            ->getAvailableProcedures();
+
+        $data = array_map(function($proc) {
+            return [
+                'id' => $proc->getId(),
+                'type' => $proc->getType(),
+                'available' => $proc->getAvailable(),
+                'price_master' => $proc->getPriceMaster(),
+                'price_junior' => $proc->getPriceJunior(),
+                'duration_master' => $proc->getDurationMaster(),
+                'duration_junior' => $proc->getDurationJunior(),
+            ];
+        }, $procedures);
+
+        return $this->json($data);
+    }
+
+    /**
+     * Get available time slots for a barber on a specific date (API endpoint)
+     */
+    #[Route('/api/barber/{barberId}/timeslots/{date}', name: 'manager_api_timeslots', methods: ['GET'])]
+    public function getAvailableTimeSlots(int $barberId, string $date): Response
+    {
+        $barber = $this->userRepository->find($barberId);
+
+        if (!$barber) {
+            return $this->json(['error' => 'Барбърът не е намерен.'], 404);
+        }
+
+        try {
+            $selectedDate = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Невалидна дата.'], 400);
+        }
+
+        // Get working hours for this barber on this date
+        $workingHours = $this->scheduleService->getWorkingHoursForDate($barber, $selectedDate);
+
+        if (!$workingHours) {
+            return $this->json(['slots' => [], 'message' => 'Барбърът не работи в този ден.']);
+        }
+
+        // Generate time slots (every 30 minutes)
+        $slots = [];
+        $startHour = (int) explode(':', $workingHours['start'])[0];
+        $startMin = (int) explode(':', $workingHours['start'])[1];
+        $endHour = (int) explode(':', $workingHours['end'])[0];
+        $endMin = (int) explode(':', $workingHours['end'])[1];
+
+        $startMinutes = $startHour * 60 + $startMin;
+        $endMinutes = $endHour * 60 + $endMin;
+
+        for ($minutes = $startMinutes; $minutes < $endMinutes; $minutes += 30) {
+            $slotHour = floor($minutes / 60);
+            $slotMin = $minutes % 60;
+            $timeSlot = sprintf('%02d:%02d', $slotHour, $slotMin);
+
+            // Skip excluded slots
+            if (!in_array($timeSlot, $workingHours['excludedSlots'])) {
+                $slots[] = $timeSlot;
+            }
+        }
+
+        return $this->json([
+            'slots' => $slots,
+            'workingHours' => [
+                'start' => $workingHours['start'],
+                'end' => $workingHours['end'],
+            ]
         ]);
     }
 }

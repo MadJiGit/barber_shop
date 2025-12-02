@@ -27,8 +27,8 @@
                 <td>{{ procedure.date_added ? procedure.date_added|date('d-m-Y') : 'n/a' }}</td>
                 <td>{{ procedure.date_stopped ? procedure.date_stopped|date('d-m-Y') : 'n/a' }}</td>
                 <td>{{ procedure.date_last_update ? procedure.date_last_update|date('d-m-Y') : 'n/a' }}</td>
-                <td><a href={{ path('procedure_edit', {id: procedure.id} ) }}><button type="button" class="button success_btn">edit</button></a></td>
-                <td><a href={{ path('procedure_delete', {id: procedure.id} ) }}><button type="button" class="button danger_btn"
+                <td><a href={{ path('admin_procedure_edit', {id: procedure.id} ) }}><button type="button" class="button success_btn">edit</button></a></td>
+                <td><a href={{ path('admin_procedure_delete', {id: procedure.id} ) }}><button type="button" class="button danger_btn"
                                                             onclick="return confirm('Сигурни ли сте, че искате да изтриете тази услуга?')">delete</button></a></td>
             <tr>
                 {% endfor %}

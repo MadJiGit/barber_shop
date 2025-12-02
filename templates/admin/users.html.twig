@@ -32,7 +32,7 @@
         <td>{{ client.date_banned|date('d-m-Y') }}</td>
         <td>{{ client.date_last_update|date('d-m-Y') }}</td>
         {% if user.userIsSuperAdmin %}
-            <td><a href={{ path('admin_user_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
+            <td><a href={{ path('admin_profile_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
         {% endif %}
     <tr>
     {% endfor %}

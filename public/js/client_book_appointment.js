@@ -89,13 +89,11 @@ function filterBarbersByProcedure(procedureId) {
 
 /**
  * Filter and manage time slots based on procedure duration
- * Smart logic:
- * - If procedure is 30/90 min -> show all 30-min slots
- * - If procedure is 60/120 min -> show only round hours, unless there's a 30-min gap
+ * Simple logic: Show all 30-min slots, disable those without enough consecutive free time
  */
 function filterTimeSlotsForBarber(barberSection, barberId) {
     if (!selectedProcedure) {
-        // No procedure selected - show all slots
+        // No procedure selected - show all slots as available
         barberSection.querySelectorAll('.time-slot-box').forEach(slot => {
             slot.style.display = '';
             slot.disabled = false;
@@ -107,38 +105,28 @@ function filterTimeSlotsForBarber(barberSection, barberId) {
         return;
     }
 
-    // Get duration based on barber level (using durationMaster as default)
-    const procedureDuration = selectedProcedure.durationMaster;
-
-    // Determine if we should show half-hour slots
-    // Show if procedure duration is 30 or 90 minutes (odd number of 30-min slots)
-    const showHalfHours = (procedureDuration % 60 !== 0);
+    // Get duration based on barber level
+    const isBarberJunior = barberSection.dataset.barberJunior === 'true';
+    const procedureDuration = isBarberJunior
+        ? selectedProcedure.durationJunior
+        : selectedProcedure.durationMaster;
+    const slotsNeeded = Math.ceil(procedureDuration / 30);
 
     const allSlots = Array.from(barberSection.querySelectorAll('.time-slot-box'));
 
     allSlots.forEach((slot, index) => {
         const isOccupied = slot.dataset.occupied === 'true';
-        const timeStr = slot.dataset.time;
 
-        // Check if this is a "round hour" (on the hour: XX:00)
-        const isRoundHour = timeStr.endsWith(':00');
-
-        // Reset slot display and classes
+        // Reset slot classes
         slot.style.display = '';
         slot.classList.remove('insufficient-time');
 
-        // Hide half-hour slots by default if procedure is 60/120 min
-        if (!isRoundHour && !showHalfHours) {
-            slot.style.display = 'none';
-        }
-
-        // Skip occupied slots
+        // Skip occupied slots - they're already marked
         if (isOccupied) {
             return;
         }
 
         // Check if there's enough consecutive free time for this procedure
-        const slotsNeeded = Math.ceil(procedureDuration / 30);
         let hasEnoughSpace = true;
 
         // Check next N slots (including current slot)
@@ -150,32 +138,16 @@ function filterTimeSlotsForBarber(barberSection, barberId) {
             }
         }
 
-        // If not enough space, disable this slot
+        // If not enough space, disable and mark this slot
         if (!hasEnoughSpace) {
             slot.disabled = true;
             slot.classList.add('insufficient-time');
             slot.classList.remove('available');
         } else {
-            // Enable slot
+            // Enable slot - there's enough free time
             slot.disabled = false;
             slot.classList.add('available');
             slot.classList.remove('insufficient-time');
-
-            // Smart gap detection: Show half-hour slot if it's the only gap available
-            if (!showHalfHours) {
-                const nextSlotIndex = index + slotsNeeded;
-                const nextSlot = allSlots[nextSlotIndex];
-
-                // If there's a 30-min gap after this appointment
-                if (nextSlot && nextSlot.dataset.occupied === 'true') {
-                    // Check if previous slot is a half-hour that we hid
-                    const previousSlot = allSlots[nextSlotIndex - 1];
-                    if (previousSlot && !previousSlot.dataset.time.endsWith(':00') && previousSlot.dataset.occupied !== 'true') {
-                        // Show the half-hour slot as it's the only available gap
-                        previousSlot.style.display = '';
-                    }
-                }
-            }
         }
     });
 }
@@ -205,9 +177,15 @@ function changeDate(days) {
 
     const dateStr = newDate.toISOString().split('T')[0];
 
-    // Reload page with new date parameter
+    // Reload page with new date parameter and preserve selected procedure
     const url = new URL(window.location);
     url.searchParams.set('date', dateStr);
+
+    // Preserve selected procedure in URL
+    if (selectedProcedure && selectedProcedure.id) {
+        url.searchParams.set('procedure', selectedProcedure.id);
+    }
+
     window.location.href = url.toString();
 }
 
@@ -387,6 +365,18 @@ document.addEventListener('DOMContentLoaded', function() {
         dayOfWeekElement.textContent = dayOfWeek;
     }
 
+    // Restore selected procedure from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const procedureIdFromUrl = urlParams.get('procedure');
+    if (procedureIdFromUrl) {
+        const procedureSelect = document.getElementById('procedure_select');
+        if (procedureSelect) {
+            procedureSelect.value = procedureIdFromUrl;
+            // Trigger the change event to update the UI
+            handleProcedureChange();
+        }
+    }
+
     // Initialize date navigation buttons state
     updateDateNavigationButtons();
 
@@ -394,22 +384,82 @@ document.addEventListener('DOMContentLoaded', function() {
     const maxDate = new Date();
     maxDate.setFullYear(maxDate.getFullYear() + 1);
 
-    // Initialize Gijgo datepicker
-    const datepicker = $('#calendar_display').datepicker({
-        format: 'yyyy-mm-dd',
-        minDate: today,
-        maxDate: maxDate,
-        uiLibrary: 'bootstrap4',
-        showRightIcon: false,
-        change: function (e) {
-            const selectedDate = e.target.value;
+    // Initialize Gijgo datepicker with slight delay to ensure Gijgo is loaded
+    setTimeout(function() {
+        const calendarInput = $('#calendar_display');
+        const calendarInputElement = document.getElementById('calendar_display');
 
-            // Reload page with new date
-            const url = new URL(window.location);
-            url.searchParams.set('date', selectedDate);
-            window.location.href = url.toString();
+        console.log('Attempting to initialize datepicker...');
+        console.log('jQuery element exists:', calendarInput.length > 0);
+        console.log('Datepicker function available:', typeof calendarInput.datepicker);
+
+        if (calendarInput.length && typeof calendarInput.datepicker === 'function') {
+            try {
+                // Initialize datepicker first
+                calendarInput.datepicker({
+                    format: 'yyyy-mm-dd',
+                    minDate: today,
+                    maxDate: maxDate,
+                    uiLibrary: 'bootstrap4',
+                    showRightIcon: false,
+                    change: function (e) {
+                        const selectedDate = e.target.value;
+
+                        // Reload page with new date and preserve selected procedure
+                        const url = new URL(window.location);
+                        url.searchParams.set('date', selectedDate);
+
+                        // Preserve selected procedure in URL
+                        if (selectedProcedure && selectedProcedure.id) {
+                            url.searchParams.set('procedure', selectedProcedure.id);
+                        }
+
+                        window.location.href = url.toString();
+                    },
+                    open: function(e) {
+                        console.log('Datepicker opened!');
+                    }
+                });
+                console.log('Datepicker initialized successfully!');
+
+                // NOW add click handler after Gijgo is initialized
+                if (calendarInputElement) {
+                    // Prevent keyboard input
+                    calendarInputElement.addEventListener('keydown', function(e) {
+                        e.preventDefault();
+                        return false;
+                    });
+
+                    // Manually trigger datepicker open on click (since readonly blocks normal behavior)
+                    // Use capture phase to catch event BEFORE it bubbles
+                    calendarInputElement.addEventListener('click', function(e) {
+                        console.log('Click detected on calendar input!');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+
+                        // Programmatically open the Gijgo datepicker
+                        console.log('Attempting to open datepicker...');
+                        console.log('Gijgo data:', calendarInput.data('gijgo'));
+
+                        // Use setTimeout to ensure we're outside the current event loop
+                        setTimeout(() => {
+                            calendarInput.datepicker('open');
+                        }, 10);
+
+                        return false;
+                    }, true); // <-- IMPORTANT: capture phase
+
+                    console.log('Click handler attached!');
+                }
+            } catch (error) {
+                console.error('Error initializing datepicker:', error);
+            }
+        } else {
+            console.error('Cannot initialize datepicker - jQuery element or datepicker function not available');
         }
-    });
+    }, 100);
+
 
     // Remove nice-select wrapper from our custom select
     const procedureSelect = document.getElementById('procedure_select');

@@ -22,7 +22,7 @@
     <!--? Appointment Booking Section Start -->
     <section class="appointment-booking-section section-padding30">
         <div class="container">
-            {% if user.isClient %}
+            {% if user.firstName %}
                 <div class="row justify-content-center">
                     <div class="col-xl-11 col-lg-12">
                         <!-- Section Title -->
@@ -80,6 +80,8 @@
                                                    type="text"
                                                    id="calendar_display"
                                                    value="{{ today }}"
+                                                   readonly
+                                                   autocomplete="off"
                                             />
                                             <button class="date-arrow-btn-new" type="button" onclick="changeDate(1)">
                                                 <i class="fas fa-chevron-right"></i>
@@ -99,7 +101,7 @@
 
                                             {# Show barber section only if working today #}
                                             {% if not isFullDayOff and workingHours %}
-                                            <div class="barber-section" data-barber-id="{{ barber.id }}">
+                                            <div class="barber-section" data-barber-id="{{ barber.id }}" data-barber-junior="{{ barber.isBarberJunior ? 'true' : 'false' }}">
                                                 <h3 class="barber-name">
                                                     {{ barber.barberTitleBg }} {{ barber.firstName }} {{ barber.lastName }}
                                                     <small class="text-muted">({{ workingHours.start }} - {{ workingHours.end }})</small>
@@ -169,7 +171,7 @@
                         <div class="alert alert-warning">
                             <h4>Завършете профила си</h4>
                             <p>Моля, попълнете информацията за профила си преди да запазите час.</p>
-                            <a href="{{ path('user_edit', {id: user.id}) }}" class="btn btn-primary mt-3">
+                            <a href="{{ path('profile_edit', {id: user.id}) }}" class="btn btn-primary mt-3">
                                 Завърши профил
                             </a>
                         </div>
@@ -184,7 +186,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/appointment_form_new.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/client_book_appointment.css') }}">
     <style>
         .time-slot-box.insufficient-time {
             background-color: #f8d7da !important;
@@ -202,8 +204,8 @@
 
 {% block javascripts %}
     {{ parent() }}
-    {% if user.isClient %}
-        <script src="{{ asset('js/appointment_form.js') }}"></script>
+    {% if user.firstName %}
+        <script src="{{ asset('js/client_book_appointment.js') }}"></script>
         <script>
             // Initialize appointment form with server data
             initializeAppointmentForm({

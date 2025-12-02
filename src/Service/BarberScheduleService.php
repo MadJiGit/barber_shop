@@ -229,6 +229,100 @@ class BarberScheduleService
     }
 
     /**
+     * Check if barber is working at specific date and time
+     *
+     * @param User $barber
+     * @param \DateTimeImmutable $dateTime
+     * @return bool True if barber is working at this time
+     */
+    public function isBarberWorkingAt(User $barber, \DateTimeImmutable $dateTime): bool
+    {
+        $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
+        $dayOfWeek = (int)$dateTime->format('w');
+
+        // Get default schedule for this day
+        $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
+        $working = $daySchedule['working'] ?? false;
+        $startTime = $daySchedule['start'] ?? null;
+        $endTime = $daySchedule['end'] ?? null;
+
+        // Check for exception on this specific date
+        $exception = $this->exceptionRepository->findByBarberAndDate($barber, $dateTime);
+
+        if ($exception) {
+            if ($exception->isFullDayOff()) {
+                return false; // Not working this day
+            }
+
+            if ($exception->hasCustomHours()) {
+                $working = true;
+                $startTime = $exception->getStartTime()?->format('H:i');
+                $endTime = $exception->getEndTime()?->format('H:i');
+            }
+
+            // Check if time slot is in excluded slots
+            $timeStr = $dateTime->format('H:i');
+            if ($exception->getExcludedSlots() && in_array($timeStr, $exception->getExcludedSlots())) {
+                return false;
+            }
+        }
+
+        // If not working by default and no exception, return false
+        if (!$working || !$startTime || !$endTime) {
+            return false;
+        }
+
+        // Check if time is within working hours
+        $appointmentTime = $dateTime->format('H:i');
+        return $appointmentTime >= $startTime && $appointmentTime < $endTime;
+    }
+
+    /**
+     * Get working hours for barber on specific date
+     * Returns null if not working, otherwise ['start' => 'HH:MM', 'end' => 'HH:MM']
+     *
+     * @param User $barber
+     * @param \DateTimeImmutable $date
+     * @return array|null
+     */
+    public function getWorkingHoursForDate(User $barber, \DateTimeImmutable $date): ?array
+    {
+        $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
+        $dayOfWeek = (int)$date->format('w');
+
+        // Get default schedule
+        $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
+        $working = $daySchedule['working'] ?? false;
+        $startTime = $daySchedule['start'] ?? null;
+        $endTime = $daySchedule['end'] ?? null;
+
+        // Check for exception
+        $exception = $this->exceptionRepository->findByBarberAndDate($barber, $date);
+
+        if ($exception) {
+            if ($exception->isFullDayOff()) {
+                return null; // Not working
+            }
+
+            if ($exception->hasCustomHours()) {
+                $startTime = $exception->getStartTime()?->format('H:i');
+                $endTime = $exception->getEndTime()?->format('H:i');
+                $working = true;
+            }
+        }
+
+        if (!$working || !$startTime || !$endTime) {
+            return null;
+        }
+
+        return [
+            'start' => $startTime,
+            'end' => $endTime,
+            'excludedSlots' => $exception?->getExcludedSlots() ?? []
+        ];
+    }
+
+    /**
      * Save schedule exception (full day off or custom hours)
      */
     public function saveException(

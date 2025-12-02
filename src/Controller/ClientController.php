@@ -222,13 +222,15 @@ class ClientController extends AbstractController
         $now = new \DateTimeImmutable('now');
         if ($appointment->getDate() <= $now) {
             $this->addFlash('error', 'Не можете да отменяте час, който вече е минал.');
-            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
+            $tab = $request->request->get('tab', 'profile');
+            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
 
         // Check if already cancelled
         if ($appointment->getStatus() === 'cancelled') {
             $this->addFlash('warning', 'Този час вече е отменен.');
-            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
+            $tab = $request->request->get('tab', 'profile');
+            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
 
         // Cancel appointment - this automatically releases the slot
@@ -241,7 +243,8 @@ class ClientController extends AbstractController
 
         $this->addFlash('success', 'Часът е успешно отменен.');
 
-        return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
+        $tab = $request->request->get('tab', 'profile');
+        return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
     }
 
     /**

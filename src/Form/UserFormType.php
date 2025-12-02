@@ -43,19 +43,27 @@ class UserFormType extends AbstractType
             ->add('password', HiddenType::class, ['mapped' => false])
             ->add('first_name', TextType::class,
                 [
-                    'label' => 'Собствено име: ',
+                    'label' => 'Собствено име',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'Вашето име'],
                 ])
             ->add('last_name', TextType::class,
                 [
-                    'label' => 'Фамилно име: ',
+                    'label' => 'Фамилно име',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'Вашата фамилия'],
                 ])
             ->add('nick_name', TextType::class,
                 [
-                    'label' => 'Никнейм: ',
+                    'label' => 'Потребителско име',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'По желание (ако е празно ще използваме вашето име)'],
                 ])
             ->add('phone', TextType::class,
                 [
-                    'label' => 'Телефон: ',
+                    'label' => 'Телефон',
+                    'required' => true,
+                    'attr' => ['placeholder' => '+359 888 123 456'],
                 ])
             ->add('date_added', TextType::class, [
                 'label' => 'Създаден на: ',

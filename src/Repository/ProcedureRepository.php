@@ -24,6 +24,19 @@ class ProcedureRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Get only available (active) procedures
+     */
+    public function getAvailableProcedures(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.available = :available')
+            ->setParameter('available', true)
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getAllProceduresTypes(): array
     {
         return $this->createQueryBuilder('u')

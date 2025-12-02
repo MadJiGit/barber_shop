@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AppointmentsRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\Index(name: 'idx_appointments_date', columns: ['date'])]
+#[ORM\Index(name: 'idx_appointments_barber_date', columns: ['barber_id', 'date'])]
+#[ORM\Index(name: 'idx_appointments_client_date', columns: ['client_id', 'date'])]
+#[ORM\Index(name: 'idx_appointments_status', columns: ['status'])]
 class Appointments
 {
     #[ORM\Id]
@@ -118,7 +122,7 @@ class Appointments
     public function setDateAdded(?\DateTimeInterface $date_added = null): static
     {
         if (empty($date_added)) {
-            $date_added = new \DateTime('now');
+            $date_added = new \DateTimeImmutable('now');
         }
         $this->date_added = $date_added;
 
@@ -133,7 +137,7 @@ class Appointments
     public function setDateUpdate(?\DateTimeInterface $date_update = null): static
     {
         if (empty($date_update)) {
-            $date_update = new \DateTime('now');
+            $date_update = new \DateTimeImmutable('now');
         }
         $this->date_update = $date_update;
 
@@ -148,7 +152,7 @@ class Appointments
     public function setDateCanceled(?\DateTimeInterface $date_canceled = null): static
     {
         if (empty($date_canceled)) {
-            $date_canceled = new \DateTime('now');
+            $date_canceled = new \DateTimeImmutable('now');
         }
         $this->date_canceled = $date_canceled;
 
@@ -163,7 +167,7 @@ class Appointments
     public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
         if (empty($date_last_update)) {
-            $date_last_update = new \DateTime('now');
+            $date_last_update = new \DateTimeImmutable('now');
         }
         $this->date_last_update = $date_last_update;
 

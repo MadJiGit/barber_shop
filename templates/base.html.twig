@@ -9,6 +9,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.png') }}">
 
     {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
         <!-- Template CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
@@ -26,6 +27,8 @@
 
         <!-- Custom CSS overrides -->
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/loading.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/toast_simple.css') }}">
     {% endblock %}
 </head>
 <body>
@@ -44,6 +47,7 @@
 
     {% block header %}
         <header>
+            <!--? Header Start -->
             <div class="header-area header-transparent pt-20">
                 <div class="main-header header-sticky">
                     <div class="container-fluid">
@@ -64,8 +68,11 @@
                                             <ul id="navigation">
                                                 <li><a href="{{ path('main') }}">Home</a></li>
                                                 {% if app.user %}
-                                                    <li><a href="{{ path('barber_appointments', {id: app.user.id}) }}">Book Appointment</a></li>
-                                                    <li><a href="{{ path('user_edit', {id: app.user.id}) }}">Profile</a></li>
+                                                    <li><a href="{{ path('client_book_appointment', {id: app.user.id}) }}">Book Appointment</a></li>
+                                                    <li><a href="{{ path('profile_edit', {id: app.user.id}) }}">Profile</a></li>
+                                                    {% if is_granted('ROLE_MANAGER') %}
+                                                        <li><a href="{{ path('manager_dashboard') }}">Manager</a></li>
+                                                    {% endif %}
                                                     {% if is_granted('ROLE_ADMIN') %}
                                                         <li><a href="{{ path('admin_menu', {id: app.user.id}) }}">Admin</a></li>
                                                     {% endif %}
@@ -77,11 +84,13 @@
                                             </ul>
                                         </nav>
                                     </div>
-                                    {% if not app.user %}
-                                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                    <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                        {% if app.user %}
+                                            <span class="user-info">{{ app.user.nickName ?? app.user.firstName ?? app.user.email }}</span>
+                                        {% else %}
                                             <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
-                                        </div>
-                                    {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             <!-- Mobile Menu -->
@@ -92,8 +101,23 @@
                     </div>
                 </div>
             </div>
+            <!-- Header End -->
         </header>
     {% endblock %}
+
+    <!-- Flash Messages - Fixed Position Below Header -->
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div style="position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 600px;">
+                <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                    <strong>{% if type == 'success' %}✓{% elseif type == 'error' %}✗{% endif %}</strong> {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
     <main>
         {% block body %}
@@ -151,6 +175,7 @@
     </div>
 
     {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
         <!-- Template JS -->
         <script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
         <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
@@ -177,9 +202,25 @@
         <script src="{{ asset('assets/js/plugins.js') }}"></script>
         <script src="{{ asset('assets/js/main.js') }}"></script>
 
-        <!-- Custom JS -->
-        <script src="{{ asset('js/date_control.js') }}"></script>
-        <script src="{{ asset('js/appointment_control.js') }}"></script>
+        <!-- Toast Notification System (Simple - no Bootstrap dependency) -->
+        <script src="{{ asset('js/toast_simple.js') }}"></script>
+
+        <!-- Loading Manager -->
+        <script src="{{ asset('js/loading.js') }}"></script>
+
+        <!-- Form Validation Helper -->
+        <script src="{{ asset('js/form_validation.js') }}"></script>
+
+        <!-- Auto-hide flash messages after 5 seconds -->
+        <script>
+            $(document).ready(function() {
+                setTimeout(function() {
+                    $('.alert').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+            });
+        </script>
     {% endblock %}
 </body>
 </html>

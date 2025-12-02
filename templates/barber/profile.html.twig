@@ -57,14 +57,14 @@
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <a href="{{ path('user_edit', {id: user.id}) }}?year={{ prevYear }}&month={{ prevMonth }}"
+                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ prevYear }}&month={{ prevMonth }}"
                                                class="btn btn-outline-secondary">
                                                 <i class="fas fa-chevron-left"></i> Предишен
                                             </a>
                                             <h2 class="mb-0">
                                                 <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
                                             </h2>
-                                            <a href="{{ path('user_edit', {id: user.id}) }}?year={{ nextYear }}&month={{ nextMonth }}"
+                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ nextYear }}&month={{ nextMonth }}"
                                                class="btn btn-outline-secondary">
                                                 Следващ <i class="fas fa-chevron-right"></i>
                                             </a>
@@ -162,7 +162,7 @@
                                 <h3 class="mb-4"><i class="fas fa-clock"></i> Записани часове</h3>
                                 <p class="text-muted">Тук ще видите клиентите, които са се записали при вас.</p>
 
-                                {% include 'user/_barber_appointments_table.html.twig' %}
+                                {% include 'shared/_appointment_table.html.twig' %}
                             </div>
                         </div>
                     </div>
@@ -383,7 +383,7 @@
                                                     </td>
                                                     <td class="text-center" style="white-space: nowrap;">
                                                         {% if isFuture and appointment.status == 'confirmed' %}
-                                                            <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
+                                                            <a href="{{ path('client_reschedule_appointment', {id: appointment.id}) }}"
                                                                class="btn btn-warning btn-xs mr-1"
                                                                style="padding: 2px 6px; font-size: 12px;"
                                                                title="Промяна на час">
@@ -497,7 +497,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/user_profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/client_profile.css') }}">
     {% if user.isBarber %}
         <link rel="stylesheet" href="{{ asset('css/barber_appointments.css') }}">
         <link rel="stylesheet" href="{{ asset('css/barber_calendar.css') }}">
@@ -506,7 +506,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/user_show.js') }}"></script>
+    <script src="{{ asset('js/client_profile.js') }}"></script>
     {% if user.isBarber %}
         <script src="{{ asset('js/barber_appointments.js') }}"></script>
         <script src="{{ asset('js/barber_calendar.js') }}"></script>

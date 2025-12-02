@@ -275,7 +275,8 @@ class BarberController extends AbstractController
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('barber_procedures', $token)) {
             $this->addFlash('error', 'Невалиден CSRF токен.');
-            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
+            $tab = $request->request->get('tab', 'calendar');
+            return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
 
         $selectedProcedureIds = $request->request->all('procedures') ?? [];
@@ -306,7 +307,7 @@ class BarberController extends AbstractController
 
             if (isset($existingMap[$procedureId])) {
                 // Already exists, mark as still active
-                $existingMap[$procedureId]->setActive(true);
+                $existingMap[$procedureId]->setCanPerform(true);
                 $this->em->persist($existingMap[$procedureId]);
                 unset($existingMap[$procedureId]);
             } else {
@@ -314,22 +315,23 @@ class BarberController extends AbstractController
                 $barberProcedure = new \App\Entity\BarberProcedure();
                 $barberProcedure->setBarber($authUser);
                 $barberProcedure->setProcedure($procedure);
-                $barberProcedure->setActive(true);
-                $barberProcedure->setDateAdded();
+                $barberProcedure->setCanPerform(true);
+                // valid_from is set automatically in constructor
                 $this->em->persist($barberProcedure);
             }
         }
 
         // Deactivate procedures that were not selected
         foreach ($existingMap as $mapping) {
-            $mapping->setActive(false);
+            $mapping->setCanPerform(false);
             $this->em->persist($mapping);
         }
 
         $this->em->flush();
 
         $this->addFlash('success', 'Услугите са актуализирани успешно!');
-        return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
+        $tab = $request->request->get('tab', 'procedures');
+        return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
     }
 
     /**

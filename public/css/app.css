@@ -80,6 +80,19 @@
     margin-right: 10px;
 }
 
+/* User Info in Header */
+.user-info {
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Mobile responsive */
+@media (max-width: 991px) {
+    .user-info {
+        display: none; /* Hide on mobile to save space */
+    }
+}
+
 /* ================================================
    Add more custom styles below
    ================================================ */

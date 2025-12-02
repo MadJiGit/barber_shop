@@ -10,79 +10,135 @@ This platform enables clients to book appointments online while providing powerf
 
 ### User Roles & Permissions
 
-**SUPER_ADMIN** (Developer Access)
+The system implements a hierarchical role-based access control system with the following roles:
+
+**Role Hierarchy:**
+```
+ROLE_CLIENT (base)
+├─ ROLE_BARBER_JUNIOR
+│  └─ ROLE_BARBER
+│     └─ ROLE_BARBER_SENIOR
+├─ ROLE_RECEPTIONIST
+├─ ROLE_MANAGER (inherits all barber levels + receptionist + client)
+├─ ROLE_ADMIN (inherits manager + all others)
+└─ ROLE_SUPER_ADMIN (inherits everything)
+```
+
+**ROLE_SUPER_ADMIN** (Developer Access)
 - Full system access and control
 - Cannot be modified or banned by any other role
 - Manages ADMIN roles and their permissions
 - Database-level access and system configuration
+- Creates and manages all service procedures
+- Access: `/admin/*` routes
 
-**ADMIN** (Business Owner)
+**ROLE_ADMIN** (Business Owner)
 - Manages all aspects of the business
-- Creates and manages services/procedures
 - Manages all user roles except SUPER_ADMIN
 - Can ban/unban users (except SUPER_ADMIN)
 - Access to all appointments and business analytics
 - Cannot modify SUPER_ADMIN permissions
+- Cannot create/edit procedures (SUPER_ADMIN only)
+- Access: `/admin/*` routes
 
-**MANAGER** (Operations Manager)
-- Manages appointments across all barbers
-- Can view and modify bookings
+**ROLE_MANAGER** (Operations Manager) ⚠️ *Planned - not yet implemented*
+- Intended to manage appointments across all barbers
+- Will view and modify bookings
 - Access to scheduling and calendar management
 - Cannot modify user roles or system settings
+- Planned access: `/manager/*` routes
 
-**RECEPTIONIST** (Front Desk)
-- Book appointments on behalf of clients
-- Answer phone calls and manually create bookings
+**ROLE_RECEPTIONIST** (Front Desk) ⚠️ *Planned - not yet implemented*
+- Intended to book appointments on behalf of clients
+- Will answer phone calls and manually create bookings
 - View daily schedule
 - Basic client information access
+- Planned access: `/receptionist/*` routes
 
-**BARBER_SENIOR** / **BARBER** / **BARBER_JUNIOR** (Service Providers)
-- View own appointments (past and future)
-- Manage personal schedule
-- Reserve workspace slots (future feature)
-- Update appointment status
-- Cannot access other barbers' private data
-- Different pricing tiers based on experience level
+**ROLE_BARBER_SENIOR / ROLE_BARBER / ROLE_BARBER_JUNIOR** (Service Providers)
+- **All barber levels can:**
+  - View upcoming appointments (clients who booked with them)
+  - Manage personal weekly schedule (working hours per day)
+  - Set schedule exceptions (days off, custom hours, excluded time slots)
+  - Select which procedures they can perform
+  - View monthly calendar with appointment occupancy
+  - Complete appointments (mark as done)
+  - Cancel appointments with client notification
+- **Cannot access other barbers' private data**
+- **Seniority determines pricing:**
+  - `ROLE_BARBER_SENIOR` and `ROLE_BARBER` → `price_master` and `duration_master`
+  - `ROLE_BARBER_JUNIOR` → `price_junior` and `duration_junior`
+- Access: `/user_edit/{id}`, `/barber/calendar/*`, `/barber/schedule/*`
 
-**CLIENT** (Registered User)
+**ROLE_CLIENT** (Registered User)
 - Book appointments online
-- View booking history
-- Manage personal profile
-- Receive email confirmations and reminders
-- Cancel/reschedule appointments
-- Loyalty points tracking
+- View booking history (past and upcoming)
+- Manage personal profile (name, phone, nickname)
+- Cancel appointments
+- Reschedule appointments (cancel + rebook workflow)
+- Must complete profile (first name required) before booking
+- Access: `/barber_appointments/{id}`, `/user_edit/{id}`, `/appointment/cancel/{id}`
 
-**GUEST** (Non-registered User)
-- Book appointments with name and email only
-- Receive email confirmation with booking details
+**GUEST** (Non-registered User) ⚠️ *Planned - not yet implemented*
+- Intended to book appointments with name and email only
+- Will receive email confirmation with booking details
 - Limited to basic booking functionality
 - Option to create account after booking
 - No access to booking history
 
 ### Appointment Management
 
-#### Current Features
-- Select barber by name
-- Choose service/procedure
-- Pick date and available time slot
-- Real-time availability display
-- Basic form handling
+#### Client Booking Flow ✅
+1. **Select Procedure** - Choose from available services
+2. **Barber Filtering** - System shows only barbers who can perform selected procedure
+3. **Date Selection** - Navigate calendar (blocks past dates)
+4. **Time Slot Selection** - Smart slot display:
+   - 30-minute intervals for procedures that are 30/90 minutes
+   - Full hour intervals for 60/120 minute procedures
+   - Occupied slots shown as unavailable
+   - Validates against barber working hours and schedule exceptions
+5. **Conflict Detection** - Prevents double-booking for both client and barber
+6. **Validation** - Comprehensive checks:
+   - Cannot book in the past
+   - Barber must be working at selected time
+   - Appointment must fit within barber's working hours
+   - No overlapping appointments
+7. **Confirmation** - Appointment created with status 'confirmed'
 
-#### In Development
-- Conflict prevention (double-booking protection)
-- Email confirmation system
-- Guest booking workflow
-- Appointment validation
+#### Barber Schedule Management ✅
+- **Weekly Schedule Template** - Set working hours for each day of week
+- **Schedule Exceptions:**
+  - Full day off (vacation, sick day)
+  - Custom hours for specific dates
+  - Exclude specific time slots (e.g., lunch break)
+- **Monthly Calendar View** - Visual display of occupancy:
+  - Available (no appointments)
+  - Partial (some slots booked)
+  - Full (all slots booked)
+  - Unavailable (day off)
+- **Appointment Visibility** - View all clients who booked appointments
+- **Appointment Actions:**
+  - Mark as completed ⚠️ *Backend TODO*
+  - Cancel with client notification ⚠️ *Backend TODO*
+
+#### Barber-Procedure Mapping ✅
+- Barbers select which procedures they can perform
+- Many-to-many relationship with temporal validity
+- `valid_from` and `valid_until` dates track when barber gained/lost capability
+- `can_perform` flag for active/inactive procedures
+- System filters barbers in booking form based on procedure capability
 
 #### Planned Features
 - Calendar export (iCal/Google Calendar integration)
 - Email reminders (24 hours before appointment)
 - SMS notifications (optional, if phone provided)
-- Cancellation and rescheduling
+- Email confirmation system
+- Guest booking workflow
 - Recurring appointments
 - Waitlist functionality
 - No-show tracking
 - Client blacklist for repeated no-shows
+- Manager/Admin appointment editing interface
 
 ### Service Management
 
@@ -186,62 +242,170 @@ This project uses a professional HTML5 Barber Shop template for the UI/UX design
 - Custom overrides load after from `/public/css/` and `/public/js/`
 - This allows us to customize without modifying the original template
 
+## Architecture & Services
+
+### Core Services
+
+**BarberScheduleService** (`/src/Service/BarberScheduleService.php`)
+- Manages all barber availability and schedule logic
+- Key methods:
+  - `getMonthCalendar()` - Returns calendar with daily availability status
+  - `getDaySchedule()` - Returns 30-min time slots for a specific date
+  - `isBarberWorkingAt()` - Validates barber availability at specific datetime
+  - `getWorkingHoursForDate()` - Returns working hours for specific date
+  - `saveException()` - Creates/updates schedule exceptions
+- Accounts for: default schedule + exceptions + occupied appointments + excluded slots
+
+**AppointmentValidator** (`/src/Service/AppointmentValidator.php`)
+- Validates appointments before booking
+- Key methods:
+  - `validateAppointment()` - Comprehensive validation, returns array of errors
+  - `isBarberAvailable()` - Checks for barber time conflicts
+  - `isClientAvailable()` - Checks for client time conflicts
+  - `isInPast()` - Prevents booking in past
+- Validation checks:
+  - Time not in past
+  - Barber is working at selected time
+  - Appointment fits within working hours
+  - No overlapping appointments (barber or client)
+
+### Controllers & Routes
+
+**MainController** (`/src/Controller/MainController.php`)
+- `/` - Homepage
+- `/barber_appointments/{id}` - Appointment booking form (GET, POST)
+- `/api/occupied-slots/{date}` - AJAX endpoint for occupied slots
+- Integrates: BarberScheduleService, AppointmentValidator, BarberProcedureRepository
+
+**UserController** (`/src/Controller/UserController.php`)
+- `/user_edit/{id}` - User profile edit
+- `/appointment/cancel/{id}` - Cancel appointment (client)
+- `/appointment/reschedule/{id}` - Start reschedule workflow
+- `/barber/calendar/{year}/{month}` - Barber monthly calendar view
+- `/barber/schedule/day/{date}` - Get day schedule (AJAX)
+- `/barber/schedule/save` - Save schedule exception
+- `/barber/procedures/save` - Save barber procedures
+
+**AdminController** (`/src/Controller/AdminController.php`)
+- `/admin_menu/{id}` - Admin dashboard
+- `/view_all_clients` - List all clients
+- `/list_all_barbers` - List all barbers
+- `/list_without_role` - Users without role
+- `/admin/user_edit/{id}` - Edit user & assign roles
+
+**ProcedureController** (`/src/Controller/ProcedureController.php`)
+- `/procedure_show/{id}` - List procedures (SUPER_ADMIN)
+- `/procedure_add/{id}` - Create procedure (SUPER_ADMIN)
+- `/procedure_edit/{id}` - Edit procedure (SUPER_ADMIN)
+- `/procedure_delete/{id}` - Delete procedure (SUPER_ADMIN)
+
+### Frontend Architecture
+
+**Asset Organization:**
+```
+/public/
+├── assets/          # Template assets (Bootstrap, jQuery, plugins)
+│   ├── css/
+│   ├── js/
+│   ├── img/
+│   └── fonts/
+├── css/             # Custom CSS
+│   ├── barber_appointments.css
+│   └── [other custom styles]
+├── js/              # Custom JavaScript
+│   ├── appointment_form.js      # Client booking logic
+│   └── barber_appointments.js   # Barber appointment actions
+└── images/          # Custom images
+```
+
+**Code Separation Standards:**
+- ❌ NO JavaScript code in Twig templates (except initialization)
+- ✅ All JS logic → `/public/js/`
+- ✅ All CSS → `/public/css/`
+- ✅ All HTML → `/templates/`
+
 ## Current Development Status
 
 ### Completed ✅
-- User authentication system
-- Role-based access control (basic implementation)
-- User entity with roles (SUPER_ADMIN, ADMIN, BARBER, BARBER_JUNIOR, CLIENT)
-- Appointments entity structure
-- Procedure/Service entity with dual pricing (master/junior)
-- Basic appointment booking form
-- User profile management
-- Admin panel structure
-- Security implementation (CSRF, password hashing)
-- Barber selection dropdown
-- Procedure selection
-- Time slot picker UI
-- Date selection with calendar
+**Authentication & Authorization:**
+- User authentication system with form login
+- Role-based access control with 7-level hierarchy
+- CSRF protection and password hashing
+- Remember me functionality (7-day sessions)
 
-### In Progress 🔄
-- Appointment conflict validation
-- Enhanced booking interface
-- Guest booking workflow
-- Email notification foundation
-- Cleanup of debug code in MainController
-- Bug fixes (getProcedure method, POST handling)
+**User Management:**
+- User registration (creates ROLE_CLIENT)
+- Profile management (name, phone, nickname)
+- Admin user management (role assignment)
+- Profile completion enforcement before booking
+
+**Appointment System:**
+- Client booking workflow with procedure selection
+- Barber filtering by procedure capability
+- Smart time slot display (30-min intervals, filtered by procedure duration)
+- Date navigation with past date blocking
+- Comprehensive appointment validation (AppointmentValidator)
+- Conflict detection (prevents double-booking)
+- Appointment cancellation (client side)
+- Occupied slot display on booking form
+
+**Barber Management:**
+- Barber-procedure many-to-many mapping with temporal validity
+- Weekly schedule template (BarberSchedule)
+- Schedule exceptions (days off, custom hours, excluded slots)
+- Monthly calendar view with occupancy status
+- Day view with 30-minute time slot detail
+- Barber appointments table (view clients who booked)
+
+**Services:**
+- BarberScheduleService for all availability logic
+- AppointmentValidator for comprehensive validation
+- Dual pricing system (master/junior)
+- Procedure CRUD (SUPER_ADMIN only)
+
+**Frontend:**
+- Clean separation: JS → /public/js/, CSS → /public/css/, HTML → /templates/
+- Bootstrap 4 template integration
+- Responsive design
+- AJAX-based slot updates
 
 ### High Priority (Next Steps) 🎯
-- Fix critical bugs in MainController
-- Implement appointment conflict detection
-- Email confirmation system for bookings
-- Guest booking complete workflow
-- RECEPTIONIST role implementation
-- No-show tracking system
-- Appointment cancellation/rescheduling
-- Improve appointment form validation
+1. **Complete barber appointment actions** (immediate priority)
+   - Backend endpoints: `/barber/appointment/{id}/complete` and `/barber/appointment/{id}/cancel`
+   - Update appointment status
+   - Client notification system
+
+2. **Implement Manager/Admin appointment editing** (high priority)
+   - Manager dashboard with appointment list
+   - Full edit capability (change date, time, barber, procedure)
+   - Route access control (ROLE_MANAGER or ROLE_ADMIN)
+
+3. **Database performance optimization**
+   - Add indexes for common queries
+   - Optimize barber_procedure lookups
 
 ### Medium Priority 📋
-- Calendar export functionality (iCal)
-- Email reminder system (24h before)
-- Barber workspace reservation
-- Review and rating system
+- Email confirmation system for bookings
+- Email reminders (24h before appointment)
+- Guest booking workflow (book without registration)
+- RECEPTIONIST role implementation with booking interface
+- Enhanced client reschedule flow (direct to form with pre-selected procedure)
+- No-show tracking system
+- Review and rating system for barbers
 - Photo gallery for services
-- Enhanced admin dashboard with metrics
-- Loyalty program foundation
 - Client blacklist functionality
 
 ### Low Priority / Future 🔮
-- SMS integration
+- Calendar export (iCal/Google Calendar integration)
+- SMS notifications
 - Recurring appointments
-- Advanced analytics and reporting
-- Mobile app API development
-- Payment integration
-- Multi-location support
-- Mobile native apps (iOS/Android)
-- Real-time notifications with WebSockets
 - Waitlist management
+- Advanced analytics and reporting
+- Payment integration
 - Online tips/gratuity processing
+- Mobile app API development
+- Multi-location support
+- Real-time notifications with WebSockets
 
 ## Installation
 
@@ -273,12 +437,55 @@ symfony serve
 
 ## Database Schema
 
-### Main Entities
-- **User**: Authentication, profiles, and role management
-- **Appointments**: Booking records with client, barber, service
-- **Procedure**: Services offered with pricing tiers
-- **AppointmentHours**: Available time slots configuration
-- **Roles**: User role definitions (enum)
+### Core Entities ✅
+
+**User** (`/src/Entity/User.php`)
+- Authentication, profiles, and role management
+- Fields: email (unique), password (hashed), roles (JSON array), first_name, last_name, nick_name, phone
+- Status: is_active, is_banned
+- Timestamps: date_added, date_last_update, date_banned
+- Email verification: confirmation_token, token_expires_at
+
+**Appointments** (`/src/Entity/Appointments.php`)
+- Booking records linking client → barber → procedure
+- Fields: date (DateTimeImmutable), duration (int minutes), status (string), notes, cancellation_reason
+- Relationships: client (ManyToOne User), barber (ManyToOne User), procedure_type (ManyToOne Procedure)
+- Status values: 'pending', 'confirmed', 'completed', 'cancelled'
+- Timestamps: date_added, date_last_update, date_canceled
+- Indexes: date, (barber_id, date), (client_id, date), status
+
+**Procedure** (`/src/Entity/Procedure.php`)
+- Service type definitions with dual pricing
+- Fields: type (string), price_master, price_junior, duration_master, duration_junior, available (bool)
+- Timestamps: date_added, date_last_update, date_stopped
+
+**BarberProcedure** (`/src/Entity/BarberProcedure.php`)
+- Many-to-many mapping with temporal validity
+- Relationships: barber (ManyToOne User), procedure (ManyToOne Procedure)
+- Fields: can_perform (bool), valid_from (DateTimeImmutable), valid_until (DateTimeImmutable, nullable)
+- Method: isCurrentlyValid() - checks if barber can perform procedure now
+
+**BarberSchedule** (`/src/Entity/BarberSchedule.php`)
+- Weekly recurring schedule template per barber
+- Relationship: barber (ManyToOne User)
+- schedule_data (JSON): `{"0": {"working": false}, "1": {"start": "09:00", "end": "18:00", "working": true}, ...}`
+- Default: Mon-Fri 09:00-18:00, Sat 09:00-13:00, Sun off
+- Timestamps: created_at, updated_at
+
+**BarberScheduleException** (`/src/Entity/BarberScheduleException.php`)
+- Overrides default schedule for specific dates
+- Relationship: barber (ManyToOne User), created_by (ManyToOne User)
+- Fields: date (DateImmutable), is_available (bool), start_time, end_time (nullable), excluded_slots (JSON array), reason
+- Use cases: vacations, special hours, lunch breaks, training days
+- Timestamp: created_at
+
+**AppointmentHours** (`/src/Entity/AppointmentHours.php`)
+- Fixed time slot definitions (legacy/reference)
+- Hard-coded slots: 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00, 17:00
+
+**BusinessHours** (`/src/Entity/BusinessHours.php`)
+- Global business hours (shop-wide, currently unused)
+- Fields: day_of_week (0-6), open_time, close_time, is_closed
 
 ### Planned Entities
 - **Review**: Client reviews for barbers
@@ -288,7 +495,6 @@ symfony serve
 - **Blacklist**: Banned clients
 - **WorkspaceReservation**: Barber station booking
 - **Notification**: Email/SMS queue
-- **BusinessHours**: Operating hours configuration
 
 ## Security Considerations
 
@@ -304,21 +510,34 @@ symfony serve
 
 ## Known Issues & Technical Debt
 
-1. **MainController.php**
-   - Line 95: Direct $_POST access instead of form handling
-   - Lines 98-106: Commented debug code with hardcoded IDs
-   - Line 222: Bug in getProcedure() - uses = instead of ==
-   - addAppointment() method incomplete
+1. **Barber Appointment Actions** (High Priority)
+   - Complete/Cancel buttons in UI are placeholders
+   - Backend endpoints not implemented: `/barber/appointment/{id}/complete`, `/barber/appointment/{id}/cancel`
+   - TODO comments in `/public/js/barber_appointments.js`
 
-2. **Appointments Entity**
-   - Commented code in relationship definitions
-   - Needs cleanup
+2. **Manager/Admin Features** (High Priority)
+   - ROLE_MANAGER exists in hierarchy but has no dedicated controller or routes
+   - No appointment editing interface for managers/admins
+   - Cannot reschedule appointments on behalf of clients
 
-3. **General**
-   - Need comprehensive input validation
-   - Missing email notification system
-   - No conflict detection for double bookings
-   - Guest booking flow incomplete
+3. **Email System** (Medium Priority)
+   - No confirmation emails after booking
+   - No reminder emails before appointments
+   - No notification on cancellation
+   - Token system exists but verification flow incomplete
+
+4. **Guest Booking** (Medium Priority)
+   - Guest booking workflow not implemented
+   - System requires registration before booking
+
+5. **Performance** (Low Priority)
+   - Need database indexes on common query patterns
+   - Consider caching for barber schedule lookups
+
+6. **Miscellaneous**
+   - BusinessHours entity exists but not integrated into system
+   - AppointmentHours entity is legacy (replaced by dynamic 30-min slots)
+   - is_banned flag in User entity not enforced at login
 
 ## API Documentation (Future)
 
@@ -356,6 +575,8 @@ Proprietary - All rights reserved
 
 ---
 
-**Last Updated**: 2024-11-26
+**Last Updated**: 2025-12-02
 **Current Branch**: appointment
 **Project Status**: Active Development
+**Symfony Version**: 7.1
+**PHP Version**: 8.2+

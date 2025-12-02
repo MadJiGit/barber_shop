@@ -86,7 +86,8 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Профилът е обновен успешно!');
 
-            return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
+            $tab = $request->request->get('tab', 'profile');
+            return $this->redirectToRoute('profile_edit', ['id' => $user->getId(), 'tab' => $tab]);
         }
 
         // Get user's appointments (all - past, future, cancelled)
@@ -109,7 +110,8 @@ class ProfileController extends AbstractController
         if ($user->isBarber()) {
             // Get barber's upcoming appointments
             $barberAppointments = $this->appointmentsRepository->findUpcomingAppointmentsByBarber($user);
-            $allProcedures = $this->em->getRepository(\App\Entity\Procedure::class)->findAll();
+            // Get only available (manager-approved) procedures
+            $allProcedures = $this->em->getRepository(\App\Entity\Procedure::class)->getAvailableProcedures();
             $barberProcedures = $this->em->getRepository(\App\Entity\BarberProcedure::class)
                 ->findActiveProceduresForBarber($user);
             $barberProcedureIds = array_map(fn($p) => $p->getId(), $barberProcedures);

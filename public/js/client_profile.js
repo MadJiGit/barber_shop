@@ -28,7 +28,88 @@ document.addEventListener('DOMContentLoaded', function() {
             formChanged = false;
         });
     }
+
+    // Tab persistence: Restore active tab from URL parameter
+    restoreActiveTab();
+
+    // Save active tab to URL when tab is clicked
+    saveActiveTabOnClick();
+
+    // Add tab parameter to form submissions
+    addTabParameterToForms();
 });
+
+/**
+ * Restore active tab from URL parameter
+ */
+function restoreActiveTab() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('tab');
+
+    if (activeTab) {
+        // Deactivate all tabs
+        document.querySelectorAll('#barberTabs .nav-link').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+        });
+
+        // Activate the specified tab
+        const tabLink = document.querySelector(`#barberTabs a[href="#${activeTab}"]`);
+        const tabPane = document.getElementById(activeTab);
+
+        if (tabLink && tabPane) {
+            tabLink.classList.add('active');
+            tabPane.classList.add('show', 'active');
+        }
+    }
+}
+
+/**
+ * Save active tab to URL when tab is clicked
+ */
+function saveActiveTabOnClick() {
+    document.querySelectorAll('#barberTabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            const targetTab = this.getAttribute('href').substring(1); // Remove '#'
+            updateURLWithTab(targetTab);
+        });
+    });
+}
+
+/**
+ * Update URL with tab parameter without reloading page
+ */
+function updateURLWithTab(tabName) {
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.pushState({}, '', url);
+}
+
+/**
+ * Add tab parameter to form submissions to preserve active tab after page reload
+ */
+function addTabParameterToForms() {
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            // Find which tab is currently active
+            const activeTab = document.querySelector('#barberTabs .nav-link.active');
+            if (activeTab) {
+                const tabName = activeTab.getAttribute('href').substring(1);
+
+                // Add hidden input with tab parameter
+                const tabInput = document.createElement('input');
+                tabInput.type = 'hidden';
+                tabInput.name = 'tab';
+                tabInput.value = tabName;
+                this.appendChild(tabInput);
+            }
+        });
+    });
+}
 
 /**
  * Cancel appointment function
@@ -46,6 +127,17 @@ function cancelAppointment(appointmentId, csrfToken) {
         csrfInput.name = '_token';
         csrfInput.value = csrfToken;
         form.appendChild(csrfInput);
+
+        // Add tab parameter to preserve active tab
+        const activeTab = document.querySelector('#barberTabs .nav-link.active');
+        if (activeTab) {
+            const tabName = activeTab.getAttribute('href').substring(1);
+            const tabInput = document.createElement('input');
+            tabInput.type = 'hidden';
+            tabInput.name = 'tab';
+            tabInput.value = tabName;
+            form.appendChild(tabInput);
+        }
 
         document.body.appendChild(form);
         form.submit();
