@@ -1,0 +1,9 @@
+{% include '/admin/admin_menu.html.twig' %}
+{% block body %}
+    <h3>MANAGE APPOINTMENT</h3>
+
+    {% if user.userIsSuperAdmin %}
+        {{ form_start(form) }}
+        {{ form_end(form) }}
+    {% endif %}
+{% endblock %}

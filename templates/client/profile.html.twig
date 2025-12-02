@@ -1,0 +1,227 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Моят профил - Barber Shop{% endblock %}
+
+{% block body %}
+    <!--? Hero Start -->
+    <div class="slider-area2">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 pt-70 text-center">
+                            <h2>Моят профил</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!--? User Profile Section Start -->
+    <section class="user-profile-section section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
+                    <!-- User Info Card -->
+                    <div class="card user-profile-card shadow-sm border-0">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h4 class="mb-0 text-center" style="color: #d4a574;">
+                                <i class="fas fa-user-edit"></i>
+                                {% if user.nickName %}
+                                    {{ user.nickName }}
+                                {% else %}
+                                    {{ user.email }}
+                                {% endif %}
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
+
+                            <div class="row">
+                                <!-- Email -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-envelope text-muted mr-2"></i>Email
+                                        </label>
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'example@email.com'}}) }}
+                                        {{ form_errors(form.email) }}
+                                    </div>
+                                </div>
+
+                                <!-- First Name -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-user text-muted mr-2"></i>Име
+                                        </label>
+                                        {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        {{ form_errors(form.first_name) }}
+                                    </div>
+                                </div>
+
+                                <!-- Last Name -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-user text-muted mr-2"></i>Фамилия
+                                        </label>
+                                        {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        {{ form_errors(form.last_name) }}
+                                    </div>
+                                </div>
+
+                                <!-- Nickname -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form_label(form.nick_name) }}
+                                        {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        {{ form_errors(form.nick_name) }}
+                                        <small class="form-text text-muted">По желание. Ако е празно ще използваме вашето име.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-phone text-muted mr-2"></i>Телефон
+                                        </label>
+                                        {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        {{ form_errors(form.phone) }}
+                                    </div>
+                                </div>
+
+                                <!-- Date Added (readonly) -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="text-muted">
+                                            <i class="fas fa-calendar-plus mr-2"></i>Член от
+                                        </label>
+                                        {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="text-center mt-4">
+                                <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
+                                    <i class="fas fa-arrow-left"></i> Обратно към начало
+                                </a>
+                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'Запази промените'}) }}
+                            </div>
+
+                            {{ form_end(form, {'render_rest': false}) }}
+                        </div>
+                    </div>
+
+                    <!-- Appointments History Section -->
+                    <div class="card shadow-sm border-0 mt-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0" style="color: #d4a574;">
+                                <i class="fas fa-history"></i> История на посещения
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead style="background-color: #f8f9fa;">
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Час</th>
+                                            <th>Бръснар</th>
+                                            <th>Услуга</th>
+                                            <th>Статус</th>
+                                            <th class="text-right">Цена</th>
+                                            <th class="text-center">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if userAppointments is empty %}
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4 text-muted">
+                                                    <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                                                    <p class="mb-0">Все още нямате записани посещения.</p>
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            {% for appointment in userAppointments %}
+                                                {% set appointmentDateTime = appointment.date %}
+                                                {% set now = "now"|date('U') %}
+                                                {% set appointmentTimestamp = appointmentDateTime|date('U') %}
+                                                {% set isFuture = appointmentTimestamp > now %}
+
+                                                <tr>
+                                                    <td>{{ appointment.date|date('d.m.Y') }}</td>
+                                                    <td>{{ appointment.date|date('H:i') }}</td>
+                                                    <td>
+                                                        {{ appointment.barber.barberTitleBg }} {{ appointment.barber.firstName }}
+                                                    </td>
+                                                    <td>{{ appointment.procedureType.type }}</td>
+                                                    <td>
+                                                        {% if appointment.status == 'confirmed' %}
+                                                            <span class="badge badge-primary">Потвърден</span>
+                                                        {% elseif appointment.status == 'completed' %}
+                                                            <span class="badge badge-success">Изпълнен</span>
+                                                        {% elseif appointment.status == 'cancelled' %}
+                                                            <span class="badge badge-danger">Отменен</span>
+                                                        {% elseif appointment.status == 'no_show' %}
+                                                            <span class="badge badge-warning">Недошъл</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">{{ appointment.status }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-right">
+                                                        {% if appointment.barber.isBarberJunior %}
+                                                            {{ appointment.procedureType.priceJunior }} лв
+                                                        {% else %}
+                                                            {{ appointment.procedureType.priceMaster }} лв
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center" style="white-space: nowrap;">
+                                                        {% if isFuture and appointment.status == 'confirmed' %}
+                                                            <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
+                                                               class="btn btn-warning btn-xs mr-1"
+                                                               style="padding: 2px 6px; font-size: 12px;"
+                                                               title="Промяна на час">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <button type="button"
+                                                                    class="btn btn-danger btn-xs"
+                                                                    style="padding: 2px 6px; font-size: 12px;"
+                                                                    onclick="cancelAppointment({{ appointment.id }}, '{{ csrf_token('cancel_appointment') }}')"
+                                                                    title="Отмяна на час">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        {% else %}
+                                                            <span class="text-muted">—</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- User Profile Section End -->
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/user_profile.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/user_show.js') }}"></script>
+{% endblock %}

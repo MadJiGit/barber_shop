@@ -1,0 +1,91 @@
+/**
+ * Manager Appointments Styles
+ */
+
+/* Phone link styling */
+.phone-link {
+    color: #007bff !important;
+    text-decoration: none;
+}
+
+.phone-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline;
+}
+
+/* Table styling */
+.table-responsive {
+    margin-top: 20px;
+}
+
+#appointmentsTable tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#appointmentsTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Action buttons */
+.btn-edit, .btn-cancel {
+    margin-right: 4px;
+}
+
+/* Filter form */
+.form-inline .form-group {
+    align-items: center;
+}
+
+.form-inline label {
+    margin-bottom: 0;
+}
+
+/* Stats cards */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-secondary {
+    border: none;
+}
+
+.card.bg-primary .card-body h2,
+.card.bg-success .card-body h2,
+.card.bg-info .card-body h2,
+.card.bg-secondary .card-body h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Modal */
+.modal-lg {
+    max-width: 800px;
+}
+
+#editAppointmentForm .form-group label {
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-inline .form-group {
+        display: block;
+        width: 100%;
+        margin-right: 0 !important;
+    }
+
+    .form-inline .form-control {
+        width: 100%;
+    }
+
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.25rem !important;
+        margin-bottom: 5px;
+    }
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Barber Shop{% endblock %}</title>
+    <link rel="icon" href="{{ asset('assets/img/favicon_barbershop.png') }}">
+
+    {% block stylesheets %}
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{{ asset('assets/css/fontawesome-all.min.css') }}">
+        <!-- Custom styles -->
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    {% endblock %}
+</head>
+<body>
+    {% block body %}{% endblock %}
+
+    {% block javascripts %}
+        <!-- jQuery -->
+        <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
+        <!-- Bootstrap JS -->
+        <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

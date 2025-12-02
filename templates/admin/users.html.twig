@@ -1,0 +1,42 @@
+{% include 'base.html.twig' %}
+{% include 'buttons/go_back_logout_buttons.html.twig' %}
+{% block body %}
+{% block stylesheets  %}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+{% endblock %}
+<table class="styled-table">
+    <thead>
+    <tr>
+    {% for field in fields %}
+        <th>{{ field }}</th>
+    {% endfor %}
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for client in clients %}
+    <tr>
+
+        <td>{{ client.id }}</td>
+        <td>{{ client.email }}</td>
+        <td>
+        {% for role in client.roles %}
+            {{ role|lower }}
+        {% endfor %}
+        </td>
+        <td>{{ client.first_name }}</td>
+        <td>{{ client.last_name }}</td>
+        <td>{{ client.nick_name }}</td>
+        <td>{{ client.phone }}</td>
+        <td>{{ client.date_added|date('d-m-Y') }}</td>
+        <td>{{ client.date_banned|date('d-m-Y') }}</td>
+        <td>{{ client.date_last_update|date('d-m-Y') }}</td>
+        {% if user.userIsSuperAdmin %}
+            <td><a href={{ path('admin_user_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
+        {% endif %}
+    <tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

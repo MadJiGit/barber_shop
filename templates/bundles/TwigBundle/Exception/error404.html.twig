@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Страницата не е намерена - 404{% endblock %}
+
+{% block body %}
+<!--? Breadcrumb Area Start -->
+<div class="slider-area">
+    <div class="slider-height2 d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap hero-cap2 text-center">
+                        <h2>Страницата не е намерена</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Area End -->
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="text-center">
+                    <div class="error-icon mb-4">
+                        <i class="fas fa-search" style="font-size: 120px; color: #d4a373;"></i>
+                    </div>
+                    <h1 class="display-1 mb-4" style="color: #d4a373; font-weight: bold;">404</h1>
+                    <h2 class="mb-4">Страницата не е намерена</h2>
+                    <p class="lead mb-4">
+                        Страницата, която търсите, не съществува или е била премахната.
+                    </p>
+                    <p class="text-muted mb-5">
+                        Проверете дали адресът е въведен правилно или се върнете към началната страница.
+                    </p>
+                    <div class="mt-5">
+                        <a href="{{ path('main') }}" class="btn btn-primary btn-lg mr-3">
+                            <i class="fas fa-home"></i> Към началната страница
+                        </a>
+                        {% if app.user %}
+                            <a href="{{ path('barber_appointments', {id: app.user.id}) }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-calendar"></i> Запази час
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
