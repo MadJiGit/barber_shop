@@ -187,18 +187,6 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/client_book_appointment.css') }}">
-    <style>
-        .time-slot-box.insufficient-time {
-            background-color: #f8d7da !important;
-            border-color: #f5c6cb !important;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .time-slot-box.insufficient-time .time-label {
-            color: #721c24;
-            text-decoration: line-through;
-        }
-    </style>
 {% endblock %}
 
 

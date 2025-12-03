@@ -393,3 +393,16 @@
 .time-slot-box.selected {
     animation: pulseSelection 0.3s ease-in-out;
 }
+
+/* Insufficient Time Styling */
+.time-slot-box.insufficient-time {
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.time-slot-box.insufficient-time .time-label {
+    color: #721c24;
+    text-decoration: line-through;
+}
