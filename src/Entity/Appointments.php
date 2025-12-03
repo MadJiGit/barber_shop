@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\AppointmentsRepository;
+use App\Service\DateTimeHelper;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 #[ORM\Entity(repositoryClass: AppointmentsRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -20,7 +23,7 @@ class Appointments
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $date = null;
+    private ?DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $duration = null;
@@ -41,13 +44,13 @@ class Appointments
     private string $status = 'pending';
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $date_added = null;
+    private ?DateTimeInterface $date_added = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $date_last_update = null;
+    private ?DateTimeInterface $date_last_update = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $date_canceled = null;
+    private ?DateTimeInterface $date_canceled = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $cancellation_reason = null;
@@ -55,9 +58,12 @@ class Appointments
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->date_added = new \DateTimeImmutable('now');
+        $this->date_added = DateTimeHelper::now();
     }
 
     public function getId(): ?int
@@ -65,12 +71,12 @@ class Appointments
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(DateTimeInterface $date): static
     {
         $this->date = $date;
 
@@ -91,7 +97,6 @@ class Appointments
 
     public function getClient(): ?User
     {
-        //        $this->userRepository->findOneBy(["id" => $this->getId()]);
         return $this->client;
     }
 
@@ -114,60 +119,54 @@ class Appointments
         return $this;
     }
 
-    public function getDateAdded(): ?\DateTimeInterface
+    public function getDateAdded(): ?DateTimeInterface
     {
         return $this->date_added;
     }
 
-    public function setDateAdded(?\DateTimeInterface $date_added = null): static
+    /**
+     * @throws Exception
+     */
+    public function setDateAdded(?DateTimeInterface $date_added = null): static
     {
         if (empty($date_added)) {
-            $date_added = new \DateTimeImmutable('now');
+            $date_added = DateTimeHelper::now();
         }
         $this->date_added = $date_added;
 
         return $this;
     }
 
-    public function getDateUpdate(): ?\DateTimeInterface
-    {
-        return $this->date_update;
-    }
-
-    public function setDateUpdate(?\DateTimeInterface $date_update = null): static
-    {
-        if (empty($date_update)) {
-            $date_update = new \DateTimeImmutable('now');
-        }
-        $this->date_update = $date_update;
-
-        return $this;
-    }
-
-    public function getDateCanceled(): ?\DateTimeInterface
+    public function getDateCanceled(): ?DateTimeInterface
     {
         return $this->date_canceled;
     }
 
-    public function setDateCanceled(?\DateTimeInterface $date_canceled = null): static
+    /**
+     * @throws Exception
+     */
+    public function setDateCanceled(?DateTimeInterface $date_canceled = null): static
     {
         if (empty($date_canceled)) {
-            $date_canceled = new \DateTimeImmutable('now');
+            $date_canceled = DateTimeHelper::now();
         }
         $this->date_canceled = $date_canceled;
 
         return $this;
     }
 
-    public function getDateLastUpdate(): ?\DateTimeInterface
+    public function getDateLastUpdate(): ?DateTimeInterface
     {
         return $this->date_last_update;
     }
 
-    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
+    /**
+     * @throws Exception
+     */
+    public function setDateLastUpdate(?DateTimeInterface $date_last_update = null): static
     {
         if (empty($date_last_update)) {
-            $date_last_update = new \DateTimeImmutable('now');
+            $date_last_update = DateTimeHelper::now();
         }
         $this->date_last_update = $date_last_update;
 
@@ -191,10 +190,13 @@ class Appointments
         return $this->status;
     }
 
+    /**
+     * @throws Exception
+     */
     public function setStatus(string $status): static
     {
         $this->status = $status;
-        $this->date_last_update = new \DateTimeImmutable('now');
+        $this->date_last_update = DateTimeHelper::now();
 
         return $this;
     }
@@ -223,9 +225,22 @@ class Appointments
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {
-        $this->date_last_update = new \DateTimeImmutable('now');
+        $this->date_last_update = DateTimeHelper::now();
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '#%d - %s (%s)',
+            $this->id ?? 0,
+            $this->date?->format('d.m.Y H:i') ?? 'N/A',
+            $this->client?->getEmail() ?? 'N/A'
+        );
     }
 }

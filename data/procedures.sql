@@ -1,7 +1,7 @@
 -- Barber Shop Procedures/Services
 -- Insert basic procedures with pricing for master and junior barbers
 
-INSERT INTO `procedure` (`type`, `price_master`, `price_junior`, `duration_master`, `duration_junior`, `available`, `date_added`) VALUES
+INSERT INTO `procedures` (`type`, `price_master`, `price_junior`, `duration_master`, `duration_junior`, `available`, `date_added`) VALUES
 -- Haircuts
 ('Haircut - Men', '25.00', '20.00', 30, 40, 1, NOW()),
 ('Haircut - Kids', '15.00', '12.00', 20, 25, 1, NOW()),

@@ -49,7 +49,7 @@ class BusinessHoursExceptionRepository extends ServiceEntityRepository
 
     public function findUpcomingExceptions(int $days = 30): array
     {
-        $today = new \DateTimeImmutable('today');
+        $today = DateTimeHelper::now();
         $endDate = $today->modify("+{$days} days");
 
         return $this->createQueryBuilder('bhe')

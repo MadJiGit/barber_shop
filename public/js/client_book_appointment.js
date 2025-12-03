@@ -404,17 +404,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     showRightIcon: false,
                     change: function (e) {
                         const selectedDate = e.target.value;
+                        const currentDisplayDate = calendarInput.val();
 
-                        // Reload page with new date and preserve selected procedure
-                        const url = new URL(window.location);
-                        url.searchParams.set('date', selectedDate);
+                        // Only reload if date actually changed
+                        if (selectedDate && selectedDate !== currentDisplayDate) {
+                            console.log('Date changed from', currentDisplayDate, 'to', selectedDate);
 
-                        // Preserve selected procedure in URL
-                        if (selectedProcedure && selectedProcedure.id) {
-                            url.searchParams.set('procedure', selectedProcedure.id);
+                            // Reload page with new date and preserve selected procedure
+                            const url = new URL(window.location);
+                            url.searchParams.set('date', selectedDate);
+
+                            // Preserve selected procedure in URL
+                            if (selectedProcedure && selectedProcedure.id) {
+                                url.searchParams.set('procedure', selectedProcedure.id);
+                            }
+
+                            window.location.href = url.toString();
+                        } else {
+                            console.log('Date not changed, ignoring event');
                         }
-
-                        window.location.href = url.toString();
                     },
                     open: function(e) {
                         console.log('Datepicker opened!');
@@ -422,35 +430,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 console.log('Datepicker initialized successfully!');
 
-                // NOW add click handler after Gijgo is initialized
+                // Simple click handler - let Gijgo handle the opening
                 if (calendarInputElement) {
-                    // Prevent keyboard input
+                    // Prevent keyboard input only
                     calendarInputElement.addEventListener('keydown', function(e) {
                         e.preventDefault();
                         return false;
                     });
 
-                    // Manually trigger datepicker open on click (since readonly blocks normal behavior)
-                    // Use capture phase to catch event BEFORE it bubbles
-                    calendarInputElement.addEventListener('click', function(e) {
-                        console.log('Click detected on calendar input!');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-
-                        // Programmatically open the Gijgo datepicker
-                        console.log('Attempting to open datepicker...');
-                        console.log('Gijgo data:', calendarInput.data('gijgo'));
-
-                        // Use setTimeout to ensure we're outside the current event loop
-                        setTimeout(() => {
-                            calendarInput.datepicker('open');
-                        }, 10);
-
-                        return false;
-                    }, true); // <-- IMPORTANT: capture phase
-
-                    console.log('Click handler attached!');
+                    console.log('Datepicker ready - click on input to open calendar');
                 }
             } catch (error) {
                 console.error('Error initializing datepicker:', error);

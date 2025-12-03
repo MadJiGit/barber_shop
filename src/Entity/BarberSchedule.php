@@ -3,8 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\BarberScheduleRepository;
+use App\Service\DateTimeHelper;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
+use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: BarberScheduleRepository::class)]
 #[ORM\Table(name: 'barber_schedule')]
@@ -33,14 +37,17 @@ class BarberSchedule
     private array $schedule_data = [];
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?DateTimeInterface $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $updated_at = null;
+    private ?DateTimeInterface $updated_at = null;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable('now');
+        $this->created_at = DateTimeHelper::now();
         $this->initializeDefaultSchedule();
     }
 
@@ -85,10 +92,13 @@ class BarberSchedule
         return $this->schedule_data;
     }
 
+    /**
+     * @throws Exception
+     */
     public function setScheduleData(array $schedule_data): static
     {
         $this->schedule_data = $schedule_data;
-        $this->updated_at = new \DateTimeImmutable('now');
+        $this->updated_at = DateTimeHelper::now();
 
         return $this;
     }
@@ -99,7 +109,7 @@ class BarberSchedule
     public function getScheduleForDay(int $dayOfWeek): ?array
     {
         if ($dayOfWeek < 0 || $dayOfWeek > 6) {
-            throw new \InvalidArgumentException('Day of week must be between 0 and 6');
+            throw new InvalidArgumentException('Day of week must be between 0 and 6');
         }
 
         return $this->schedule_data[(string)$dayOfWeek] ?? null;
@@ -133,20 +143,30 @@ class BarberSchedule
         ];
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
+    public function setUpdatedAt(?DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('График за %s',
+            $this->barber?->getEmail() ?? 'N/A'
+        );
     }
 }

@@ -2,9 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\BarberProcedure;
+use App\Entity\Procedure;
 use App\Repository\AppointmentsRepository;
 use App\Service\BarberScheduleService;
+use App\Service\DateTimeHelper;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +54,7 @@ class BarberController extends AbstractController
 
         // Default to current month if not specified
         if (!$year || !$month) {
-            $now = new \DateTime('now');
+            $now = new DateTime('now');
             $year = (int)$now->format('Y');
             $month = (int)$now->format('m');
         }
@@ -57,7 +63,7 @@ class BarberController extends AbstractController
         $calendar = $this->scheduleService->getMonthCalendar($authUser, $year, $month);
 
         // Calculate previous and next month
-        $currentDate = new \DateTime("$year-$month-01");
+        $currentDate = new DateTime("$year-$month-01");
         $prevMonth = (clone $currentDate)->modify('-1 month');
         $nextMonth = (clone $currentDate)->modify('+1 month');
 
@@ -87,8 +93,8 @@ class BarberController extends AbstractController
         }
 
         try {
-            $dateObj = new \DateTimeImmutable($date);
-        } catch (\Exception $e) {
+            $dateObj = new DateTimeImmutable($date);
+        } catch (Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
 
@@ -120,8 +126,8 @@ class BarberController extends AbstractController
         }
 
         try {
-            $date = new \DateTimeImmutable($data['date']);
-        } catch (\Exception $e) {
+            $date = new DateTimeImmutable($data['date']);
+        } catch (Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
 
@@ -152,7 +158,7 @@ class BarberController extends AbstractController
                     'is_available' => $exception->getIsAvailable(),
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->json([
                 'success' => false,
                 'error' => 'Грешка при запазване: ' . $e->getMessage(),
@@ -162,6 +168,7 @@ class BarberController extends AbstractController
 
     /**
      * Complete appointment (mark as done) - Barber only
+     * @throws Exception
      */
     #[Route('/appointment/{id}/complete', name: 'barber_appointment_complete', methods: ['POST'])]
     public function completeAppointment(int $id): Response
@@ -195,7 +202,7 @@ class BarberController extends AbstractController
 
         // Mark as completed
         $appointment->setStatus('completed');
-        $appointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $appointment->setDateLastUpdate(DateTimeHelper::now());
 
         $this->em->persist($appointment);
         $this->em->flush();
@@ -208,6 +215,7 @@ class BarberController extends AbstractController
 
     /**
      * Cancel appointment - Barber side (notifies client)
+     * @throws Exception
      */
     #[Route('/appointment/{id}/cancel', name: 'barber_appointment_cancel', methods: ['POST'])]
     public function cancelAppointment(int $id): Response
@@ -236,16 +244,16 @@ class BarberController extends AbstractController
         }
 
         // Check if appointment is in the future
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
             return $this->json(['success' => false, 'error' => 'Не можете да отменяте час, който вече е минал.'], 400);
         }
 
         // Cancel appointment - this automatically releases the slot
         $appointment->setStatus('cancelled');
-        $appointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен от бръснар');
-        $appointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $appointment->setDateLastUpdate(DateTimeHelper::now());
 
         $this->em->persist($appointment);
         $this->em->flush();
@@ -280,8 +288,8 @@ class BarberController extends AbstractController
         }
 
         $selectedProcedureIds = $request->request->all('procedures') ?? [];
-        $barberProcedureRepo = $this->em->getRepository(\App\Entity\BarberProcedure::class);
-        $procedureRepo = $this->em->getRepository(\App\Entity\Procedure::class);
+        $barberProcedureRepo = $this->em->getRepository(BarberProcedure::class);
+        $procedureRepo = $this->em->getRepository(Procedure::class);
 
         // Get all existing barber-procedure mappings
         $existingMappings = $barberProcedureRepo->createQueryBuilder('bp')
@@ -312,7 +320,7 @@ class BarberController extends AbstractController
                 unset($existingMap[$procedureId]);
             } else {
                 // New mapping - create it
-                $barberProcedure = new \App\Entity\BarberProcedure();
+                $barberProcedure = new BarberProcedure();
                 $barberProcedure->setBarber($authUser);
                 $barberProcedure->setProcedure($procedure);
                 $barberProcedure->setCanPerform(true);

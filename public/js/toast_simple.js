@@ -108,7 +108,7 @@ function closeToast(toastId) {
 /**
  * Convenience methods for different toast types
  */
-const Toast = {
+let Toast = {
     success: (message, duration) => showToast(message, 'success', duration),
     error: (message, duration) => showToast(message, 'error', duration),
     warning: (message, duration) => showToast(message, 'warning', duration),

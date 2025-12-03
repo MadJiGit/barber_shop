@@ -89,3 +89,76 @@
         margin-bottom: 5px;
     }
 }
+
+/* Sortable Table Headers */
+.sortable-header {
+    color: #333;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.sortable-header:hover {
+    color: #d4a574;
+    text-decoration: none;
+}
+
+.sortable-header.active {
+    color: #d4a574;
+    font-weight: 600;
+}
+
+.sortable-header i {
+    font-size: 0.8em;
+}
+
+/* Column Toggle Dropdown */
+.dropdown-menu {
+    min-width: 200px;
+}
+
+.dropdown-menu .form-check {
+    margin-bottom: 8px;
+}
+
+.dropdown-menu .form-check:last-child {
+    margin-bottom: 0;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #333;
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #d4a574;
+    color: #d4a574;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #d4a574;
+    border-color: #d4a574;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Table improvements */
+.table-sm td, .table-sm th {
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+}

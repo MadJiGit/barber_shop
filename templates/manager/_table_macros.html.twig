@@ -1,0 +1,19 @@
+{# Sortable Table Header Macro #}
+{% macro sortable_header(label, column, currentSort, currentOrder, params) %}
+    {% set isActive = currentSort == column %}
+    {% set nextOrder = (isActive and currentOrder == 'asc') ? 'desc' : 'asc' %}
+    {% set url_params = params|merge({sort: column, order: nextOrder, page: 1}) %}
+
+    <a href="?{{ url_params|url_encode }}" class="sortable-header {{ isActive ? 'active' : '' }}">
+        {{ label }}
+        {% if isActive %}
+            {% if currentOrder == 'asc' %}
+                <i class="fas fa-sort-up"></i>
+            {% else %}
+                <i class="fas fa-sort-down"></i>
+            {% endif %}
+        {% else %}
+            <i class="fas fa-sort text-muted"></i>
+        {% endif %}
+    </a>
+{% endmacro %}

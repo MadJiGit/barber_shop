@@ -8,7 +8,9 @@ use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
 use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -111,7 +113,7 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo 'failed : '.$e->getMessage();
         }
 
@@ -122,7 +124,7 @@ class AdminController extends AbstractController
             $user->setNickName($form->get('nick_name')->getData());
             $user->setPhone($form->get('phone')->getData());
             $user->setRoles($temp_roles);
-            $user->setDateLastUpdate(new \DateTime('now'));
+            $user->setDateLastUpdate(new DateTime('now'));
 
             $this->em->persist($user);
             $this->em->flush();
@@ -207,7 +209,7 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFlash('error', 'Грешка: ' . $e->getMessage());
         }
 
@@ -252,7 +254,7 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addFlash('error', 'Грешка: ' . $e->getMessage());
         }
 

@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\BarberProcedureRepository;
+use App\Service\DateTimeHelper;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 #[ORM\Entity(repositoryClass: BarberProcedureRepository::class)]
 #[ORM\Table(name: 'barber_procedure')]
@@ -28,14 +31,17 @@ class BarberProcedure
     private bool $can_perform = true;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $valid_from = null;
+    private ?DateTimeImmutable $valid_from = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $valid_until = null;
+    private ?DateTimeImmutable $valid_until = null;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->valid_from = new \DateTimeImmutable('now');
+        $this->valid_from = DateTimeHelper::now();
     }
 
     public function getId(): ?int
@@ -79,24 +85,24 @@ class BarberProcedure
         return $this;
     }
 
-    public function getValidFrom(): ?\DateTimeImmutable
+    public function getValidFrom(): ?DateTimeImmutable
     {
         return $this->valid_from;
     }
 
-    public function setValidFrom(\DateTimeImmutable $valid_from): static
+    public function setValidFrom(DateTimeImmutable $valid_from): static
     {
         $this->valid_from = $valid_from;
 
         return $this;
     }
 
-    public function getValidUntil(): ?\DateTimeImmutable
+    public function getValidUntil(): ?DateTimeImmutable
     {
         return $this->valid_until;
     }
 
-    public function setValidUntil(?\DateTimeImmutable $valid_until): static
+    public function setValidUntil(?DateTimeImmutable $valid_until): static
     {
         $this->valid_until = $valid_until;
 
@@ -105,10 +111,11 @@ class BarberProcedure
 
     /**
      * Check if this barber-procedure mapping is currently valid
+     * @throws Exception
      */
     public function isCurrentlyValid(): bool
     {
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
 
         if (!$this->can_perform) {
             return false;
@@ -123,5 +130,16 @@ class BarberProcedure
         }
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('%s - %s',
+            $this->barber?->getEmail() ?? 'N/A',
+            $this->procedure?->getType() ?? 'N/A'
+        );
     }
 }

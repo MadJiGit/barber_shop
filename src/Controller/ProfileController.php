@@ -78,7 +78,7 @@ class ProfileController extends AbstractController
             $user->setLastName($lastName);
             $user->setNickName($nickName);
             $user->setPhone($phone);
-            $user->setDateLastUpdate(new \DateTimeImmutable('now'));
+            $user->setDateLastUpdate(DateTimeHelper::now());
 
             $this->em->persist($user);
             $this->em->flush();

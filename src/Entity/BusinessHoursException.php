@@ -43,7 +43,7 @@ class BusinessHoursException
 
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable('now');
+        $this->created_at = DateTimeHelper::now();
     }
 
     public function getId(): ?int

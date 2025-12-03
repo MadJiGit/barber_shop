@@ -114,7 +114,7 @@ class AppointmentValidator
      */
     public function isInPast(DateTimeImmutable $appointmentTime): bool
     {
-        $now = new DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         return $appointmentTime < $now;
     }
 

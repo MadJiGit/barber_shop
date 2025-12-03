@@ -43,7 +43,7 @@ class ManagerController extends AbstractController
     #[Route('/dashboard', name: 'manager_dashboard')]
     public function dashboard(): Response
     {
-        $today = new \DateTimeImmutable('today');
+        $today = DateTimeHelper::now();
         $tomorrow = $today->modify('+1 day');
         $startOfWeek = $today->modify('monday this week');
         $endOfWeek = $today->modify('sunday this week')->modify('+1 day');
@@ -93,7 +93,7 @@ class ManagerController extends AbstractController
     }
 
     /**
-     * List all appointments with filters
+     * List all appointments with filters, sorting, and pagination
      */
     #[Route('/appointments', name: 'manager_appointments')]
     public function appointments(Request $request): Response
@@ -103,6 +103,15 @@ class ManagerController extends AbstractController
         $filterBarberId = $request->query->get('barber');
         $filterStatus = $request->query->get('status');
         $filterClientSearch = $request->query->get('client');
+
+        // Get sorting parameters
+        $sortBy = $request->query->get('sort', 'date'); // default: date
+        $sortOrder = $request->query->get('order', 'desc'); // default: desc (newest first)
+
+        // Get pagination parameters
+        $page = max(1, (int) $request->query->get('page', 1));
+        $perPage = (int) $request->query->get('perPage', 20); // default: 20
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 20; // validate
 
         // Parse date filter
         $startDate = null;
@@ -141,19 +150,60 @@ class ManagerController extends AbstractController
             });
         }
 
-        // Sort by date (newest first)
-        usort($appointments, fn($a, $b) => $b->getDate() <=> $a->getDate());
+        // Sorting logic
+        $validSortFields = ['id', 'date', 'date_added', 'date_last_update'];
+        if (!in_array($sortBy, $validSortFields)) {
+            $sortBy = 'date';
+        }
+        $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
+
+        usort($appointments, function($a, $b) use ($sortBy, $sortOrder) {
+            $valueA = match($sortBy) {
+                'id' => $a->getId(),
+                'date' => $a->getDate(),
+                'date_added' => $a->getDateAdded(),
+                'date_last_update' => $a->getDateLastUpdate(),
+                default => $a->getDate(),
+            };
+
+            $valueB = match($sortBy) {
+                'id' => $b->getId(),
+                'date' => $b->getDate(),
+                'date_added' => $b->getDateAdded(),
+                'date_last_update' => $b->getDateLastUpdate(),
+                default => $b->getDate(),
+            };
+
+            $comparison = $valueA <=> $valueB;
+            return $sortOrder === 'asc' ? $comparison : -$comparison;
+        });
+
+        // Pagination
+        $totalAppointments = count($appointments);
+        $totalPages = (int) ceil($totalAppointments / $perPage);
+        $page = min($page, max(1, $totalPages)); // ensure page is within bounds
+
+        $offset = ($page - 1) * $perPage;
+        $paginatedAppointments = array_slice($appointments, $offset, $perPage);
 
         // Get all barbers for filter dropdown
         $allBarbers = $this->userRepository->getAllBarbers();
 
         return $this->render('manager/appointments.html.twig', [
-            'appointments' => $appointments,
+            'appointments' => $paginatedAppointments,
             'allBarbers' => $allBarbers,
             'filterDate' => $filterDate,
             'filterBarberId' => $filterBarberId,
             'filterStatus' => $filterStatus,
             'filterClientSearch' => $filterClientSearch,
+            // Sorting
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
+            // Pagination
+            'currentPage' => $page,
+            'perPage' => $perPage,
+            'totalAppointments' => $totalAppointments,
+            'totalPages' => $totalPages,
         ]);
     }
 
@@ -206,7 +256,7 @@ class ManagerController extends AbstractController
         }
 
         // BLOCK EDITING OF PAST APPOINTMENTS - Check if ORIGINAL appointment is in the past
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         if ($oldAppointment->getDate() < $now) {
             return $this->json([
                 'success' => false,
@@ -263,9 +313,9 @@ class ManagerController extends AbstractController
         // AUDIT TRAIL: Cancel old appointment and create new one
         // Step 1: Cancel the old appointment
         $oldAppointment->setStatus('cancelled');
-        $oldAppointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $oldAppointment->setDateCanceled(DateTimeHelper::now());
         $oldAppointment->setCancellationReason('Презаписан час от мениджър');
-        $oldAppointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $oldAppointment->setDateLastUpdate(DateTimeHelper::now());
         $this->em->persist($oldAppointment);
 
         // Step 2: Create NEW appointment with new details
@@ -277,8 +327,8 @@ class ManagerController extends AbstractController
         $newAppointment->setDuration($duration);
         $newAppointment->setStatus($data['status'] ?? 'confirmed');
         $newAppointment->setNotes($data['notes'] ?? 'Презаписан от час #' . $oldAppointment->getId());
-        $newAppointment->setDateAdded(new \DateTimeImmutable('now'));
-        $newAppointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $newAppointment->setDateAdded(DateTimeHelper::now());
+        $newAppointment->setDateLastUpdate(DateTimeHelper::now());
 
         $this->em->persist($newAppointment);
         $this->em->flush();
@@ -310,9 +360,9 @@ class ManagerController extends AbstractController
         $reason = $data['reason'] ?? 'Отменен от мениджър';
 
         $appointment->setStatus('cancelled');
-        $appointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason($reason);
-        $appointment->setDateLastUpdate(new \DateTimeImmutable('now'));
+        $appointment->setDateLastUpdate(DateTimeHelper::now());
 
         $this->em->persist($appointment);
         $this->em->flush();

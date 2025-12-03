@@ -3,9 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Appointments;
+use App\Entity\User;
+use App\Service\DateTimeHelper;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -23,14 +27,12 @@ class AppointmentsRepository extends ServiceEntityRepository
 
     public function getAllAppointments(): array
     {
-        $res = $this->entityManager->createQueryBuilder()
+        return $this->entityManager->createQueryBuilder()
                 ->select('ub.nick_name')
                 ->from(Appointments::class, 'a')
                 ->leftJoin('a.barber', 'ub')
                 ->getQuery()
                 ->getArrayResult();
-
-        return $res;
     }
 
     /**
@@ -113,23 +115,13 @@ class AppointmentsRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find client by ID (unused - should use UserRepository instead)
-     * @deprecated Use UserRepository::findOneById() instead
-     */
-    public function findClientById(int $id)
-    {
-        // TODO: Remove this method - use UserRepository instead
-        return null;
-    }
-
-    /**
      * Find appointments for a barber on a specific date
      *
-     * @param \App\Entity\User $barber
-     * @param \DateTimeImmutable $date
+     * @param User $barber
+     * @param DateTimeImmutable $date
      * @return Appointments[]
      */
-    public function findByBarberAndDate($barber, \DateTimeImmutable $date): array
+    public function findByBarberAndDate(User $barber, DateTimeImmutable $date): array
     {
         $startOfDay = $date->setTime(0, 0, 0);
         $endOfDay = $date->setTime(23, 59, 59);
@@ -151,11 +143,11 @@ class AppointmentsRepository extends ServiceEntityRepository
     /**
      * Find appointments for a client on a specific date
      *
-     * @param \App\Entity\User $client
-     * @param \DateTimeImmutable $date
+     * @param User $client
+     * @param DateTimeImmutable $date
      * @return Appointments[]
      */
-    public function findByClientAndDate($client, \DateTimeImmutable $date): array
+    public function findByClientAndDate(User $client, DateTimeImmutable $date): array
     {
         $startOfDay = $date->setTime(0, 0, 0);
         $endOfDay = $date->setTime(23, 59, 59);
@@ -196,11 +188,12 @@ class AppointmentsRepository extends ServiceEntityRepository
      *
      * @param string $date Date in Y-m-d format
      * @return array [barberId => ['09:00', '10:00', ...]]
+     * @throws Exception
      */
     public function getOccupiedSlotsByDate(string $date): array
     {
-        $startOfDay = new \DateTimeImmutable($date . ' 00:00:00');
-        $endOfDay = new \DateTimeImmutable($date . ' 23:59:59');
+        $startOfDay = new DateTimeImmutable($date . ' 00:00:00');
+        $endOfDay = new DateTimeImmutable($date . ' 23:59:59');
 
         // Get appointments for this date
         $appointments = $this->createQueryBuilder('a')
@@ -242,7 +235,7 @@ class AppointmentsRepository extends ServiceEntityRepository
         // Also get excluded slots from barber_schedule_exception
         $em = $this->getEntityManager();
         $exceptions = $em->getRepository(\App\Entity\BarberScheduleException::class)
-            ->findBy(['date' => new \DateTimeImmutable($date)]);
+            ->findBy(['date' => new DateTimeImmutable($date)]);
 
         foreach ($exceptions as $exception) {
             $barberId = $exception->getBarber()->getId();
@@ -276,13 +269,14 @@ class AppointmentsRepository extends ServiceEntityRepository
     /**
      * Find all upcoming appointments for a barber
      *
-     * @param \App\Entity\User $barber
+     * @param User $barber
      * @param bool $includeToday Include today's appointments
      * @return Appointments[]
+     * @throws Exception
      */
-    public function findUpcomingAppointmentsByBarber($barber, bool $includeToday = true): array
+    public function findUpcomingAppointmentsByBarber(User $barber, bool $includeToday = true): array
     {
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         $startDate = $includeToday ? $now->setTime(0, 0, 0) : $now;
 
         return $this->createQueryBuilder('a')
@@ -300,17 +294,17 @@ class AppointmentsRepository extends ServiceEntityRepository
     /**
      * Find all appointments for a barber within date range
      *
-     * @param \App\Entity\User $barber
-     * @param \DateTimeImmutable|null $startDate
-     * @param \DateTimeImmutable|null $endDate
+     * @param User $barber
+     * @param DateTimeImmutable|null $startDate
+     * @param DateTimeImmutable|null $endDate
      * @param string|null $status Filter by status (confirmed, cancelled, completed)
      * @return Appointments[]
      */
     public function findBarberAppointments(
-        $barber,
-        ?\DateTimeImmutable $startDate = null,
-        ?\DateTimeImmutable $endDate = null,
-        ?string $status = null
+        ?User              $barber = null,
+        ?DateTimeImmutable $startDate = null,
+        ?DateTimeImmutable $endDate = null,
+        ?string            $status = null
     ): array {
         $qb = $this->createQueryBuilder('a');
 

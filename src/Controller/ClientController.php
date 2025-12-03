@@ -219,7 +219,7 @@ class ClientController extends AbstractController
         }
 
         // Check if appointment is in the future
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
             $this->addFlash('error', 'Не можете да отменяте час, който вече е минал.');
             $tab = $request->request->get('tab', 'profile');
@@ -235,7 +235,7 @@ class ClientController extends AbstractController
 
         // Cancel appointment - this automatically releases the slot
         $appointment->setStatus('cancelled');
-        $appointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен от клиент');
 
         $this->em->persist($appointment);
@@ -269,7 +269,7 @@ class ClientController extends AbstractController
         }
 
         // Check if appointment is in the future
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
             $this->addFlash('error', 'Не можете да променяте час, който вече е минал.');
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
@@ -283,7 +283,7 @@ class ClientController extends AbstractController
 
         // Cancel old appointment first
         $appointment->setStatus('cancelled');
-        $appointment->setDateCanceled(new \DateTimeImmutable('now'));
+        $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен за промяна на час');
         $this->em->persist($appointment);
         $this->em->flush();

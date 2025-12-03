@@ -5,8 +5,10 @@ namespace App\Repository;
 use App\Entity\BarberProcedure;
 use App\Entity\Procedure;
 use App\Entity\User;
+use App\Service\DateTimeHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @extends ServiceEntityRepository<BarberProcedure>
@@ -23,10 +25,11 @@ class BarberProcedureRepository extends ServiceEntityRepository
      *
      * @param User $barber
      * @return Procedure[]
+     * @throws Exception
      */
     public function findActiveProceduresForBarber(User $barber): array
     {
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
 
         $qb = $this->createQueryBuilder('bp')
             ->select('bp, p')
@@ -51,10 +54,11 @@ class BarberProcedureRepository extends ServiceEntityRepository
      *
      * @param Procedure $procedure
      * @return User[]
+     * @throws Exception
      */
     public function findBarbersForProcedure(Procedure $procedure): array
     {
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
 
         $qb = $this->createQueryBuilder('bp')
             ->select('bp, u')
@@ -82,10 +86,11 @@ class BarberProcedureRepository extends ServiceEntityRepository
      * @param User $barber
      * @param Procedure $procedure
      * @return bool
+     * @throws Exception
      */
     public function canBarberPerformProcedure(User $barber, Procedure $procedure): bool
     {
-        $now = new \DateTimeImmutable('now');
+        $now = DateTimeHelper::now();
 
         $qb = $this->createQueryBuilder('bp')
             ->select('COUNT(bp.id)')

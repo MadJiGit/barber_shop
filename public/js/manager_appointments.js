@@ -165,7 +165,7 @@ function loadProceduresForBarber(barberId, selectedProcedureId = null) {
                 option.value = proc.id;
                 // Show both master and junior prices/duration
                 option.textContent = `${proc.type} (Master: ${proc.duration_master}мин/${proc.price_master}лв, Junior: ${proc.duration_junior}мин/${proc.price_junior}лв)`;
-                if (proc.id == selectedProcedureId) {
+                if (proc.id === selectedProcedureId) {
                     option.selected = true;
                 }
                 select.appendChild(option);
@@ -276,3 +276,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+/**
+ * Column Visibility Management
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // Load column visibility from localStorage
+    loadColumnVisibility();
+
+    // Attach toggle event listeners
+    document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const column = this.dataset.column;
+            const isVisible = this.checked;
+            toggleColumn(column, isVisible);
+            saveColumnVisibility();
+        });
+    });
+});
+
+function toggleColumn(columnName, isVisible) {
+    const headerCells = document.querySelectorAll(`th.col-${columnName}`);
+    const bodyCells = document.querySelectorAll(`td.col-${columnName}`);
+
+    const displayValue = isVisible ? '' : 'none';
+
+    headerCells.forEach(cell => cell.style.display = displayValue);
+    bodyCells.forEach(cell => cell.style.display = displayValue);
+}
+
+function saveColumnVisibility() {
+    const visibility = {};
+    document.querySelectorAll('.column-toggle').forEach(checkbox => {
+        visibility[checkbox.dataset.column] = checkbox.checked;
+    });
+    localStorage.setItem('managerAppointmentsColumns', JSON.stringify(visibility));
+}
+
+function loadColumnVisibility() {
+    const saved = localStorage.getItem('managerAppointmentsColumns');
+    if (!saved) return;
+
+    try {
+        const visibility = JSON.parse(saved);
+        Object.entries(visibility).forEach(([column, isVisible]) => {
+            const checkbox = document.querySelector(`.column-toggle[data-column="${column}"]`);
+            if (checkbox) {
+                checkbox.checked = isVisible;
+                toggleColumn(column, isVisible);
+            }
+        });
+    } catch (e) {
+        console.error('Error loading column visibility:', e);
+    }
+}
+
+/**
+ * Change per-page value and reload
+ */
+function changePerPage(value) {
+    const url = new URL(window.location);
+    url.searchParams.set('perPage', value);
+    url.searchParams.set('page', '1'); // Reset to first page
+    window.location.href = url.toString();
+}

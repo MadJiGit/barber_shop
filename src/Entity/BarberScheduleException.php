@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\BarberScheduleExceptionRepository;
+use App\Service\DateTimeHelper;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 #[ORM\Entity(repositoryClass: BarberScheduleExceptionRepository::class)]
 #[ORM\Table(name: 'barber_schedule_exception')]
@@ -21,16 +24,16 @@ class BarberScheduleException
     private ?User $barber = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $date = null;
+    private ?DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $is_available = true;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $start_time = null;
+    private ?DateTimeInterface $start_time = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $end_time = null;
+    private ?DateTimeInterface $end_time = null;
 
     /**
      * Array of excluded time slots in HH:MM format
@@ -44,15 +47,18 @@ class BarberScheduleException
     private ?string $reason = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?DateTimeInterface $created_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'created_by', referencedColumnName: 'id', nullable: true)]
     private ?User $created_by = null;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable('now');
+        $this->created_at = DateTimeHelper::now();
     }
 
     public function getId(): ?int
@@ -72,12 +78,12 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(DateTimeInterface $date): static
     {
         $this->date = $date;
 
@@ -96,24 +102,24 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getStartTime(): ?\DateTimeInterface
+    public function getStartTime(): ?DateTimeInterface
     {
         return $this->start_time;
     }
 
-    public function setStartTime(?\DateTimeInterface $start_time): static
+    public function setStartTime(?DateTimeInterface $start_time): static
     {
         $this->start_time = $start_time;
 
         return $this;
     }
 
-    public function getEndTime(): ?\DateTimeInterface
+    public function getEndTime(): ?DateTimeInterface
     {
         return $this->end_time;
     }
 
-    public function setEndTime(?\DateTimeInterface $end_time): static
+    public function setEndTime(?DateTimeInterface $end_time): static
     {
         $this->end_time = $end_time;
 
@@ -156,7 +162,7 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->created_at;
     }
@@ -199,5 +205,16 @@ class BarberScheduleException
             && count($this->excluded_slots) > 0
             && $this->start_time === null
             && $this->end_time === null;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('%s - %s',
+            $this->barber?->getEmail() ?? 'N/A',
+            $this->date?->format('d.m.Y') ?? ''
+        );
     }
 }
