@@ -1,0 +1,72 @@
+/* User Profile Form Styling */
+
+.user-profile-section {
+    background: #f8f9fa;
+    min-height: 60vh;
+}
+
+/* Tabs Styling */
+.nav-tabs .nav-link {
+    color: #495057;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin-right: 2px;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #d4a574;
+    background-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+    color: #d4a574;
+    background-color: #fff;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
+.user-profile-card {
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.user-profile-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+}
+
+.user-profile-form .form-group label {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.user-profile-form .form-control:focus {
+    border-color: #d4a574;
+    box-shadow: 0 0 0 0.2rem rgba(212, 165, 116, 0.25);
+}
+
+.user-profile-form .btn-primary {
+    background-color: #d4a574;
+    border-color: #d4a574;
+    transition: all 0.3s ease;
+}
+
+.user-profile-form .btn-primary:hover {
+    background-color: #c8955f;
+    border-color: #c8955f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 165, 116, 0.4);
+}
+
+.profile-actions .btn-outline-primary {
+    color: #d4a574;
+    border-color: #d4a574;
+    transition: all 0.3s ease;
+}
+
+.profile-actions .btn-outline-primary:hover {
+    background-color: #d4a574;
+    border-color: #d4a574;
+    color: #fff;
+}

@@ -1,0 +1,212 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Запазете час - Barber Shop{% endblock %}
+
+{% block body %}
+    <!--? Hero Start -->
+    <div class="slider-area2">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 pt-70 text-center">
+                            <h2>Запазете час</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+    <!--? Appointment Booking Section Start -->
+    <section class="appointment-booking-section section-padding30">
+        <div class="container">
+            {% if user.firstName %}
+                <div class="row justify-content-center">
+                    <div class="col-xl-11 col-lg-12">
+                        <!-- Section Title -->
+                        <div class="section-tittle text-center mb-50">
+                            <h2>Изберете часовия диапазон, в който желаете да запазите своя час.</h2>
+                        </div>
+
+                        <!-- Appointment Form -->
+                        <form id="appointment_form"
+                              method="post"
+                              class="appointment-form-new"
+                              data-turbo="false">
+                            {{ form_row(form._token) }}
+
+                            <!-- Hidden inputs for form submission -->
+                            <input type="hidden" name="barbers" id="selected_barber_id" value=""/>
+                            <input type="hidden" name="procedures" id="selected_procedure_id" value=""/>
+                            <input type="hidden" name="appointment_start" id="selected_appointment_date" value="{{ today }}"/>
+                            <input type="hidden" name="pickedHours" id="pickedHours" value=""/>
+
+                            <div class="row">
+                                <!-- Procedure Selection -->
+                                <div class="col-lg-12 mb-40">
+                                    <div class="form-section text-center">
+                                        <h4 class="form-section-title justify-content-center">
+                                            <i class="fas fa-cut"></i> Изберете услуга
+                                        </h4>
+                                        <div class="procedure-select-wrapper">
+                                            <select name="procedure_select" id="procedure_select" class="custom-select-new" onchange="handleProcedureChange()">
+                                                <option value="">Изберете услуга...</option>
+                                                {% for procedure in procedures %}
+                                                    <option value="{{ procedure.id }}"
+                                                            data-duration-master="{{ procedure.durationMaster }}"
+                                                            data-duration-junior="{{ procedure.durationJunior }}"
+                                                            data-price-master="{{ procedure.priceMaster }}"
+                                                            data-price-junior="{{ procedure.priceJunior }}"
+                                                            data-procedure-name="{{ procedure.type }}">
+                                                        {{ procedure.type }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Date Selection -->
+                                <div class="col-lg-12 mb-40">
+                                    <div class="form-section text-center">
+                                        <h4 class="form-section-title mb-20">Дата:</h4>
+                                        <div class="date-control-wrapper-new">
+                                            <button class="date-arrow-btn-new" type="button" onclick="changeDate(-1)">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                            <input class="date-display-new"
+                                                   type="text"
+                                                   id="calendar_display"
+                                                   value="{{ today }}"
+                                                   autocomplete="off"
+                                            />
+                                            <button class="date-arrow-btn-new" type="button" onclick="changeDate(1)">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                        <div class="day-of-week-display" id="day_of_week">Сряда</div>
+                                    </div>
+                                </div>
+
+                                <!-- Barbers with Time Slots -->
+                                <div class="col-lg-12" id="barbers_container">
+                                    {% if barbers is not empty %}
+                                        {% for barber in barbers %}
+                                            {% set barberOccupiedSlots = occupiedSlots[barber.id] ?? [] %}
+                                            {% set isFullDayOff = '__FULL_DAY_OFF__' in barberOccupiedSlots %}
+                                            {% set workingHours = barberWorkingHours[barber.id] ?? null %}
+
+                                            {# Show barber section only if working today #}
+                                            {% if not isFullDayOff and workingHours %}
+                                            <div class="barber-section" data-barber-id="{{ barber.id }}" data-barber-junior="{{ barber.isBarberJunior ? 'true' : 'false' }}">
+                                                <h3 class="barber-name">
+                                                    {{ barber.barberTitleBg }} {{ barber.firstName }} {{ barber.lastName }}
+                                                    <small class="text-muted">({{ workingHours.start }} - {{ workingHours.end }})</small>
+                                                </h3>
+                                                <div class="time-slots-horizontal">
+                                                    {# Generate time slots based on barber's working hours #}
+                                                    {% set startHour = workingHours.start|split(':')[0]|number_format(0, '', '') %}
+                                                    {% set startMin = workingHours.start|split(':')[1]|number_format(0, '', '') %}
+                                                    {% set endHour = workingHours.end|split(':')[0]|number_format(0, '', '') %}
+                                                    {% set endMin = workingHours.end|split(':')[1]|number_format(0, '', '') %}
+
+                                                    {# Calculate total 30-min slots #}
+                                                    {% set startMinutes = startHour * 60 + startMin %}
+                                                    {% set endMinutes = endHour * 60 + endMin %}
+
+                                                    {% for minutes in range(startMinutes, endMinutes - 30, 30) %}
+                                                        {% set slotHour = (minutes / 60)|round(0, 'floor') %}
+                                                        {% set slotMin = minutes % 60 %}
+                                                        {% set timeSlot = '%02d:%02d'|format(slotHour, slotMin) %}
+
+                                                        {% set isOccupied = timeSlot in barberOccupiedSlots %}
+                                                        {% set isExcluded = timeSlot in workingHours.excludedSlots %}
+
+                                                        {# Check if slot is in the past (only for today) #}
+                                                        {% set isPast = false %}
+                                                        {% if today == 'now'|date('Y-m-d') %}
+                                                            {% set isPast = timeSlot < currentTime %}
+                                                        {% endif %}
+
+                                                        <button type="button"
+                                                                class="time-slot-box {{ (isOccupied or isExcluded or isPast) ? 'booked' : 'available' }}"
+                                                                onclick="selectTimeSlot(this, {{ barber.id }}, '{{ timeSlot }}')"
+                                                                {{ (isOccupied or isExcluded or isPast) ? 'disabled' : '' }}
+                                                                data-time="{{ timeSlot }}"
+                                                                data-barber-id="{{ barber.id }}"
+                                                                data-occupied="{{ (isOccupied or isExcluded or isPast) ? 'true' : 'false' }}"
+                                                                data-minutes="{{ minutes }}">
+                                                            <div class="time-label">{{ timeSlot }}</div>
+                                                            <div class="time-icon">
+                                                                <i class="fas fa-cut"></i>
+                                                            </div>
+                                                        </button>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="col-lg-12 text-center mt-50">
+                                    <button type="submit"
+                                            class="btn btn-primary btn-lg"
+                                            id="submit_btn"
+                                            disabled
+                                            name="submit_appointment"
+                                            value="1">
+                                        <i class="fas fa-check"></i> Запази час
+                                    </button>
+                                    <div class="selection-summary mt-3" id="selection_summary">
+                                        <small class="text-muted">Изберете услуга и час за да продължите</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <!-- User needs to complete profile -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="alert alert-warning">
+                            <h4>Завършете профила си</h4>
+                            <p>Моля, попълнете информацията за профила си преди да запазите час.</p>
+                            <a href="{{ path('profile_edit', {id: user.id}) }}" class="btn btn-primary mt-3">
+                                Завърши профил
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    <!-- Appointment Booking Section End -->
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/client_book_appointment.css') }}">
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if user.firstName %}
+        <script src="{{ asset('js/client_book_appointment.js') }}"></script>
+        <script>
+            // Initialize appointment form with server data
+            initializeAppointmentForm({
+                appointments: {{ appointments|json_encode|raw }},
+                today: '{{ today }}',
+                occupiedSlots: {{ occupiedSlots|json_encode|raw }},
+                barberProcedureMap: {{ barberProcedureMap|json_encode|raw }}
+            });
+        </script>
+    {% endif %}
+{% endblock %}

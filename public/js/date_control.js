@@ -6,6 +6,11 @@ $(document).ready(function(){
     let right_arrow_button = document.getElementById("add_a_day_arrow");
     let calendarElement = document.getElementById('calendar');
 
+    // Exit early if calendar element doesn't exist (not on appointment page)
+    if (!calendarElement) {
+        return;
+    }
+
     let min_date = calendarElement.min;
     let max_date = calendarElement.max;
 

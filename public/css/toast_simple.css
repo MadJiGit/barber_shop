@@ -1,0 +1,196 @@
+/**
+ * Simple Toast Notifications CSS
+ * Pure CSS implementation with animations
+ */
+
+/* Toast container */
+.toast-container-custom {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    pointer-events: none;
+    max-width: 400px;
+}
+
+/* Individual toast item */
+.toast-item {
+    pointer-events: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border-left: 4px solid;
+}
+
+/* Show animation */
+.toast-item.toast-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Hide animation */
+.toast-item.toast-hide {
+    opacity: 0;
+    transform: translateX(400px);
+}
+
+/* Toast icon */
+.toast-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+}
+
+/* Toast content */
+.toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* Toast close button */
+.toast-close {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.toast-close:hover {
+    color: #333;
+}
+
+/* Success variant */
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-success .toast-icon {
+    background-color: #28a745;
+}
+
+.toast-success .toast-title {
+    color: #28a745;
+}
+
+/* Error variant */
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-error .toast-icon {
+    background-color: #dc3545;
+}
+
+.toast-error .toast-title {
+    color: #dc3545;
+}
+
+/* Warning variant */
+.toast-warning {
+    border-left-color: #ffc107;
+}
+
+.toast-warning .toast-icon {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.toast-warning .toast-title {
+    color: #856404;
+}
+
+/* Info variant */
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+.toast-info .toast-icon {
+    background-color: #17a2b8;
+}
+
+.toast-info .toast-title {
+    color: #17a2b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .toast-container-custom {
+        right: 10px;
+        left: 10px;
+        top: 10px;
+        max-width: none;
+    }
+
+    .toast-item {
+        transform: translateY(-100px);
+    }
+
+    .toast-item.toast-show {
+        transform: translateY(0);
+    }
+
+    .toast-item.toast-hide {
+        transform: translateY(-100px);
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .toast-item {
+        background: #2d2d2d;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .toast-title {
+        color: #fff;
+    }
+
+    .toast-message {
+        color: #ccc;
+    }
+
+    .toast-close {
+        color: #999;
+    }
+
+    .toast-close:hover {
+        color: #fff;
+    }
+}

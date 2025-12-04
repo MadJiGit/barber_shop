@@ -1,0 +1,185 @@
+{% extends 'base_iframe.html.twig' %}
+
+{% block title %}График - {{ monthName }} {{ year }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-4">
+        <!-- Calendar Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ path('barber_calendar', {year: prevYear, month: prevMonth}) }}"
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-chevron-left"></i> Предишен
+                    </a>
+                    <h2 class="mb-0">
+                        <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
+                    </h2>
+                    <a href="{{ path('barber_calendar', {year: nextYear, month: nextMonth}) }}"
+                       class="btn btn-outline-secondary">
+                        Следващ <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="calendar-legend d-flex justify-content-center gap-3">
+                    <span class="legend-item">
+                        <span class="legend-box legend-available"></span> Свободен
+                    </span>
+                    <span class="legend-item">
+                        <span class="legend-box legend-partial"></span> Частично зает
+                    </span>
+                    <span class="legend-item">
+                        <span class="legend-box legend-full"></span> Напълно зает
+                    </span>
+                    <span class="legend-item">
+                        <span class="legend-box legend-unavailable"></span> Не работя
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="row">
+            <div class="col-12">
+                <div class="calendar-grid">
+                    <!-- Weekday headers -->
+                    <div class="calendar-header">
+                        <div class="calendar-day-name">Пон</div>
+                        <div class="calendar-day-name">Вто</div>
+                        <div class="calendar-day-name">Сря</div>
+                        <div class="calendar-day-name">Чет</div>
+                        <div class="calendar-day-name">Пет</div>
+                        <div class="calendar-day-name">Съб</div>
+                        <div class="calendar-day-name">Нед</div>
+                    </div>
+
+                    <!-- Calendar days -->
+                    <div class="calendar-body">
+                        {% set firstDayOfWeek = calendar[0].dayOfWeek %}
+                        {% set offset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1 %}
+
+                        {# Empty cells before first day #}
+                        {% if offset > 0 %}
+                            {% for i in 1..offset %}
+                                <div class="calendar-cell empty"></div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {# Actual calendar days #}
+                        {% for day in calendar %}
+                            {% set dateObj = day.date|date('Y-m-d') %}
+                            {% set dayNum = day.date|date('d') %}
+
+                            <div class="calendar-cell calendar-day status-{{ day.status }}"
+                                 data-date="{{ day.date }}"
+                                 data-working="{{ day.working ? 'true' : 'false' }}"
+                                 onclick="openDayModal('{{ day.date }}')">
+                                <div class="day-number">{{ dayNum|number_format(0, '', '') }}</div>
+
+                                {% if day.working %}
+                                    <div class="day-info">
+                                        <small>{{ day.startTime }} - {{ day.endTime }}</small>
+                                    </div>
+                                    {% if day.occupiedSlots > 0 %}
+                                        <div class="day-occupied">
+                                            <i class="fas fa-user"></i> {{ day.occupiedSlots }}/{{ day.totalSlots }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="day-info">
+                                        <small class="text-muted">Почивен</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Schedule Modal -->
+    <div class="modal fade" id="dayScheduleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-day"></i>
+                        <span id="modalDate"></span> - <span id="modalDayName"></span>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalLoading" class="text-center py-5">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                        <p class="mt-3">Зареждане...</p>
+                    </div>
+
+                    <div id="modalContent" style="display: none;">
+                        <!-- Working checkbox -->
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="workingCheckbox" checked>
+                                <label class="custom-control-label" for="workingCheckbox">
+                                    <strong>Работя този ден</strong>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="workingHoursSection">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Начало:</label>
+                                    <input type="time" class="form-control" id="startTime" value="09:00">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Край:</label>
+                                    <input type="time" class="form-control" id="endTime" value="18:00">
+                                </div>
+                            </div>
+
+                            <!-- Time slots -->
+                            <div class="mb-3">
+                                <label><strong>Часове:</strong></label>
+                                <div id="timeSlotsContainer" class="time-slots-grid">
+                                    <!-- Will be populated by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Reason -->
+                            <div class="form-group">
+                                <label>Причина (по желание):</label>
+                                <input type="text" class="form-control" id="scheduleReason"
+                                       placeholder="напр. Лична причина, Отпуск, и т.н.">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отказ</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSchedule()">
+                        <i class="fas fa-save"></i> Запази
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/barber_calendar.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/barber_calendar.js') }}"></script>
+{% endblock %}

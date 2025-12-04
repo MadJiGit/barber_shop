@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\Collection;
+use App\Service\DateTimeHelper;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -14,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -55,29 +58,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         match: true, )]
     private ?string $phone = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_added = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?DateTimeInterface $date_added = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_banned = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeInterface $date_banned = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_last_update = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeInterface $date_last_update = null;
 
-//    //    #[ORM\OneToOne(mappedBy: 'barber', cascade: ['persist', 'remove'])]
-//    //    #[ORM\ManyToMany(targetEntity: Appointments::class, inversedBy: 'id')]
-//    #[ORM\ManyToMany(targetEntity: Appointments::class, mappedBy: 'barber')]
-//    //    #[ORM\Column(Appointments::class)]
-//    //    private ?Appointments $barber = null;
-//    private $barber;
-//
-//    // //    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
-//    #[ORM\ManyToMany(targetEntity: Appointments::class, mappedBy: 'client')]
-//    //    #[ORM\Column(Appointments::class)]
-//    private $client;
-//
-//    private $appointments;
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $is_active = true;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $is_banned = false;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $confirmation_token = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeInterface $token_expires_at = null;
+
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->setDateAdded();
@@ -87,26 +91,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isUserIsAdmin(): bool
     {
-        //        dd(array_values($this->getRoles()));
-        return in_array(Roles::ADMIN->value, $this->getRoles());
+        return in_array('ROLE_ADMIN', $this->getRoles());
     }
 
     public function isUserIsSuperAdmin(): bool
     {
-        return in_array(Roles::SUPER_ADMIN->value, $this->getRoles());
-        //        return in_array(Roles::SUPER_ADMIN->value, $this->getRoles());
+        return in_array('ROLE_SUPER_ADMIN', $this->getRoles());
     }
 
     public function isClient(): bool
     {
-        return in_array(Roles::CLIENT->value, $this->getRoles());
-        //        return in_array(Roles::CLIENT->value, $this->getRoles());
+        return in_array('ROLE_CLIENT', $this->getRoles());
     }
 
     public function isBarber(): bool
     {
-        return in_array(Roles::BARBER->value, $this->getRoles());
-        //        return in_array(Roles::CLIENT->value, $this->getRoles());
+        return in_array('ROLE_BARBER', $this->getRoles())
+            || in_array('ROLE_BARBER_JUNIOR', $this->getRoles())
+            || in_array('ROLE_BARBER_SENIOR', $this->getRoles());
+    }
+
+    public function isBarberSenior(): bool
+    {
+        return in_array('ROLE_BARBER_SENIOR', $this->getRoles());
+    }
+
+    public function isBarberJunior(): bool
+    {
+        return in_array('ROLE_BARBER_JUNIOR', $this->getRoles());
+    }
+
+    public function isManager(): bool
+    {
+        return in_array('ROLE_MANAGER', $this->getRoles());
+    }
+
+    public function isReceptionist(): bool
+    {
+        return in_array('ROLE_RECEPTIONIST', $this->getRoles());
     }
 
     public function getId(): ?int
@@ -141,15 +163,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        //                dd($this->roles);
         return $this->roles;
-        //        if (is_array($this->roles)) {
-        //            return $this->roles;
-        //        } elseif ($this->roles && ($this->roles instanceof Collection)) {
-        //            return $this->roles->toArray();
-        //        } else {
-        //            return [];
-        //        }
     }
 
     /**
@@ -157,15 +171,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRolesObjects(): array
     {
-        //        dd($this->roles);
-        //        return $this->roles;
-        if (is_array($this->roles)) {
-            return $this->roles;
-        } elseif ($this->roles && ($this->roles instanceof Collection)) {
-            return $this->roles->toArray();
-        } else {
-            return [];
-        }
+        return $this->roles;
     }
 
     /**
@@ -173,11 +179,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function setRoles(?array $roles = null): static
     {
-        //        dd($roles);
         if ($roles) {
             $this->addRole($roles);
         } else {
-            $this->addRole([Roles::CLIENT->value]);
+            $this->addRole(['ROLE_CLIENT']);
         }
 
         return $this;
@@ -188,11 +193,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $role;
     }
 
-    //    private function addRole(string $role): void
-    //    {
-    //        $this->roles[] = $role;
-    //    }
-
     /**
      * @see PasswordAuthenticatedUserInterface
      */
@@ -201,7 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
 
@@ -246,7 +246,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->nick_name;
     }
 
-    public function setNickName(string $nick_name): static
+    public function setNickName(?string $nick_name): static
     {
         $this->nick_name = $nick_name;
 
@@ -258,46 +258,52 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->phone;
     }
 
-    public function setPhone(string $phone): static
+    public function setPhone(?string $phone): static
     {
         $this->phone = $phone;
 
         return $this;
     }
 
-    public function getDateAdded(): ?string
+    public function getDateAdded(): ?DateTimeInterface
     {
-        return $this->date_added->format('d-M-Y H:i:s');
+        return $this->date_added;
     }
 
-    public function setDateAdded(): static
+    /**
+     * @throws Exception
+     */
+    public function setDateAdded(?DateTimeInterface $date = null): static
     {
-        $this->date_added = new \DateTime('now');
+        $this->date_added = DateTimeHelper::now();
 
         return $this;
     }
 
-    public function getDateBanned(): ?string
+    public function getDateBanned(): ?DateTimeInterface
     {
-        return $this->date_banned?->format('d-M-Y H:i:s');
+        return $this->date_banned;
     }
 
-    public function setDateBanned(?\DateTimeInterface $date_banned = null): static
+    public function setDateBanned(?DateTimeInterface $date_banned = null): static
     {
         $this->date_banned = $date_banned;
 
         return $this;
     }
 
-    public function getDateLastUpdate(): ?string
+    public function getDateLastUpdate(): ?DateTimeInterface
     {
-        return null == $this->date_last_update ? '' : $this->date_last_update->format('d-M-Y H:i:s');
+        return $this->date_last_update;
     }
 
-    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
+    /**
+     * @throws Exception
+     */
+    public function setDateLastUpdate(?DateTimeInterface $date_last_update = null): static
     {
         if ($date_last_update) {
-            $this->date_last_update = new \DateTime('now');
+            $this->date_last_update = DateTimeHelper::now();
         } else {
             $this->date_last_update = $date_last_update;
         }
@@ -305,45 +311,104 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getBarber(): ?Appointments
+    public function getIsActive(): bool
     {
-        return $this->barber;
+        return $this->is_active;
     }
 
-    public function setBarber(Appointments $barber): static
+    public function setIsActive(bool $is_active): static
     {
-        // set the owning side of the relation if necessary
-        if ($barber->getBarber() !== $this) {
-            $barber->setBarber($this);
-        }
-
-        $this->barber = $barber;
+        $this->is_active = $is_active;
 
         return $this;
     }
 
-    public function getClient(): ?Appointments
+    public function getIsBanned(): bool
     {
-        return $this->client;
+        return $this->is_banned;
     }
 
-    public function setClient(Appointments $client): static
+    /**
+     * @throws Exception
+     */
+    public function setIsBanned(bool $is_banned): static
     {
-        // set the owning side of the relation if necessary
-        if ($client->getClient() !== $this) {
-            $client->setClient($this);
+        $this->is_banned = $is_banned;
+        if ($is_banned) {
+            $this->date_banned = DateTimeHelper::now();
         }
 
-        $this->client = $client;
+        return $this;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmation_token;
+    }
+
+    public function setConfirmationToken(?string $confirmation_token): static
+    {
+        $this->confirmation_token = $confirmation_token;
 
         return $this;
+    }
+
+    public function getTokenExpiresAt(): ?DateTimeInterface
+    {
+        return $this->token_expires_at;
+    }
+
+    public function setTokenExpiresAt(?DateTimeInterface $token_expires_at): static
+    {
+        $this->token_expires_at = $token_expires_at;
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function isTokenExpired(): bool
+    {
+        if (!$this->token_expires_at) {
+            return true;
+        }
+
+        return $this->token_expires_at < DateTimeHelper::now();
+    }
+
+    /**
+     * Get barber title in Bulgarian based on role
+     */
+    public function getBarberTitleBg(): string
+    {
+        if ($this->isBarberSenior()) {
+            return 'Старши Бръснар';
+        }
+        if ($this->isBarberJunior()) {
+            return 'Младши Бръснар';
+        }
+        if ($this->isBarber()) {
+            return 'Бръснар';
+        }
+
+        return '';
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->date_last_update = DateTimeHelper::now();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->email ?? '';
     }
 }
-
-/*
- *             $user->setFirstName($form->get('first_name')->getData());
-            $user->setLastName($form->get('last_name')->getData());
-            $user->setNickName($form->get('nick_name')->getData());
-            $user->setPhone($form->get('phone')->getData());
-            $user->setDateLastUpdate(new \DateTime('now'));
- */

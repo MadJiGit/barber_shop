@@ -2,12 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\Roles;
-use App\Entity\RolesNew;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -28,7 +27,16 @@ class UserFormType extends AbstractType
                 ])
                 ->add('roles', ChoiceType::class, [
                     'label' => 'Права',
-                    'choices' => RolesNew::getRoles(),
+                    'choices' => [
+                        'Super Admin' => 'ROLE_SUPER_ADMIN',
+                        'Admin' => 'ROLE_ADMIN',
+                        'Manager' => 'ROLE_MANAGER',
+                        'Receptionist' => 'ROLE_RECEPTIONIST',
+                        'Senior Barber' => 'ROLE_BARBER_SENIOR',
+                        'Barber' => 'ROLE_BARBER',
+                        'Junior Barber' => 'ROLE_BARBER_JUNIOR',
+                        'Client' => 'ROLE_CLIENT',
+                    ],
                     'multiple' => true,
                     'expanded' => true,
 
@@ -36,23 +44,32 @@ class UserFormType extends AbstractType
             ->add('password', HiddenType::class, ['mapped' => false])
             ->add('first_name', TextType::class,
                 [
-                    'label' => 'Собствено име: ',
+                    'label' => 'Собствено име',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'Вашето име'],
                 ])
             ->add('last_name', TextType::class,
                 [
-                    'label' => 'Фамилно име: ',
+                    'label' => 'Фамилно име',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'Вашата фамилия'],
                 ])
             ->add('nick_name', TextType::class,
                 [
-                    'label' => 'Никнейм: ',
+                    'label' => 'Потребителско име',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'По желание (ако е празно ще използваме вашето име)'],
                 ])
             ->add('phone', TextType::class,
                 [
-                    'label' => 'Телефон: ',
+                    'label' => 'Телефон',
+                    'required' => true,
+                    'attr' => ['placeholder' => '+359 888 123 456'],
                 ])
-            ->add('date_added', TextType::class, [
+            ->add('date_added', DateTimeType::class, [
                 'label' => 'Създаден на: ',
                 'disabled' => true,
+                'widget' => 'single_text',
             ])
             ->add('date_banned', TextType::class, [
                 'label' => 'Премахнат на: ',

@@ -1,0 +1,84 @@
+/**
+ * Barber Appointments Table Styles
+ */
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr.table-primary {
+    background-color: #cfe2ff !important;
+}
+
+.table-hover tbody tr.table-primary:hover {
+    background-color: #b6d4fe !important;
+}
+
+.badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.85em;
+}
+
+/* Phone link styling - make it visible */
+.phone-link {
+    color: #007bff !important;
+    text-decoration: none;
+}
+
+.phone-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline;
+}
+
+/* Actions cell - compact buttons */
+.actions-cell {
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.btn-group-vertical {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.btn-action {
+    padding: 4px 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    min-width: 40px;
+    border-radius: 4px;
+}
+
+.btn-action i {
+    margin: 0;
+}
+
+.text-muted {
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.9em;
+    }
+
+    .btn-action {
+        padding: 3px 6px;
+        font-size: 12px;
+        min-width: 35px;
+    }
+
+    .actions-cell {
+        width: 60px;
+    }
+}

@@ -1,227 +1,98 @@
-/*.date-control {*/
-/*    !*bottom: 0;*!*/
-/*    width: 15%;*/
-/*    display: flex;*/
-/*}*/
+/* ================================================
+   Custom Styles for Barber Shop Application
+   ================================================ */
 
-/*.date-control-label{*/
-/*    width: 150px;*/
-/*    height: 20px;*/
-/*    float: left;*/
-/*    margin: 10% 0 0 45%;*/
-/*}*/
-/*.date-control-input{*/
-/*    margin: 15px;*/
-/*}*/
-
-/*.date-control a {*/
-/*    width: 20px;*/
-/*    height: 20px;*/
-/*    margin: 0 15px;*/
-/*}*/
-
-/*.date-control i {*/
-/*    width: 10%;*/
-/*}*/
-
-.appointment-control {
-    margin: 30px 30px 0 0;
-}
-
-.form-control {
-    margin: 5px 5px 5px 5px;
-}
-
-.form-control:focus {
-    background-color: #f0006c;
-}
-
-.form-control:hover {
-    /*background-color: #d4c200;*/
-    background-color: #f0006c;
-    /*color: #56DB3A;*/
-    transform: translateY(-2px);
-}
-
-.drop_down_menu {
-    margin: 30px 30px 30px 0;
-}
-.barbers_label {
-    margin: 0 0 10px 0;
-}
-
-.procedures_label {
-    margin: 0 0 10px 10px;
-}
-
-.arrow_buttons:hover {
-    /*transform: translate(10px, 5px);*/
-    color: #56DB3A;
-}
-
-.arrow_buttons {
-    color: #56DB3A;
-}
-
-.date-control {
-    display: flex;
-    gap: 10px;
-    /*justify-content: center;*/
-    align-items: center;
-}
-
-.arrow {
-    border: solid black;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 3px;
-}
-
-.right {
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-}
-
-.left {
-    transform: rotate(135deg);
-    -webkit-transform: rotate(135deg);
-}
-
-.styled-table {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-}
-
-.styled-table thead tr {
-    background-color: #009879;
-    color: #ffffff;
-    text-align: center;
-}
-
-.styled-table th,
-.styled-table td {
-    padding: 12px 15px;
-}
-
-.styled-table tbody tr {
-    border-bottom: 1px solid #dddddd;
-}
-
-.styled-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-}
-
-.styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
-}
-
-
-.styled-table tbody tr.active-row {
-    font-weight: bold;
-    color: #009879;
-}
-
-.button {
-    border: 1px solid;
-    color: white;
-    padding: 4px 10px;
-    text-align: center;
+/* Homepage - Thumb Content (Make Appointment Button) */
+.thumb-content-link {
     text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    /*margin: 2px 1px;*/
-    transition: background-color 0.3s ease,
-    transform 0.3s ease,
-    border-color 0.3s ease;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.thumb-content-box:hover .thumb-content {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.thumb-content {
     cursor: pointer;
-    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-.warning_btn {
-    background-color: #ffeb3b;
-    border-color: #fbc02d;
-    color: black;
+/* Guest Booking Section */
+.appointment-info-box {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
 }
 
-.warning_btn:hover {
-    background-color: #d4c200;
-    transform: translateY(-2px);
+.info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
 }
 
-.default_btn {
-    background-color: #e7e7e7;
-    border-color: #bdbdbd;
-    color: black;
+.info-item i {
+    font-size: 24px;
+    color: #d4a373;
+    margin-right: 20px;
+    min-width: 30px;
 }
 
-.default_btn:hover {
-    background-color: #d6d6d6;
-    transform: translateY(-2px);
+.info-item p {
+    margin: 0;
+    font-size: 16px;
 }
 
-.info_btn {
-    background-color: #2196F3;
-    border-color: #1976D2;
+.guest-booking-placeholder {
+    background: #fff;
+    padding: 60px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1);
 }
 
-.info_btn:hover {
-    background-color: #0b7dda;
-    transform: translateY(-2px);
+.placeholder-content i {
+    color: #d4a373;
 }
 
-.success_btn {
-    /*background-color: #4CAF50;*/
-    background-color: #009879;
-    border-color: #388E3C;
+/* Pricing Features */
+.pricing-features {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
 }
 
-.success_btn:hover {
-    background-color: #45a049;
-    transform: translateY(-2px);
+.pricing-features li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
 }
 
-.danger_btn {
-    background-color: #f44336;
-    border-color: #d32f2f;
+.pricing-features li:before {
+    content: " ";
+    color: #d4a373;
+    font-weight: bold;
+    margin-right: 10px;
 }
 
-.danger_btn:hover {
-    background-color: #da190b;
-    transform: translateY(-2px);
+/* User Info in Header */
+.user-info {
+    color: #fff;
+    font-size: 14px;
 }
 
-/*.menu_buttons {*/
-/*    display: flex;*/
-/*    gap: 0.625%;*/
-/*}*/
+/* Mobile responsive */
+@media (max-width: 991px) {
+    .user-info {
+        display: none; /* Hide on mobile to save space */
+    }
+}
 
-/*a {*/
-/*    flex: 1;*/
-/*    text-decoration: none;*/
-/*    outline-color: transparent;*/
-/*    text-align: center;*/
-/*    line-height: 3;*/
-/*    color: black;*/
-/*}*/
-
-/*a:link,*/
-/*a:visited,*/
-/*a:focus {*/
-/*    background: palegoldenrod;*/
-/*    color: black;*/
-/*}*/
-
-/*a:hover {*/
-/*    background: orange;*/
-/*}*/
-
-/*a:active {*/
-/*    background: darkred;*/
-/*    color: white;*/
-/*}*/
+/* ================================================
+   Add more custom styles below
+   ================================================ */

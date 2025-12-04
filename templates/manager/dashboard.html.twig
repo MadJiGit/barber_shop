@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block body %}
+<!--? Hero Start -->
+<div class="slider-area2">
+    <div class="slider-height2 d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap hero-cap2 pt-70 text-center">
+                        <h2>Manager Dashboard</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="fas fa-chart-line"></i> Manager Dashboard</h1>
+            <p class="text-muted">Преглед на резервации и операции</p>
+        </div>
+    </div>
+
+    {# Navigation #}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <a href="{{ path('manager_dashboard') }}" class="btn btn-primary active">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{{ path('manager_appointments') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-alt"></i> Всички резервации
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Stats Cards #}
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-calendar-day"></i> Днес</h5>
+                    <h2>{{ todayStats.total }}</h2>
+                    <p class="mb-0">
+                        <small>
+                            Потвърдени: {{ todayStats.confirmed }} |
+                            Завършени: {{ todayStats.completed }}
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-calendar-week"></i> Тази седмица</h5>
+                    <h2>{{ weekCount }}</h2>
+                    <p class="mb-0"><small>Общо резервации</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-calendar"></i> Този месец</h5>
+                    <h2>{{ monthCount }}</h2>
+                    <p class="mb-0"><small>Общо резервации</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-users"></i> Барбъри</h5>
+                    <h2>{{ barbers|length }}</h2>
+                    <p class="mb-0"><small>Активни служители</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Today's Appointments #}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-clock"></i> Днешни резервации ({{ today|date('d.m.Y') }})</h4>
+                </div>
+                <div class="card-body">
+                    {% if todayAppointments is empty %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Няма резервации за днес.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Час</th>
+                                        <th>Клиент</th>
+                                        <th>Барбър</th>
+                                        <th>Услуга</th>
+                                        <th>Продължителност</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in todayAppointments %}
+                                        <tr>
+                                            <td><strong>{{ appointment.date|date('H:i') }}</strong></td>
+                                            <td>
+                                                {{ appointment.client.firstName }} {{ appointment.client.lastName }}
+                                                {% if appointment.client.phone %}
+                                                    <br><small class="text-muted">
+                                                        <i class="fas fa-phone"></i> {{ appointment.client.phone }}
+                                                    </small>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ appointment.barber.firstName }} {{ appointment.barber.lastName }}</td>
+                                            <td>{{ appointment.procedureType.type }}</td>
+                                            <td>{{ appointment.duration }} мин</td>
+                                            <td>
+                                                {% if appointment.status == 'confirmed' %}
+                                                    <span class="badge badge-success">Потвърден</span>
+                                                {% elseif appointment.status == 'completed' %}
+                                                    <span class="badge badge-secondary">Завършен</span>
+                                                {% elseif appointment.status == 'cancelled' %}
+                                                    <span class="badge badge-danger">Отменен</span>
+                                                {% else %}
+                                                    <span class="badge badge-warning">{{ appointment.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ path('manager_appointments') }}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Виж всички резервации
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

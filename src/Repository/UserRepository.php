@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Roles;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,21 +32,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
-
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
 
     public function getAllRolesByRolesName(string $role): array
     {
@@ -101,28 +85,57 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getAllBarbers(): array
     {
-        $barber = Roles::BARBER->value;
+        $barber = 'ROLE_BARBER';
 
         return $this->createQueryBuilder('u')
-            ->select('u.id',
-                'u.email',
-                'u.roles',
-                'u.first_name',
-                'u.last_name',
-                'u.nick_name',
-                'u.phone',
-                'u.date_added',
-                'u.date_banned',
-                'u.date_last_update')
             ->where('u.roles like :role')
             ->setParameter('role', '%'.$barber.'%')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
+    }
+
+    /**
+     * Get all barbers sorted by seniority (SENIOR -> BARBER -> JUNIOR)
+     *
+     * @return User[]
+     */
+    public function getAllBarbersSortedBySeniority(): array
+    {
+        $barbers = $this->getAllBarbers();
+
+        // Sort barbers by role hierarchy
+        usort($barbers, function($a, $b) {
+            $roleA = $this->getBarberSeniorityLevel($a);
+            $roleB = $this->getBarberSeniorityLevel($b);
+            return $roleA - $roleB;
+        });
+
+        return $barbers;
+    }
+
+    /**
+     * Get seniority level for sorting (lower number = higher seniority)
+     */
+    private function getBarberSeniorityLevel(User $barber): int
+    {
+        $roles = $barber->getRoles();
+
+        if (in_array('ROLE_BARBER_SENIOR', $roles)) {
+            return 1; // Highest seniority
+        }
+        if (in_array('ROLE_BARBER', $roles)) {
+            return 2; // Middle seniority
+        }
+        if (in_array('ROLE_BARBER_JUNIOR', $roles)) {
+            return 3; // Lowest seniority
+        }
+
+        return 4; // Unknown/other
     }
 
     public function getAllClients(): array
     {
-        $role = Roles::CLIENT->value;
+        $role = 'ROLE_CLIENT';
 
         if (true) {
             return $this->createQueryBuilder('u')
@@ -157,14 +170,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $user = $this->findOneById($id);
 
-        return in_array(Roles::ADMIN, $user->getRoles());
+        return in_array('ROLE_ADMIN', $user->getRoles());
     }
 
     public function isUserIsSuperAdmin($id): bool
     {
         $user = $this->findOneById($id);
 
-        return in_array(Roles::SUPER_ADMIN, $user->getRoles());
+        return in_array('ROLE_SUPER_ADMIN', $user->getRoles());
     }
 
     public function findOneByEmail($email): ?User
@@ -204,13 +217,31 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 ->getQuery();
             //                ->getOneOrNullResult();
 
-            if (true) {
-                echo '<pre>'.var_export($a->getSQL(), true).'</pre>';
-                exit;
-            } else {
-                //                        return $a->getFirstResult();
-                return $a->getOneOrNullResult();
-            }
+            return $a->getOneOrNullResult();
         }
+    }
+
+    /**
+     * Find all appointments for a given user ID
+     * Includes past, future, and cancelled appointments
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function findAppointmentsByUserId(int $userId): array
+    {
+        $em = $this->getEntityManager();
+
+        return $em->createQueryBuilder()
+            ->select('a, b, c, p')
+            ->from('App\Entity\Appointments', 'a')
+            ->leftJoin('a.barber', 'b')
+            ->leftJoin('a.client', 'c')
+            ->leftJoin('a.procedure_type', 'p')
+            ->where('c.id = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('a.date', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

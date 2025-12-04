@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Procedure;
-use App\Entity\Roles;
 use App\Entity\User;
 use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
 use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,16 +29,16 @@ class AdminController extends AbstractController
         $this->procedureRepository = $procedureRepository;
     }
 
-    #[Route('/admin_menu/{id}', name: 'admin_menu')]
+    #[Route('/legacy_admin_menu/{id}', name: 'legacy_admin_menu')]
     public function adminUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
-        if (!in_array(Roles::SUPER_ADMIN->value, $user->getRoles())) {
+        if (!in_array('ROLE_SUPER_ADMIN', $user->getRoles())) {
             // TODO exceptions need here
             return $this->redirectToRoute('user', ['username' => $user->getEmail()]);
         }
 
-        return $this->render('admin/admin_menu.html.twig', [
+        return $this->render('admin/dashboard.html.twig', [
             'user' => $user,
         ]);
     }
@@ -45,7 +46,7 @@ class AdminController extends AbstractController
     #[Route('/view_all_clients', name: 'view_all_clients')]
     public function listAllClients(Request $request): Response
     {
-        $allClients = $this->userRepository->getAllRolesByRolesName(Roles::CLIENT->value);
+        $allClients = $this->userRepository->getAllRolesByRolesName('ROLE_CLIENT');
         $clients_list = [];
 
         $header_row = array_keys($allClients[0]);
@@ -55,7 +56,7 @@ class AdminController extends AbstractController
             $clients_list[] = $client;
         }
 
-        return $this->render('admin/view_all_clients.html.twig', [
+        return $this->render('admin/users.html.twig', [
             'user' => parent::getUser(),
             'fields' => $header_row,
             'clients' => $clients_list,
@@ -77,7 +78,7 @@ class AdminController extends AbstractController
         $header_row = array_keys($all[0]);
         $header_row[] = 'edit';
 
-        return $this->render('admin/view_all_clients.html.twig', [
+        return $this->render('admin/users.html.twig', [
             'user' => parent::getUser(),
             'fields' => $header_row,
             'clients' => $all_list,
@@ -97,14 +98,14 @@ class AdminController extends AbstractController
             $barber_list[] = $barber;
         }
 
-        return $this->render('admin/view_all_clients.html.twig', [
+        return $this->render('admin/users.html.twig', [
             'user' => parent::getUser(),
             'fields' => $header_row,
             'clients' => $barber_list,
         ]);
     }
 
-    #[Route('admin/user_edit/{id}', name: 'admin_user_edit')]
+    #[Route('legacy_admin/user_edit/{id}', name: 'legacy_admin_user_edit')]
     public function editUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
@@ -112,7 +113,7 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo 'failed : '.$e->getMessage();
         }
 
@@ -123,7 +124,7 @@ class AdminController extends AbstractController
             $user->setNickName($form->get('nick_name')->getData());
             $user->setPhone($form->get('phone')->getData());
             $user->setRoles($temp_roles);
-            $user->setDateLastUpdate(new \DateTime('now'));
+            $user->setDateLastUpdate(new DateTime('now'));
 
             $this->em->persist($user);
             $this->em->flush();
@@ -134,7 +135,16 @@ class AdminController extends AbstractController
             );
         }
         $all_user_roles['name'] = $user->getRoles()[0] ?? null;
-        $all_roles = Roles::cases();
+        $all_roles = [
+            'ROLE_SUPER_ADMIN' => 'Super Admin',
+            'ROLE_ADMIN' => 'Admin',
+            'ROLE_MANAGER' => 'Manager',
+            'ROLE_RECEPTIONIST' => 'Receptionist',
+            'ROLE_BARBER_SENIOR' => 'Senior Barber',
+            'ROLE_BARBER' => 'Barber',
+            'ROLE_BARBER_JUNIOR' => 'Junior Barber',
+            'ROLE_CLIENT' => 'Client',
+        ];
 
         return $this->render('admin/user_edit.html.twig', [
             'user' => $user,
@@ -152,111 +162,141 @@ class AdminController extends AbstractController
         return $this->userRepository->findOneBy(['email' => $user->getUserIdentifier()], []);
     }
 
-    public static function bind_params(&$stmt, $params)
+    /**
+     * List all procedures
+     */
+    #[Route('/procedures', name: 'legacy_admin_procedures')]
+    public function listProcedures(Request $request): Response
     {
-        if (empty($params)) {
-            return false;
-        }
-        if (!is_array($params)) {
-            return false;
-        }
-        if (!is_a($stmt, 'mysqli_stmt')) {
-            return false;
-        }
+        $userAuth = parent::getUser();
+        $user = $this->userRepository->findOneById($userAuth->getId());
 
-        $res = call_user_func_array([$stmt, 'bind_param'], self::refValues($params));
-
-        return true;
-    }
-
-    public static function refValues($arr)
-    {
-        if (strnatcmp(phpversion(), '5.3') >= 0) {
-            $refs = [];
-            foreach ($arr as $key => $value) {
-                $refs[$key] = &$arr[$key];
-            }
-
-            return $refs;
+        if (!$user->isUserIsSuperAdmin()) {
+            return $this->redirectToRoute('main');
         }
 
-        return $arr;
+        $procedures = $this->procedureRepository->getAllProcedures();
+        $header_row = '';
+        if (!empty($procedures)) {
+            $header_row = array_keys($procedures[0]);
+            $header_row[] = 'edit';
+            $header_row[] = 'delete';
+            array_shift($header_row);
+        }
+
+        return $this->render('admin/procedures.html.twig', [
+            'procedures' => $procedures,
+            'fields' => $header_row,
+            'user' => $user,
+        ]);
     }
 
-    public function new_test($conn, string $name, int $age, ?string $neshto)
+    /**
+     * Add new procedure
+     */
+    #[Route('/procedure/add', name: 'legacy_admin_procedure_add')]
+    public function addProcedure(Request $request): Response
     {
-        $dbparams = [];
-        $dbparams[0] = '';
-        $dbsubquery = [];
+        $userAuth = parent::getUser();
+        $user = $this->userRepository->findOneById($userAuth->getId());
 
-        $this->add_data_to_query_origin($dbsubquery, $dbparams, 's', 'name = ?', !empty($name) ? 'null' : 'nqma');
-        $this->add_data_to_query_origin($dbsubquery, $dbparams, 'i', 'age = ?', 16);
-        $this->add_data_to_query_origin($dbsubquery, $dbparams, 's', 'neshto = ?', null);
+        if (!$user->isUserIsSuperAdmin()) {
+            return $this->redirectToRoute('main');
+        }
 
-        $all_params = implode(",\n", $dbsubquery);
-        $query = "INSERT INTO barber_shop.test SET \n".$all_params.';';
-        $stmt = $conn->prepare($query);
-        $this->bind_params($stmt, $dbparams);
+        $procedure = new Procedure();
+        $form = $this->createForm(ProcedureFormType::class, $procedure);
 
-        $stmt->execute();
-        $stmt->get_result();
-        $odit_docs_id = $conn->insert_id;
-        $stmt->close();
+        try {
+            $form->handleRequest($request);
+        } catch (Exception $e) {
+            $this->addFlash('error', 'Грешка: ' . $e->getMessage());
+        }
 
-        dd($odit_docs_id);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $procedure->setDateAdded();
+            $procedure->setDateLastUpdate();
+
+            $this->em->persist($procedure);
+            $this->em->flush();
+            $this->em->clear();
+
+            $this->addFlash('success', 'Процедурата е добавена успешно.');
+            return $this->redirectToRoute('admin_procedures');
+        }
+
+        return $this->render('admin/procedure_form.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
     }
 
-    public function add_data_to_query($conn, string $name, int $age, ?string $neshto): void
+    /**
+     * Edit procedure
+     */
+    #[Route('/procedure/{id}/edit', name: 'legacy_admin_procedure_edit')]
+    public function editProcedure(Request $request, int $id): Response
     {
-        //                $query = 'INSERT INTO barber_shop.test (`name`, `age`, `neshto`) values ("pesho_3", 32, "null")';
-        $query = 'INSERT INTO barber_shop.test (`name`, `age`, `neshto`) VALUES (?, ?, ?)';
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('sis', $name, $age, $neshto);
-        $stmt->execute();
-        $stmt->get_result();
-        $odit_docs_id = $conn->insert_id;
-        $stmt->close();
+        $userAuth = parent::getUser();
 
-        dd($odit_docs_id);
+        if (!$userAuth->isUserIsSuperAdmin()) {
+            return $this->redirectToRoute('main');
+        }
+
+        $procedure = $this->procedureRepository->findOneBy(['id' => $id]);
+
+        if (!$procedure) {
+            $this->addFlash('error', 'Процедурата не е намерена.');
+            return $this->redirectToRoute('admin_procedures');
+        }
+
+        $form = $this->createForm(ProcedureFormType::class, $procedure);
+
+        try {
+            $form->handleRequest($request);
+        } catch (Exception $e) {
+            $this->addFlash('error', 'Грешка: ' . $e->getMessage());
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $procedure->setDateLastUpdate();
+            $this->em->persist($procedure);
+            $this->em->flush();
+            $this->em->clear();
+
+            $this->addFlash('success', 'Процедурата е редактирана успешно.');
+            return $this->redirectToRoute('admin_procedures');
+        }
+
+        return $this->render('admin/procedure_form.html.twig', [
+            'user' => $userAuth,
+            'form' => $form->createView(),
+        ]);
     }
 
-    public function select_query($conn)
+    /**
+     * Delete procedure
+     */
+    #[Route('/procedure/{id}/delete', name: 'legacy_admin_procedure_delete')]
+    public function deleteProcedure(Request $request, int $id): Response
     {
-        $query = 'SELECT id FROM barber_shop.test WHERE test.neshto = "neshto1"';
-        $stmt = $conn->prepare($query);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $stmt->close();
+        $userAuth = parent::getUser();
 
-        $t = $res->fetch_assoc();
+        if (!$userAuth->isUserIsSuperAdmin()) {
+            return $this->redirectToRoute('main');
+        }
 
-        if (empty($t['id'])) {
-            //            if(isset($t) && $t['id']){
-            //                echo '<pre>'.var_export($t['id'], true).'</pre>';
-            echo '<pre>'.var_export('tuk', true).'</pre>';
+        $procedure = $this->procedureRepository->findOneBy(['id' => $id]);
+
+        if ($procedure) {
+            $this->em->remove($procedure);
+            $this->em->flush();
+            $this->em->clear();
+            $this->addFlash('success', 'Процедурата е изтрита успешно.');
         } else {
-            echo '<pre>'.var_export('nishto nqma', true).'</pre>';
+            $this->addFlash('error', 'Процедурата не е намерена.');
         }
-        //        while ($t = $res->fetch_assoc()) {
-        //            echo '<pre>'.var_export($t, true).'</pre>';
-        //        }
-    }
 
-    public function add_data_to_query_origin(array &$dbsubquery, array &$dbparams, string $param_type, string $column, ?string $value): void
-    {
-        $dbsubquery[] = $column;
-        $dbparams[0] .= $param_type;
-        $dbparams[] = $value;
-    }
-
-    #[Route('/test', name: 'test')]
-    public function test()
-    {
-        $conn = mysqli_connect('localhost', 'root', 'neam-nervi');
-        //        $this->new_test($conn, 'ivan_2', 66, 'null');
-        //        $this->add_data_to_query();
-        $this->select_query($conn);
-
-        exit;
+        return $this->redirectToRoute('admin_procedures');
     }
 }

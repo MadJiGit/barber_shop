@@ -1,0 +1,38 @@
+{% include 'admin/admin_menu.html.twig' %}
+{% block body %}
+    <h3>MANAGE APPOINTMENT</h3>
+
+    {% block procedures %}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        {% endblock %}
+        <table class="styled-table">
+            <thead>
+            <tr>
+                {% for field in fields %}
+                    <th>{{ field }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for procedure in procedures %}
+            <tr>
+                <td>{{ procedure.type }}</td>
+                <td>{{ procedure.available ? 'Yes' : 'No' }}</td>
+                <td>{{ procedure.price_master }}</td>
+                <td>{{ procedure.price_junior }}</td>
+                <td>{{ procedure.duration_master }}</td>
+                <td>{{ procedure.duration_junior }}</td>
+                <td>{{ procedure.date_added ? procedure.date_added|date('d-m-Y') : 'n/a' }}</td>
+                <td>{{ procedure.date_stopped ? procedure.date_stopped|date('d-m-Y') : 'n/a' }}</td>
+                <td>{{ procedure.date_last_update ? procedure.date_last_update|date('d-m-Y') : 'n/a' }}</td>
+                <td><a href={{ path('admin_procedure_edit', {id: procedure.id} ) }}><button type="button" class="button success_btn">edit</button></a></td>
+                <td><a href={{ path('admin_procedure_delete', {id: procedure.id} ) }}><button type="button" class="button danger_btn"
+                                                            onclick="return confirm('Сигурни ли сте, че искате да изтриете тази услуга?')">delete</button></a></td>
+            <tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endblock %}
+{% endblock %}
