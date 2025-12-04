@@ -12,3 +12,12 @@
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< php-cs-fixer/shim ###
+
+.DS_Store
+.idea/*
+TODO.md
+claude.txt
+node_modules/
+public/build/
+public/assets/.DS_Store
+public/assets/img/.DS_Store
