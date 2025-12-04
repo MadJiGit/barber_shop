@@ -5,6 +5,26 @@
     min-height: 60vh;
 }
 
+/* Tabs Styling */
+.nav-tabs .nav-link {
+    color: #495057;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin-right: 2px;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #d4a574;
+    background-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+    color: #d4a574;
+    background-color: #fff;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
 .user-profile-card {
     border-radius: 15px;
     overflow: hidden;

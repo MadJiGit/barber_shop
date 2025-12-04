@@ -124,13 +124,19 @@
                                                         {% set isOccupied = timeSlot in barberOccupiedSlots %}
                                                         {% set isExcluded = timeSlot in workingHours.excludedSlots %}
 
+                                                        {# Check if slot is in the past (only for today) #}
+                                                        {% set isPast = false %}
+                                                        {% if today == 'now'|date('Y-m-d') %}
+                                                            {% set isPast = timeSlot < currentTime %}
+                                                        {% endif %}
+
                                                         <button type="button"
-                                                                class="time-slot-box {{ isOccupied or isExcluded ? 'booked' : 'available' }}"
+                                                                class="time-slot-box {{ (isOccupied or isExcluded or isPast) ? 'booked' : 'available' }}"
                                                                 onclick="selectTimeSlot(this, {{ barber.id }}, '{{ timeSlot }}')"
-                                                                {{ isOccupied or isExcluded ? 'disabled' : '' }}
+                                                                {{ (isOccupied or isExcluded or isPast) ? 'disabled' : '' }}
                                                                 data-time="{{ timeSlot }}"
                                                                 data-barber-id="{{ barber.id }}"
-                                                                data-occupied="{{ isOccupied or isExcluded ? 'true' : 'false' }}"
+                                                                data-occupied="{{ (isOccupied or isExcluded or isPast) ? 'true' : 'false' }}"
                                                                 data-minutes="{{ minutes }}">
                                                             <div class="time-label">{{ timeSlot }}</div>
                                                             <div class="time-icon">

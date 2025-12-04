@@ -12,6 +12,7 @@ use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: BarberScheduleRepository::class)]
 #[ORM\Table(name: 'barber_schedule')]
+#[ORM\HasLifecycleCallbacks]
 class BarberSchedule
 {
     #[ORM\Id]
@@ -158,6 +159,15 @@ class BarberSchedule
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->updated_at = DateTimeHelper::now();
     }
 
     /**

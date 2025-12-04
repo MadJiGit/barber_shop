@@ -77,13 +77,35 @@ function openEditModal(appointmentId) {
             document.getElementById('edit_appointment_id').value = data.id;
             document.getElementById('edit_client').value = `${data.client.name} (${data.client.email})`;
             document.getElementById('edit_barber').value = data.barber.id;
-            document.getElementById('edit_date').value = data.date;
-            document.getElementById('edit_time').value = data.time;
+
+            const dateInput = document.getElementById('edit_date');
+            const timeInput = document.getElementById('edit_time');
+
+            dateInput.value = data.date;
+            timeInput.value = data.time;
+
+            // Store original date/time for comparison
+            dateInput.dataset.originalDate = data.date;
+            timeInput.dataset.originalTime = data.time;
+
             document.getElementById('edit_status').value = data.status;
             document.getElementById('edit_notes').value = data.notes || '';
 
-            // Set min datetime to prevent selecting past times
-            setMinDateTime();
+            // Check if appointment is in the past
+            const appointmentDateTime = new Date(`${data.date} ${data.time}`);
+            const now = new Date();
+            const isPast = appointmentDateTime < now;
+
+            // Disable date/time/barber/procedure fields for past appointments
+            document.getElementById('edit_barber').disabled = isPast;
+            dateInput.disabled = isPast;
+            timeInput.disabled = isPast;
+            document.getElementById('edit_procedure').disabled = isPast;
+
+            // Set min datetime to prevent selecting past times (only for future appointments)
+            if (!isPast) {
+                setMinDateTime();
+            }
 
             // Load procedures for selected barber
             loadProceduresForBarber(data.barber.id, data.procedure.id);
@@ -182,6 +204,9 @@ function loadProceduresForBarber(barberId, selectedProcedureId = null) {
  */
 function saveAppointment() {
     const appointmentId = document.getElementById('edit_appointment_id').value;
+    const originalDate = document.getElementById('edit_date').dataset.originalDate;
+    const originalTime = document.getElementById('edit_time').dataset.originalTime;
+
     const data = {
         barber_id: parseInt(document.getElementById('edit_barber').value),
         date: document.getElementById('edit_date').value,
@@ -191,10 +216,30 @@ function saveAppointment() {
         notes: document.getElementById('edit_notes').value,
     };
 
-    // Validate
-    if (!data.barber_id || !data.date || !data.time || !data.procedure_id) {
-        Toast.warning('Моля попълнете всички задължителни полета!');
-        return;
+    // Check if appointment is in the past
+    const appointmentDateTime = new Date(`${originalDate || data.date} ${originalTime || data.time}`);
+    const now = new Date();
+    const isPastAppointment = appointmentDateTime < now;
+
+    // Determine which endpoint to use
+    let endpoint, requestData;
+
+    if (isPastAppointment) {
+        // For past appointments, only allow status/notes changes
+        endpoint = `/manager/appointment/${appointmentId}/update-status`;
+        requestData = {
+            status: data.status,
+            notes: data.notes
+        };
+    } else {
+        // For future appointments, allow full update
+        // Validate required fields
+        if (!data.barber_id || !data.date || !data.time || !data.procedure_id) {
+            Toast.warning('Моля попълнете всички задължителни полета!');
+            return;
+        }
+        endpoint = `/manager/appointment/${appointmentId}/update`;
+        requestData = data;
     }
 
     // Show loading state
@@ -203,17 +248,17 @@ function saveAppointment() {
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Запазване...';
     saveBtn.disabled = true;
 
-    fetch(`/manager/appointment/${appointmentId}/update`, {
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(requestData)
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            Toast.success('Часът е обновен успешно!');
+            Toast.success(data.message || 'Часът е обновен успешно!');
             $('#editAppointmentModal').modal('hide');
             setTimeout(() => location.reload(), 1000);
         } else {

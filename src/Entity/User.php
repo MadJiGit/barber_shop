@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use App\Service\DateTimeHelper;
 use DateTimeInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
@@ -17,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -163,15 +163,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        //                dd($this->roles);
         return $this->roles;
-        //        if (is_array($this->roles)) {
-        //            return $this->roles;
-        //        } elseif ($this->roles && ($this->roles instanceof Collection)) {
-        //            return $this->roles->toArray();
-        //        } else {
-        //            return [];
-        //        }
     }
 
     /**
@@ -201,11 +193,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $role;
     }
 
-    //    private function addRole(string $role): void
-    //    {
-    //        $this->roles[] = $role;
-    //    }
-
     /**
      * @see PasswordAuthenticatedUserInterface
      */
@@ -214,7 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
 
@@ -286,7 +273,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @throws Exception
      */
-    public function setDateAdded(): static
+    public function setDateAdded(?DateTimeInterface $date = null): static
     {
         $this->date_added = DateTimeHelper::now();
 
@@ -406,6 +393,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return '';
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->date_last_update = DateTimeHelper::now();
     }
 
     /**

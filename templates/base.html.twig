@@ -69,13 +69,13 @@
                                                 <li><a href="{{ path('main') }}">Home</a></li>
                                                 {% if app.user %}
                                                     <li><a href="{{ path('client_book_appointment', {id: app.user.id}) }}">Book Appointment</a></li>
-                                                    <li><a href="{{ path('profile_edit', {id: app.user.id}) }}">Profile</a></li>
                                                     {% if is_granted('ROLE_MANAGER') %}
                                                         <li><a href="{{ path('manager_dashboard') }}">Manager</a></li>
                                                     {% endif %}
                                                     {% if is_granted('ROLE_ADMIN') %}
-                                                        <li><a href="{{ path('admin_menu', {id: app.user.id}) }}">Admin</a></li>
+                                                        <li><a href="{{ path('admin', {id: app.user.id}) }}">Admin</a></li>
                                                     {% endif %}
+                                                    <li><a href="{{ path('profile_edit', {id: app.user.id}) }}">Hello, {{ app.user.nickName ?? app.user.firstName ?? app.user.email }}</a></li>
                                                     <li><a href="{{ path('app_logout') }}">Logout</a></li>
                                                 {% else %}
                                                     <li><a href="{{ path('app_login') }}">Login</a></li>
@@ -85,9 +85,7 @@
                                         </nav>
                                     </div>
                                     <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                        {% if app.user %}
-                                            <span class="user-info">{{ app.user.nickName ?? app.user.firstName ?? app.user.email }}</span>
-                                        {% else %}
+                                        {% if not app.user %}
                                             <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
                                         {% endif %}
                                     </div>

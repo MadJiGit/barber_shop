@@ -74,11 +74,8 @@ class AppointmentsRepository extends ServiceEntityRepository
             ->orderBy('a.date', 'DESC')
             ->setMaxResults(10)
             ->getQuery()
-//            ->getResult()
         ;
 
-        //        echo '<pre>'.var_export($res->getSQL(), true).'</pre>';
-        //        exit;
         return $res->getResult();
     }
 
@@ -165,21 +162,6 @@ class AppointmentsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    //    /**
-    //     * @return Appointments[] Returns an array of Appointments objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
 
     /**
      * Get occupied time slots for a specific date
@@ -294,7 +276,7 @@ class AppointmentsRepository extends ServiceEntityRepository
     /**
      * Find all appointments for a barber within date range
      *
-     * @param User $barber
+     * @param User|null $barber
      * @param DateTimeImmutable|null $startDate
      * @param DateTimeImmutable|null $endDate
      * @param string|null $status Filter by status (confirmed, cancelled, completed)
@@ -333,4 +315,98 @@ class AppointmentsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find appointments with filters (for barbers and clients)
+     *
+     * @param User|null $user - The barber or client
+     * @param string $userType - 'barber' or 'client'
+     * @param DateTimeImmutable|null $dateFrom
+     * @param DateTimeImmutable|null $dateTo
+     * @param array|null $statuses - Array of statuses to filter
+     * @param string|null $searchTerm - Search in client name, email, phone
+     * @param int $page - Page number for pagination
+     * @param int $limit - Items per page
+     * @return array ['items' => Appointments[], 'total' => int]
+     */
+    public function findAppointmentsWithFilters(
+        ?User $user,
+        string $userType,
+        ?DateTimeImmutable $dateFrom = null,
+        ?DateTimeImmutable $dateTo = null,
+        ?array $statuses = null,
+        ?string $searchTerm = null,
+        int $page = 1,
+        int $limit = 20
+    ): array {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.client', 'c')
+            ->leftJoin('a.barber', 'b')
+            ->leftJoin('a.procedure_type', 'p');
+
+        // Filter by user (barber or client)
+        if ($user) {
+            if ($userType === 'barber') {
+                $qb->andWhere('a.barber = :user');
+            } else {
+                $qb->andWhere('a.client = :user');
+            }
+            $qb->setParameter('user', $user);
+        }
+
+        // Date range filters
+        if ($dateFrom) {
+            $qb->andWhere('a.date >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo) {
+            // Add 23:59:59 to include the entire end date
+            $dateToEnd = $dateTo->modify('+1 day')->modify('-1 second');
+            $qb->andWhere('a.date <= :dateTo')
+                ->setParameter('dateTo', $dateToEnd);
+        }
+
+        // Status filter
+        if ($statuses && count($statuses) > 0) {
+            $qb->andWhere('a.status IN (:statuses)')
+                ->setParameter('statuses', $statuses);
+        }
+
+        // Search term (client name, email, phone) - only for barbers
+        if ($searchTerm && $userType === 'barber') {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('c.first_name', ':search'),
+                    $qb->expr()->like('c.last_name', ':search'),
+                    $qb->expr()->like('c.nick_name', ':search'),
+                    $qb->expr()->like('c.email', ':search'),
+                    $qb->expr()->like('c.phone', ':search')
+                )
+            )->setParameter('search', '%' . $searchTerm . '%');
+        }
+
+        // Count total
+        $countQb = clone $qb;
+        $total = $countQb->select('COUNT(a.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $items = $qb->orderBy('a.date', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        return [
+            'items' => $items,
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
+            'totalPages' => ceil($total / $limit),
+        ];
+    }
+
 }

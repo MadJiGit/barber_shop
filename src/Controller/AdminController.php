@@ -29,7 +29,7 @@ class AdminController extends AbstractController
         $this->procedureRepository = $procedureRepository;
     }
 
-    #[Route('/admin_menu/{id}', name: 'admin_menu')]
+    #[Route('/legacy_admin_menu/{id}', name: 'legacy_admin_menu')]
     public function adminUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
@@ -105,7 +105,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('admin/user_edit/{id}', name: 'admin_user_edit')]
+    #[Route('legacy_admin/user_edit/{id}', name: 'legacy_admin_user_edit')]
     public function editUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
@@ -165,7 +165,7 @@ class AdminController extends AbstractController
     /**
      * List all procedures
      */
-    #[Route('/procedures', name: 'admin_procedures')]
+    #[Route('/procedures', name: 'legacy_admin_procedures')]
     public function listProcedures(Request $request): Response
     {
         $userAuth = parent::getUser();
@@ -194,7 +194,7 @@ class AdminController extends AbstractController
     /**
      * Add new procedure
      */
-    #[Route('/procedure/add', name: 'admin_procedure_add')]
+    #[Route('/procedure/add', name: 'legacy_admin_procedure_add')]
     public function addProcedure(Request $request): Response
     {
         $userAuth = parent::getUser();
@@ -234,7 +234,7 @@ class AdminController extends AbstractController
     /**
      * Edit procedure
      */
-    #[Route('/procedure/{id}/edit', name: 'admin_procedure_edit')]
+    #[Route('/procedure/{id}/edit', name: 'legacy_admin_procedure_edit')]
     public function editProcedure(Request $request, int $id): Response
     {
         $userAuth = parent::getUser();
@@ -277,7 +277,7 @@ class AdminController extends AbstractController
     /**
      * Delete procedure
      */
-    #[Route('/procedure/{id}/delete', name: 'admin_procedure_delete')]
+    #[Route('/procedure/{id}/delete', name: 'legacy_admin_procedure_delete')]
     public function deleteProcedure(Request $request, int $id): Response
     {
         $userAuth = parent::getUser();

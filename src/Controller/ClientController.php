@@ -12,6 +12,7 @@ use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
+use App\Service\DateTimeHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -149,11 +150,14 @@ class ClientController extends AbstractController
         // Get selected date from query parameter, or use today as default
         $selectedDateStr = $request->query->get('date');
         if (!$selectedDateStr || !strtotime($selectedDateStr)) {
-            $today = now();
+            $today = DateTimeHelper::now();
             $selectedDateStr = $today->format('Y-m-d');
+        } else {
+            $today = DateTimeHelper::now();
         }
 
         $selectedDate = new \DateTimeImmutable($selectedDateStr);
+        $currentTime = $today->format('H:i'); // Current time in Sofia timezone
 
         // Get occupied slots for selected date
         $occupiedSlots = $this->appointmentRepository->getOccupiedSlotsByDate($selectedDateStr);
@@ -184,6 +188,7 @@ class ClientController extends AbstractController
                 'procedures' => $procedures,
                 'appointments' => $allAppointments,
                 'today' => $selectedDateStr,
+                'currentTime' => $currentTime,
                 'occupiedSlots' => $occupiedSlots,
                 'barberProcedureMap' => $barberProcedureMap,
                 'barberWorkingHours' => $barberWorkingHours,

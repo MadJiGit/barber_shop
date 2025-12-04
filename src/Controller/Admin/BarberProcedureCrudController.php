@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\BarberProcedure;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -25,6 +27,13 @@ class BarberProcedureCrudController extends AbstractCrudController
             ->setDefaultSort(['valid_from' => 'DESC']);
     }
 
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_NEW, Action::INDEX);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -32,8 +41,8 @@ class BarberProcedureCrudController extends AbstractCrudController
             AssociationField::new('barber', 'Барбер'),
             AssociationField::new('procedure', 'Процедура'),
             BooleanField::new('can_perform', 'Може да извършва'),
-            DateTimeField::new('valid_from', 'Валидна от'),
-            DateTimeField::new('valid_until', 'Валидна до')->hideOnIndex(),
+//            DateTimeField::new('valid_from', 'Валидна от'),
+//            DateTimeField::new('valid_until', 'Валидна до')->hideOnIndex(),
         ];
     }
 }

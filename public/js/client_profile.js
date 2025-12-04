@@ -48,7 +48,7 @@ function restoreActiveTab() {
 
     if (activeTab) {
         // Deactivate all tabs
-        document.querySelectorAll('#barberTabs .nav-link').forEach(tab => {
+        document.querySelectorAll('#profileTabs .nav-link').forEach(tab => {
             tab.classList.remove('active');
         });
         document.querySelectorAll('.tab-pane').forEach(pane => {
@@ -56,7 +56,7 @@ function restoreActiveTab() {
         });
 
         // Activate the specified tab
-        const tabLink = document.querySelector(`#barberTabs a[href="#${activeTab}"]`);
+        const tabLink = document.querySelector(`#profileTabs a[href="#${activeTab}"]`);
         const tabPane = document.getElementById(activeTab);
 
         if (tabLink && tabPane) {
@@ -70,7 +70,7 @@ function restoreActiveTab() {
  * Save active tab to URL when tab is clicked
  */
 function saveActiveTabOnClick() {
-    document.querySelectorAll('#barberTabs .nav-link').forEach(tab => {
+    document.querySelectorAll('#profileTabs .nav-link').forEach(tab => {
         tab.addEventListener('click', function(e) {
             const targetTab = this.getAttribute('href').substring(1); // Remove '#'
             updateURLWithTab(targetTab);
@@ -96,7 +96,7 @@ function addTabParameterToForms() {
     forms.forEach(form => {
         form.addEventListener('submit', function() {
             // Find which tab is currently active
-            const activeTab = document.querySelector('#barberTabs .nav-link.active');
+            const activeTab = document.querySelector('#profileTabs .nav-link.active');
             if (activeTab) {
                 const tabName = activeTab.getAttribute('href').substring(1);
 
@@ -113,13 +113,16 @@ function addTabParameterToForms() {
 
 /**
  * Cancel appointment function
+ * @param {number} appointmentId - The appointment ID to cancel
+ * @param {string} csrfToken - CSRF token for security
+ * @param {string} currentTab - Current active tab (appointments or history)
  */
-function cancelAppointment(appointmentId, csrfToken) {
+function cancelAppointment(appointmentId, csrfToken, currentTab = 'appointments') {
     if (confirm('Сигурни ли сте, че искате да отмените това посещение?')) {
         // Create form and submit
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/appointment/' + appointmentId + '/cancel';
+        form.action = '/appointment/cancel/' + appointmentId;
 
         // Add CSRF token
         const csrfInput = document.createElement('input');
@@ -129,15 +132,11 @@ function cancelAppointment(appointmentId, csrfToken) {
         form.appendChild(csrfInput);
 
         // Add tab parameter to preserve active tab
-        const activeTab = document.querySelector('#barberTabs .nav-link.active');
-        if (activeTab) {
-            const tabName = activeTab.getAttribute('href').substring(1);
-            const tabInput = document.createElement('input');
-            tabInput.type = 'hidden';
-            tabInput.name = 'tab';
-            tabInput.value = tabName;
-            form.appendChild(tabInput);
-        }
+        const tabInput = document.createElement('input');
+        tabInput.type = 'hidden';
+        tabInput.name = 'tab';
+        tabInput.value = currentTab;
+        form.appendChild(tabInput);
 
         document.body.appendChild(form);
         form.submit();

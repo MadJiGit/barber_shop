@@ -2,11 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Appointments;
+use App\Entity\Procedure;
 use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
+use App\Service\DateTimeHelper;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,6 +45,7 @@ class ManagerController extends AbstractController
 
     /**
      * Manager Dashboard - Overview with key metrics
+     * @throws Exception
      */
     #[Route('/dashboard', name: 'manager_dashboard')]
     public function dashboard(): Response
@@ -47,7 +54,7 @@ class ManagerController extends AbstractController
         $tomorrow = $today->modify('+1 day');
         $startOfWeek = $today->modify('monday this week');
         $endOfWeek = $today->modify('sunday this week')->modify('+1 day');
-        $startOfMonth = new \DateTimeImmutable('first day of this month');
+        $startOfMonth = new DateTimeImmutable('first day of this month');
         $endOfMonth = $startOfMonth->modify('+1 month');
 
         // Today's appointments (from 00:00:00 today to 00:00:00 tomorrow)
@@ -118,9 +125,10 @@ class ManagerController extends AbstractController
         $endDate = null;
         if ($filterDate) {
             try {
-                $startDate = new \DateTimeImmutable($filterDate);
+                $startDate = new DateTimeImmutable($filterDate);
+//                $startDate = new DateTimeInterface($filterDate);
                 $endDate = $startDate->modify('+1 day');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->addFlash('error', 'Невалидна дата.');
             }
         }
@@ -245,6 +253,7 @@ class ManagerController extends AbstractController
 
     /**
      * Update appointment (AJAX) - Creates new appointment and cancels old one
+     * @throws Exception
      */
     #[Route('/appointment/{id}/update', name: 'manager_appointment_update', methods: ['POST'])]
     public function updateAppointment(int $id, Request $request): Response
@@ -274,7 +283,7 @@ class ManagerController extends AbstractController
 
         // Get entities
         $barber = $this->userRepository->find($data['barber_id']);
-        $procedure = $this->em->getRepository(\App\Entity\Procedure::class)->find($data['procedure_id']);
+        $procedure = $this->em->getRepository(Procedure::class)->find($data['procedure_id']);
 
         if (!$barber || !$procedure) {
             return $this->json(['success' => false, 'error' => 'Невалиден барбър или процедура.'], 400);
@@ -282,8 +291,8 @@ class ManagerController extends AbstractController
 
         // Parse new date and time
         try {
-            $newDateTime = new \DateTimeImmutable($data['date'] . ' ' . $data['time']);
-        } catch (\Exception $e) {
+            $newDateTime = new DateTimeImmutable($data['date'] . ' ' . $data['time']);
+        } catch (Exception $e) {
             return $this->json(['success' => false, 'error' => 'Невалидна дата или час.'], 400);
         }
 
@@ -319,7 +328,7 @@ class ManagerController extends AbstractController
         $this->em->persist($oldAppointment);
 
         // Step 2: Create NEW appointment with new details
-        $newAppointment = new \App\Entity\Appointments();
+        $newAppointment = new Appointments();
         $newAppointment->setClient($oldAppointment->getClient());
         $newAppointment->setBarber($barber);
         $newAppointment->setProcedureType($procedure);
@@ -341,7 +350,71 @@ class ManagerController extends AbstractController
     }
 
     /**
+     * Update status of past appointment (Manager side)
+     * Only allows changing status to completed/no_show for past appointments
+     * @throws Exception
+     */
+    #[Route('/appointment/{id}/update-status', name: 'manager_appointment_update_status', methods: ['POST'])]
+    public function updateAppointmentStatus(int $id, Request $request): Response
+    {
+        $appointment = $this->appointmentsRepository->find($id);
+
+        if (!$appointment) {
+            return $this->json(['success' => false, 'error' => 'Часът не е намерен.'], 404);
+        }
+
+        // This endpoint is ONLY for past appointments
+        $now = DateTimeHelper::now();
+        if ($appointment->getDate() >= $now) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Този endpoint е само за минали часове. Използвайте update за бъдещи часове.'
+            ], 400);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['status'])) {
+            return $this->json(['success' => false, 'error' => 'Липсва статус.'], 400);
+        }
+
+        $newStatus = $data['status'];
+
+        // Only allow completed or no_show for past appointments
+        if (!in_array($newStatus, ['completed', 'no_show', 'cancelled'])) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Невалиден статус. Разрешени са само: completed, no_show, cancelled.'
+            ], 400);
+        }
+
+        // Update status
+        $appointment->setStatus($newStatus);
+        $appointment->setDateLastUpdate(DateTimeHelper::now());
+
+        // Add notes if provided
+        if (isset($data['notes'])) {
+            $appointment->setNotes($data['notes']);
+        }
+
+        $this->em->persist($appointment);
+        $this->em->flush();
+
+        $statusLabels = [
+            'completed' => 'завършен',
+            'no_show' => 'пропуснат',
+            'cancelled' => 'отменен',
+        ];
+
+        return $this->json([
+            'success' => true,
+            'message' => 'Статусът е променен на "' . ($statusLabels[$newStatus] ?? $newStatus) . '".',
+        ]);
+    }
+
+    /**
      * Cancel appointment (Manager side)
+     * @throws Exception
      */
     #[Route('/appointment/{id}/cancel', name: 'manager_appointment_cancel', methods: ['POST'])]
     public function cancelAppointment(int $id, Request $request): Response
@@ -381,7 +454,7 @@ class ManagerController extends AbstractController
     #[Route('/api/procedures', name: 'manager_api_procedures', methods: ['GET'])]
     public function getProcedures(): Response
     {
-        $procedures = $this->em->getRepository(\App\Entity\Procedure::class)
+        $procedures = $this->em->getRepository(Procedure::class)
             ->getAvailableProcedures();
 
         $data = array_map(function($proc) {
@@ -412,8 +485,8 @@ class ManagerController extends AbstractController
         }
 
         try {
-            $selectedDate = new \DateTimeImmutable($date);
-        } catch (\Exception $e) {
+            $selectedDate = new DateTimeImmutable($date);
+        } catch (Exception $e) {
             return $this->json(['error' => 'Невалидна дата.'], 400);
         }
 

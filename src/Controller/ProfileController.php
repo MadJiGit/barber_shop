@@ -2,11 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\BarberProcedure;
+use App\Entity\Procedure;
 use App\Form\UserFormType;
 use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\BarberScheduleService;
+use App\Service\DateTimeHelper;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +39,7 @@ class ProfileController extends AbstractController
     /**
      * Edit user profile - works for ALL roles (CLIENT, BARBER, MANAGER, ADMIN)
      * Renders different templates based on user role
+     * @throws Exception
      */
     #[Route('/profile/{id}', name: 'profile_edit')]
     public function edit(Request $request, int $id): Response
@@ -59,7 +65,7 @@ class ProfileController extends AbstractController
         $form = $this->createForm(UserFormType::class, $user);
         try {
             $form->handleRequest($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo 'failed : '.$e->getMessage();
         }
 
@@ -90,13 +96,13 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('profile_edit', ['id' => $user->getId(), 'tab' => $tab]);
         }
 
-        // Get user's appointments (all - past, future, cancelled)
-        $userAppointments = $this->userRepository->findAppointmentsByUserId($user->getId());
-
-        // Initialize variables for BARBER-specific data
+        // Initialize variables
         $allProcedures = [];
         $barberProcedureIds = [];
         $barberAppointments = [];
+        $clientAppointments = [];
+        $appointmentsPagination = null;
+        $filters = [];
         $calendar = [];
         $calendarYear = null;
         $calendarMonth = null;
@@ -106,13 +112,116 @@ class ProfileController extends AbstractController
         $nextYear = null;
         $nextMonth = null;
 
+        // Get session for filter persistence
+        $session = $request->getSession();
+
+        // Load personal client appointments for ALL users (including barbers)
+        // These are the appointments where THIS user is the CLIENT
+        $clientDateFrom = $request->query->get('client_date_from', $session->get('client_filter_date_from', null));
+        $clientDateTo = $request->query->get('client_date_to', $session->get('client_filter_date_to', null));
+        $clientStatuses = $request->query->all('client_statuses') ?: $session->get('client_filter_statuses', ['confirmed', 'pending', 'completed', 'cancelled']);
+        $clientPage = max(1, (int)$request->query->get('client_page', 1));
+        $clientLimit = (int)$request->query->get('client_limit', $session->get('client_filter_limit', 20));
+
+        // Save filters to session for persistence
+        $session->set('client_filter_date_from', $clientDateFrom);
+        $session->set('client_filter_date_to', $clientDateTo);
+        $session->set('client_filter_statuses', $clientStatuses);
+        $session->set('client_filter_limit', $clientLimit);
+
+        // Convert date strings to DateTimeImmutable
+        try {
+            $clientDateFromObj = $clientDateFrom ? new \DateTimeImmutable($clientDateFrom . ' 00:00:00') : null;
+            $clientDateToObj = $clientDateTo ? new \DateTimeImmutable($clientDateTo . ' 23:59:59') : null;
+        } catch (\Exception $e) {
+            $clientDateFromObj = null;
+            $clientDateToObj = null;
+        }
+
+        // Get personal appointments where this user is the CLIENT
+        $clientAppointmentsData = $this->appointmentsRepository->findAppointmentsWithFilters(
+            user: $user,
+            userType: 'client',
+            dateFrom: $clientDateFromObj,
+            dateTo: $clientDateToObj,
+            statuses: $clientStatuses,
+            searchTerm: null,
+            page: $clientPage,
+            limit: $clientLimit
+        );
+
+        $clientAppointments = $clientAppointmentsData['items'];
+        $clientAppointmentsPagination = [
+            'total' => $clientAppointmentsData['total'],
+            'page' => $clientAppointmentsData['page'],
+            'limit' => $clientAppointmentsData['limit'],
+            'totalPages' => $clientAppointmentsData['totalPages'],
+        ];
+
+        $clientFilters = [
+            'date_from' => $clientDateFrom,
+            'date_to' => $clientDateTo,
+            'statuses' => $clientStatuses,
+            'limit' => $clientLimit,
+        ];
+
         // Load BARBER-specific data if user is barber
         if ($user->isBarber()) {
-            // Get barber's upcoming appointments
-            $barberAppointments = $this->appointmentsRepository->findUpcomingAppointmentsByBarber($user);
+            // Appointments filters (for "appointments" tab)
+            $dateFrom = $request->query->get('date_from', $session->get('barber_filter_date_from', date('Y-m-d')));
+            $dateTo = $request->query->get('date_to', $session->get('barber_filter_date_to', date('Y-m-d')));
+            $statuses = $request->query->all('statuses') ?: $session->get('barber_filter_statuses', ['confirmed', 'pending']);
+            $searchTerm = $request->query->get('search', $session->get('barber_filter_search', ''));
+            $page = max(1, (int)$request->query->get('page', 1));
+            $limit = (int)$request->query->get('limit', $session->get('barber_filter_limit', 20));
+
+            // Save filters to session for persistence
+            $session->set('barber_filter_date_from', $dateFrom);
+            $session->set('barber_filter_date_to', $dateTo);
+            $session->set('barber_filter_statuses', $statuses);
+            $session->set('barber_filter_search', $searchTerm);
+            $session->set('barber_filter_limit', $limit);
+
+            // Convert date strings to DateTimeImmutable
+            try {
+                $dateFromObj = $dateFrom ? new \DateTimeImmutable($dateFrom . ' 00:00:00') : null;
+                $dateToObj = $dateTo ? new \DateTimeImmutable($dateTo . ' 23:59:59') : null;
+            } catch (\Exception $e) {
+                $dateFromObj = null;
+                $dateToObj = null;
+            }
+
+            // Get filtered appointments for "appointments" tab
+            $appointmentsData = $this->appointmentsRepository->findAppointmentsWithFilters(
+                user: $user,
+                userType: 'barber',
+                dateFrom: $dateFromObj,
+                dateTo: $dateToObj,
+                statuses: $statuses,
+                searchTerm: $searchTerm,
+                page: $page,
+                limit: $limit
+            );
+
+            $barberAppointments = $appointmentsData['items'];
+            $appointmentsPagination = [
+                'total' => $appointmentsData['total'],
+                'page' => $appointmentsData['page'],
+                'limit' => $appointmentsData['limit'],
+                'totalPages' => $appointmentsData['totalPages'],
+            ];
+
+            $filters = [
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+                'statuses' => $statuses,
+                'search' => $searchTerm,
+                'limit' => $limit,
+            ];
+
             // Get only available (manager-approved) procedures
-            $allProcedures = $this->em->getRepository(\App\Entity\Procedure::class)->getAvailableProcedures();
-            $barberProcedures = $this->em->getRepository(\App\Entity\BarberProcedure::class)
+            $allProcedures = $this->em->getRepository(Procedure::class)->getAvailableProcedures();
+            $barberProcedures = $this->em->getRepository(BarberProcedure::class)
                 ->findActiveProceduresForBarber($user);
             $barberProcedureIds = array_map(fn($p) => $p->getId(), $barberProcedures);
 
@@ -121,7 +230,7 @@ class ProfileController extends AbstractController
             $calendarMonth = $request->query->get('month');
 
             if (!$calendarYear || !$calendarMonth) {
-                $now = new \DateTime('now');
+                $now = new DateTime('now');
                 $calendarYear = (int)$now->format('Y');
                 $calendarMonth = (int)$now->format('m');
             } else {
@@ -132,7 +241,7 @@ class ProfileController extends AbstractController
             $calendar = $this->scheduleService->getMonthCalendar($user, $calendarYear, $calendarMonth);
 
             // Calculate previous and next month
-            $currentDate = new \DateTime("$calendarYear-$calendarMonth-01");
+            $currentDate = new DateTime("$calendarYear-$calendarMonth-01");
             $prevMonthDate = (clone $currentDate)->modify('-1 month');
             $nextMonthDate = (clone $currentDate)->modify('+1 month');
 
@@ -151,8 +260,12 @@ class ProfileController extends AbstractController
             'isAdmin' => $isAuthUserAdmin,
             'isSuperAdmin' => $isAuthUserSuperAdmin,
             'form' => $form->createView(),
-            'userAppointments' => $userAppointments,
+            'clientAppointments' => $clientAppointments,
+            'clientAppointmentsPagination' => $clientAppointmentsPagination,
+            'clientFilters' => $clientFilters,
             'barberAppointments' => $barberAppointments,
+            'appointmentsPagination' => $appointmentsPagination ?? null,
+            'filters' => $filters ?? [],
             'allProcedures' => $allProcedures,
             'barberProcedureIds' => $barberProcedureIds,
             'calendar' => $calendar,

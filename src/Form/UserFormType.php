@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -65,9 +66,10 @@ class UserFormType extends AbstractType
                     'required' => true,
                     'attr' => ['placeholder' => '+359 888 123 456'],
                 ])
-            ->add('date_added', TextType::class, [
+            ->add('date_added', DateTimeType::class, [
                 'label' => 'Създаден на: ',
                 'disabled' => true,
+                'widget' => 'single_text',
             ])
             ->add('date_banned', TextType::class, [
                 'label' => 'Премахнат на: ',

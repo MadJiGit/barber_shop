@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProcedureRepository::class)]
 #[ORM\Table(name: '`procedures`')]
+#[ORM\HasLifecycleCallbacks]
 class Procedure
 {
     #[ORM\Id]
@@ -177,6 +178,15 @@ class Procedure
     public function setAvailable(?bool $available): void
     {
         $this->available = $available;
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        $this->date_last_update = DateTimeHelper::now();
     }
 
     public function __toString(): string

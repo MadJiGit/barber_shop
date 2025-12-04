@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\BarberScheduleException;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
@@ -28,6 +30,13 @@ class BarberScheduleExceptionCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Изключения от график')
             ->setSearchFields(['reason'])
             ->setDefaultSort(['date' => 'DESC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_NEW, Action::INDEX);
     }
 
     public function configureFields(string $pageName): iterable
