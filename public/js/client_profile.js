@@ -122,7 +122,7 @@ function cancelAppointment(appointmentId, csrfToken, currentTab = 'appointments'
         // Create form and submit
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/appointment/cancel/' + appointmentId;
+        form.action = '/appointment/' + appointmentId + '/client-cancel';
 
         // Add CSRF token
         const csrfInput = document.createElement('input');

@@ -1,28 +1,199 @@
-{#{% include 'go_back_logout_buttons.html.twig' %}#}
+{% extends 'base.html.twig' %}
+
+{% block title %}Вход - Barber Shop{% endblock %}
+
 {% block body %}
-    <h1>Log in</h1>
-<form method="post">
-    <div>
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-{#    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>#}
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
+    <!--? Hero Start -->
+    <div class="slider-area2">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 pt-70 text-center">
+                            <h2>Вход</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-        <a href="{{ path('app_login') }}"><button type="submit" class="button info_btn">Login</button></a>
-        <a href="{{ path('app_register') }}"><button type="button" class="button info_btn">Go To Register</button></a>
-    </div>
-</form>
+    <!-- Hero End -->
+
+    <!--? Login Section Start -->
+    <section class="login-section section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8 col-md-10">
+                    <div class="login-form-wrapper">
+                        <div class="login-form">
+                            <!-- Section Title -->
+                            <div class="section-tittle text-center mb-50">
+                                <h2>Влезте в профила си</h2>
+                                <p>Добре дошли обратно! Въведете вашите данни за вход.</p>
+                            </div>
+
+                            {% if error %}
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-circle"></i> {{ error.messageKey|trans(error.messageData, 'security') }}
+                                </div>
+                            {% endif %}
+
+                            {% if app.user %}
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle"></i> Вие вече сте влезли като {{ app.user.userIdentifier }}.
+                                    <a href="{{ path('main') }}">Към начална страница</a>
+                                </div>
+                            {% endif %}
+
+                            <form method="post">
+                                <div class="form-group mb-30">
+                                    <label for="inputEmail" class="form-label">
+                                        <i class="fas fa-envelope"></i> Имейл адрес
+                                    </label>
+                                    <input type="email"
+                                           value="{{ last_username }}"
+                                           name="email"
+                                           id="inputEmail"
+                                           class="form-control form-control-lg"
+                                           placeholder="your@email.com"
+                                           autocomplete="email"
+                                           required
+                                           autofocus>
+                                </div>
+
+                                <div class="form-group mb-30">
+                                    <label for="inputPassword" class="form-label">
+                                        <i class="fas fa-lock"></i> Парола
+                                    </label>
+                                    <input type="password"
+                                           name="password"
+                                           id="inputPassword"
+                                           class="form-control form-control-lg"
+                                           placeholder="••••••••"
+                                           autocomplete="current-password"
+                                           required>
+                                </div>
+
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                <div class="form-check mb-30">
+                                    <input type="checkbox"
+                                           name="_remember_me"
+                                           id="remember_me"
+                                           class="form-check-input">
+                                    <label for="remember_me" class="form-check-label">
+                                        Запомни ме
+                                    </label>
+                                </div>
+
+                                <div class="d-grid gap-2 mb-30">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-sign-in-alt"></i> Влез
+                                    </button>
+                                </div>
+
+                                <div class="text-center">
+                                    <p class="mb-0">
+                                        Нямате профил?
+                                        <a href="{{ path('app_register') }}" class="text-primary fw-bold">
+                                            Регистрирайте се тук
+                                        </a>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Login Section End -->
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .login-section {
+            background: #f8f9fa;
+            min-height: 60vh;
+        }
+
+        .login-form-wrapper {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 50px 40px;
+        }
+
+        .login-form .section-tittle h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .login-form .section-tittle p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .form-label i {
+            color: #d4a024;
+            margin-right: 8px;
+        }
+
+        .form-control-lg {
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-lg:focus {
+            border-color: #d4a024;
+            box-shadow: 0 0 0 0.2rem rgba(212, 160, 36, 0.25);
+        }
+
+        .form-check-input:checked {
+            background-color: #d4a024;
+            border-color: #d4a024;
+        }
+
+        .btn-primary {
+            background-color: #d4a024;
+            border-color: #d4a024;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #b8891f;
+            border-color: #b8891f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 160, 36, 0.3);
+        }
+
+        .alert {
+            border-radius: 10px;
+            padding: 15px 20px;
+        }
+
+        .alert i {
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .login-form-wrapper {
+                padding: 30px 20px;
+            }
+        }
+    </style>
 {% endblock %}

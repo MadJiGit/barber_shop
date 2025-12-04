@@ -40,7 +40,7 @@
                             <i class="fas fa-home"></i> Към началната страница
                         </a>
                         {% if app.user %}
-                            <a href="{{ path('client_book_appointment', {id: app.user.id}) }}" class="btn btn-outline-secondary btn-lg">
+                            <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="btn btn-outline-secondary btn-lg">
                                 <i class="fas fa-calendar"></i> Запази час
                             </a>
                         {% endif %}

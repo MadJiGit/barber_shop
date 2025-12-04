@@ -28,7 +28,7 @@
         <!-- Call to Action Arrow -->
         <div class="thumb-content-box">
             {% if app.user %}
-                <a href="{{ path('client_book_appointment', {id: app.user.id}) }}" class="thumb-content-link">
+                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="thumb-content-link">
                     <div class="thumb-content">
                         <h3>Make an Appointment Now</h3>
                         <i class="fas fa-long-arrow-alt-right"></i>
@@ -202,7 +202,7 @@
                                 <li>30-40 minutes</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('client_book_appointment', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
                                 <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
                             {% endif %}
@@ -225,7 +225,7 @@
                                 <li>45-55 minutes</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('client_book_appointment', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
                                 <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
                             {% endif %}
@@ -249,7 +249,7 @@
                                 <li>90+ minutes</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('client_book_appointment', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
                                 <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
                             {% endif %}

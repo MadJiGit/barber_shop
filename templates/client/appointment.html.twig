@@ -191,14 +191,14 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/client_book_appointment.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/client_appointment.css') }}">
 {% endblock %}
 
 
 {% block javascripts %}
     {{ parent() }}
     {% if user.firstName %}
-        <script src="{{ asset('js/client_book_appointment.js') }}"></script>
+        <script src="{{ asset('js/client_appointment.js') }}"></script>
         <script>
             // Initialize appointment form with server data
             initializeAppointmentForm({

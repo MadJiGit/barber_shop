@@ -68,7 +68,7 @@
                                             <ul id="navigation">
                                                 <li><a href="{{ path('main') }}">Home</a></li>
                                                 {% if app.user %}
-                                                    <li><a href="{{ path('client_book_appointment', {id: app.user.id}) }}">Book Appointment</a></li>
+                                                    <li><a href="{{ path('appointment_book', {id: app.user.id}) }}">Book Appointment</a></li>
                                                     {% if is_granted('ROLE_MANAGER') %}
                                                         <li><a href="{{ path('manager_dashboard') }}">Manager</a></li>
                                                     {% endif %}

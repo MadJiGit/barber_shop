@@ -65,7 +65,7 @@ function loadProcedures() {
 function openEditModal(appointmentId) {
     Loading.show('Зареждане на данни...');
 
-    fetch(`/manager/appointment/${appointmentId}/details`)
+    fetch(`/appointment/${appointmentId}/details`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -226,7 +226,7 @@ function saveAppointment() {
 
     if (isPastAppointment) {
         // For past appointments, only allow status/notes changes
-        endpoint = `/manager/appointment/${appointmentId}/update-status`;
+        endpoint = `/appointment/${appointmentId}/update-status`;
         requestData = {
             status: data.status,
             notes: data.notes
@@ -238,7 +238,7 @@ function saveAppointment() {
             Toast.warning('Моля попълнете всички задължителни полета!');
             return;
         }
-        endpoint = `/manager/appointment/${appointmentId}/update`;
+        endpoint = `/appointment/${appointmentId}/update`;
         requestData = data;
     }
 
@@ -288,7 +288,7 @@ function cancelAppointment(appointmentId) {
         return;
     }
 
-    fetch(`/manager/appointment/${appointmentId}/cancel`, {
+    fetch(`/appointment/${appointmentId}/manager-cancel`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

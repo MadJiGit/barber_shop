@@ -11,7 +11,7 @@ function completeAppointment(appointmentId) {
         return;
     }
 
-    fetch(`/barber/appointment/${appointmentId}/complete`, {
+    fetch(`/appointment/${appointmentId}/complete`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ function cancelBarberAppointment(appointmentId) {
         return;
     }
 
-    fetch(`/barber/appointment/${appointmentId}/cancel`, {
+    fetch(`/appointment/${appointmentId}/barber-cancel`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

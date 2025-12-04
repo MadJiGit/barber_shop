@@ -295,7 +295,7 @@
                                                             </td>
                                                             <td class="text-center" style="white-space: nowrap;">
                                                                 {% if isFuture and appointment.status == 'confirmed' %}
-                                                                    <a href="{{ path('client_reschedule_appointment', {id: appointment.id}) }}"
+                                                                    <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
                                                                        class="btn btn-warning btn-xs mr-1"
                                                                        style="padding: 2px 6px; font-size: 12px;"
                                                                        title="Промяна на час">
@@ -498,7 +498,7 @@
                                                             </td>
                                                             <td class="text-center" style="white-space: nowrap;">
                                                                 {% if isFuture and appointment.status == 'confirmed' %}
-                                                                    <a href="{{ path('client_reschedule_appointment', {id: appointment.id}) }}"
+                                                                    <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
                                                                        class="btn btn-warning btn-xs mr-1"
                                                                        style="padding: 2px 6px; font-size: 12px;"
                                                                        title="Промяна на час">
