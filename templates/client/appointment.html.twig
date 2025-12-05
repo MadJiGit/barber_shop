@@ -79,7 +79,7 @@
                                             <input class="date-display-new"
                                                    type="text"
                                                    id="calendar_display"
-                                                   value="{{ today }}"
+                                                   value="{{ today|date('d-m-Y') }}"
                                                    autocomplete="off"
                                             />
                                             <button class="date-arrow-btn-new" type="button" onclick="changeDate(1)">
@@ -92,63 +92,13 @@
 
                                 <!-- Barbers with Time Slots -->
                                 <div class="col-lg-12" id="barbers_container">
-                                    {% if barbers is not empty %}
-                                        {% for barber in barbers %}
-                                            {% set barberOccupiedSlots = occupiedSlots[barber.id] ?? [] %}
-                                            {% set isFullDayOff = '__FULL_DAY_OFF__' in barberOccupiedSlots %}
-                                            {% set workingHours = barberWorkingHours[barber.id] ?? null %}
-
-                                            {# Show barber section only if working today #}
-                                            {% if not isFullDayOff and workingHours %}
-                                            <div class="barber-section" data-barber-id="{{ barber.id }}" data-barber-junior="{{ barber.isBarberJunior ? 'true' : 'false' }}">
-                                                <h3 class="barber-name">
-                                                    {{ barber.barberTitleBg }} {{ barber.firstName }} {{ barber.lastName }}
-                                                    <small class="text-muted">({{ workingHours.start }} - {{ workingHours.end }})</small>
-                                                </h3>
-                                                <div class="time-slots-horizontal">
-                                                    {# Generate time slots based on barber's working hours #}
-                                                    {% set startHour = workingHours.start|split(':')[0]|number_format(0, '', '') %}
-                                                    {% set startMin = workingHours.start|split(':')[1]|number_format(0, '', '') %}
-                                                    {% set endHour = workingHours.end|split(':')[0]|number_format(0, '', '') %}
-                                                    {% set endMin = workingHours.end|split(':')[1]|number_format(0, '', '') %}
-
-                                                    {# Calculate total 30-min slots #}
-                                                    {% set startMinutes = startHour * 60 + startMin %}
-                                                    {% set endMinutes = endHour * 60 + endMin %}
-
-                                                    {% for minutes in range(startMinutes, endMinutes - 30, 30) %}
-                                                        {% set slotHour = (minutes / 60)|round(0, 'floor') %}
-                                                        {% set slotMin = minutes % 60 %}
-                                                        {% set timeSlot = '%02d:%02d'|format(slotHour, slotMin) %}
-
-                                                        {% set isOccupied = timeSlot in barberOccupiedSlots %}
-                                                        {% set isExcluded = timeSlot in workingHours.excludedSlots %}
-
-                                                        {# Check if slot is in the past (only for today) #}
-                                                        {% set isPast = false %}
-                                                        {% if today == 'now'|date('Y-m-d') %}
-                                                            {% set isPast = timeSlot < currentTime %}
-                                                        {% endif %}
-
-                                                        <button type="button"
-                                                                class="time-slot-box {{ (isOccupied or isExcluded or isPast) ? 'booked' : 'available' }}"
-                                                                onclick="selectTimeSlot(this, {{ barber.id }}, '{{ timeSlot }}')"
-                                                                {{ (isOccupied or isExcluded or isPast) ? 'disabled' : '' }}
-                                                                data-time="{{ timeSlot }}"
-                                                                data-barber-id="{{ barber.id }}"
-                                                                data-occupied="{{ (isOccupied or isExcluded or isPast) ? 'true' : 'false' }}"
-                                                                data-minutes="{{ minutes }}">
-                                                            <div class="time-label">{{ timeSlot }}</div>
-                                                            <div class="time-icon">
-                                                                <i class="fas fa-cut"></i>
-                                                            </div>
-                                                        </button>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
+                                    {# Barber sections will be generated dynamically by JavaScript #}
+                                    <div id="barbers-container">
+                                        <div class="text-center text-muted p-4">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Зареждане на свободни часове...</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Submit Button -->
@@ -204,7 +154,7 @@
             initializeAppointmentForm({
                 appointments: {{ appointments|json_encode|raw }},
                 today: '{{ today }}',
-                occupiedSlots: {{ occupiedSlots|json_encode|raw }},
+                barbers: {{ barbersData|json_encode|raw }},
                 barberProcedureMap: {{ barberProcedureMap|json_encode|raw }}
             });
         </script>

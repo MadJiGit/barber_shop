@@ -10,21 +10,53 @@ let selectedBarber = null;
 let selectedTime = null;
 let occupiedSlots = {};
 let barberProcedureMap = {};
+let barberWorkingHours = {};
 let appointmentsData = [];
+let barbersData = [];
 let today = '';
 
 // Bulgarian day names
 const dayNamesBg = ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'];
 
 /**
+ * Convert date from yyyy-mm-dd to dd-MM-yyyy for display
+ */
+function formatDateForDisplay(dateStr) {
+    const [year, month, day] = dateStr.split('-');
+    return `${day}-${month}-${year}`;
+}
+
+/**
+ * Convert date from dd-MM-yyyy to yyyy-mm-dd for API/backend
+ */
+function formatDateForAPI(dateStr) {
+    const [day, month, year] = dateStr.split('-');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Update day of week display
+ */
+function updateDayOfWeek() {
+    const dayOfWeekElement = document.getElementById('day_of_week');
+    if (dayOfWeekElement) {
+        const dayOfWeek = dayNamesBg[currentDate.getDay()];
+        dayOfWeekElement.textContent = dayOfWeek;
+    }
+}
+
+/**
  * Initialize the appointment form with data from server
  */
 function initializeAppointmentForm(data) {
     appointmentsData = data.appointments || [];
-    today = data.today;
-    currentDate = new Date(today);
-    occupiedSlots = data.occupiedSlots || {};
+    today = data.today; // Actual server date - never changes
+    currentDate = new Date(data.today); // Start with today, user can change it
+    barbersData = data.barbers || [];
     barberProcedureMap = data.barberProcedureMap || {};
+
+    // Load availability for today on initial load
+    loadAvailability(today);
 }
 
 /**
@@ -177,7 +209,13 @@ function changeDate(days) {
 
     const dateStr = newDate.toISOString().split('T')[0];
 
-    // Reload page with new date parameter and preserve selected procedure
+    // Update current date
+    currentDate = newDate;
+
+    // Update day of week display
+    updateDayOfWeek();
+
+    // Update URL without reloading page
     const url = new URL(window.location);
     url.searchParams.set('date', dateStr);
 
@@ -186,97 +224,140 @@ function changeDate(days) {
         url.searchParams.set('procedure', selectedProcedure.id);
     }
 
-    window.location.href = url.toString();
+    window.history.pushState({}, '', url);
+
+    // Update datepicker display (convert to dd-MM-yyyy format)
+    const calendarInput = $('#calendar_display');
+    if (calendarInput.length) {
+        calendarInput.val(formatDateForDisplay(dateStr));
+    }
+
+    // Load availability via AJAX
+    loadAvailability(dateStr);
+
+    // Update date navigation buttons
+    updateDateNavigationButtons();
 }
 
 /**
- * Load occupied slots via AJAX
+ * Load availability data via AJAX (occupied slots + working hours)
  */
-function loadOccupiedSlots(date) {
-    fetch('/api/occupied-slots/' + date)
-        .then(response => response.json())
+function loadAvailability(date) {
+    fetch('/appointment/api/availability/' + date)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
-            occupiedSlots = data;
-            updateTimeSlots();
+            occupiedSlots = data.occupiedSlots || {};
+            barberWorkingHours = data.barberWorkingHours || {};
+            renderBarbers();
         })
         .catch(error => {
-            console.error('Error loading occupied slots:', error);
+            console.error('Error loading availability:', error);
         });
 }
 
 /**
- * Update time slots based on occupied slots
+ * Render barber sections with time slots
  */
-function updateTimeSlots() {
-    // First, check which barbers are completely unavailable
-    const unavailableBarbers = [];
-    for (const barberId in occupiedSlots) {
-        if (occupiedSlots[barberId].includes('__FULL_DAY_OFF__')) {
-            unavailableBarbers.push(barberId);
-        }
+function renderBarbers() {
+    const container = document.getElementById('barbers-container');
+    if (!container) {
+        console.error('Container #barbers-container not found!');
+        return;
     }
+    container.innerHTML = '';
 
-    // Hide barber sections that are completely unavailable OR don't perform selected procedure
-    document.querySelectorAll('.barber-section').forEach(section => {
-        const barberId = parseInt(section.dataset.barberId);
+    // Get current date/time for isPast check
+    const now = new Date();
+    const selectedDateObj = new Date(currentDate);
 
-        // Hide if full day off
-        if (unavailableBarbers.includes(barberId.toString())) {
-            section.style.display = 'none';
+    barbersData.forEach(barber => {
+        const barberId = barber.id;
+        const barberSlots = occupiedSlots[barberId] || [];
+        const isFullDayOff = barberSlots.includes('__FULL_DAY_OFF__');
+        const workingHours = barberWorkingHours[barberId];
+
+        // Skip if barber is off or has no working hours
+        if (isFullDayOff || !workingHours) {
             return;
         }
 
-        // If procedure is selected, check if barber can perform it
-        if (selectedProcedure && selectedProcedure.id) {
-            const barberProcedures = barberProcedureMap[barberId] || [];
-            const procedureId = parseInt(selectedProcedure.id);
+        // Create barber section
+        const barberSection = document.createElement('div');
+        barberSection.className = 'barber-section';
+        barberSection.dataset.barberId = barberId;
+        barberSection.dataset.barberJunior = barber.isBarberJunior ? 'true' : 'false';
 
-            if (barberProcedures.includes(procedureId)) {
-                section.style.display = 'block';
-                // Re-filter time slots for this barber
-                filterTimeSlotsForBarber(section, barberId);
-            } else {
-                section.style.display = 'none';
-            }
-        } else {
-            // No procedure selected - show all available barbers
-            section.style.display = 'block';
+        // Barber header
+        const header = document.createElement('h3');
+        header.className = 'barber-name';
+        header.innerHTML = `
+            ${barber.barberTitleBg} ${barber.firstName} ${barber.lastName}
+            <small class="text-muted">(${workingHours.start} - ${workingHours.end})</small>
+        `;
+        barberSection.appendChild(header);
+
+        // Time slots container
+        const slotsContainer = document.createElement('div');
+        slotsContainer.className = 'time-slots-horizontal';
+
+        // Generate time slots
+        const [startHour, startMin] = workingHours.start.split(':').map(Number);
+        const [endHour, endMin] = workingHours.end.split(':').map(Number);
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+
+        for (let minutes = startMinutes; minutes < endMinutes; minutes += 30) {
+            const slotHour = Math.floor(minutes / 60);
+            const slotMin = minutes % 60;
+            const timeSlot = `${String(slotHour).padStart(2, '0')}:${String(slotMin).padStart(2, '0')}`;
+
+            const isOccupied = barberSlots.includes(timeSlot);
+            const isExcluded = workingHours.excludedSlots && workingHours.excludedSlots.includes(timeSlot);
+
+            // Check if slot is in the past
+            const slotDateTime = new Date(selectedDateObj);
+            slotDateTime.setHours(slotHour, slotMin, 0, 0);
+            const isPast = slotDateTime < now;
+
+            const isDisabled = isOccupied || isExcluded || isPast;
+
+            // Create slot button
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `time-slot-box ${isDisabled ? 'booked' : 'available'}`;
+            button.dataset.time = timeSlot;
+            button.dataset.barberId = barberId;
+            button.dataset.occupied = isDisabled ? 'true' : 'false';
+            button.dataset.minutes = minutes;
+            button.disabled = isDisabled;
+            button.onclick = function() {
+                selectTimeSlot(this, barberId, timeSlot);
+            };
+
+            button.innerHTML = `
+                <div class="time-label">${timeSlot}</div>
+                <div class="time-icon"><i class="fas fa-cut"></i></div>
+            `;
+
+            slotsContainer.appendChild(button);
         }
+
+        barberSection.appendChild(slotsContainer);
+        container.appendChild(barberSection);
     });
 
-    // Update individual time slots for available barbers
-    document.querySelectorAll('.time-slot-box').forEach(button => {
-        const section = button.closest('.barber-section');
-        if (!section || section.style.display === 'none') {
-            return; // Skip hidden barbers
-        }
-
-        const barberId = section.dataset.barberId;
-        const timeValue = button.querySelector('.time-label').textContent;
-        const isOccupied = occupiedSlots[barberId] && occupiedSlots[barberId].includes(timeValue);
-
-        // Update button state
-        if (isOccupied) {
-            button.classList.remove('available', 'selected');
-            button.classList.add('booked');
-            button.disabled = true;
-            button.dataset.occupied = 'true';
-        } else {
-            button.classList.remove('booked', 'selected');
-            button.classList.add('available');
-            button.disabled = false;
-            button.dataset.occupied = 'false';
-        }
-    });
-
-    // Clear selection when slots update
-    selectedTime = null;
-    selectedBarber = null;
-    document.getElementById('selected_barber_id').value = '';
-    document.getElementById('pickedHours').value = '';
-    updateSelectionSummary();
-    checkFormValidity();
+    // Apply procedure filtering if procedure is selected
+    if (selectedProcedure) {
+        filterBarbersByProcedure(parseInt(selectedProcedure.id));
+    }
 }
+
+// updateTimeSlots() function removed - replaced by renderBarbers()
 
 /**
  * Update date navigation buttons (disable left arrow if on today)
@@ -359,11 +440,8 @@ function checkFormValidity() {
  * Initialize on DOM ready
  */
 document.addEventListener('DOMContentLoaded', function() {
-    const dayOfWeekElement = document.getElementById('day_of_week');
-    if (dayOfWeekElement) {
-        const dayOfWeek = dayNamesBg[currentDate.getDay()];
-        dayOfWeekElement.textContent = dayOfWeek;
-    }
+    // Update day of week display on initial load
+    updateDayOfWeek();
 
     // Restore selected procedure from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -389,28 +467,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const calendarInput = $('#calendar_display');
         const calendarInputElement = document.getElementById('calendar_display');
 
-        console.log('Attempting to initialize datepicker...');
-        console.log('jQuery element exists:', calendarInput.length > 0);
-        console.log('Datepicker function available:', typeof calendarInput.datepicker);
-
         if (calendarInput.length && typeof calendarInput.datepicker === 'function') {
             try {
-                // Initialize datepicker first
+                // Initialize datepicker
                 calendarInput.datepicker({
-                    format: 'yyyy-mm-dd',
-                    minDate: today,
+                    format: 'dd-mm-yyyy',
+                    minDate: formatDateForDisplay(today),
                     maxDate: maxDate,
                     uiLibrary: 'bootstrap4',
                     showRightIcon: false,
+                    weekStartDay: 1, // Start week on Monday
                     change: function (e) {
-                        const selectedDate = e.target.value;
-                        const currentDisplayDate = calendarInput.val();
+                        const selectedDateDisplay = e.target.value; // dd-mm-yyyy format
 
-                        // Only reload if date actually changed
-                        if (selectedDate && selectedDate !== currentDisplayDate) {
-                            console.log('Date changed from', currentDisplayDate, 'to', selectedDate);
+                        if (selectedDateDisplay) {
+                            // Convert from dd-mm-yyyy to yyyy-mm-dd for internal use
+                            const selectedDate = formatDateForAPI(selectedDateDisplay);
 
-                            // Reload page with new date and preserve selected procedure
+                            // Update current date
+                            currentDate = new Date(selectedDate);
+
+                            // Update day of week display
+                            updateDayOfWeek();
+
+                            // Update URL without reloading page (use yyyy-mm-dd format)
                             const url = new URL(window.location);
                             url.searchParams.set('date', selectedDate);
 
@@ -419,16 +499,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 url.searchParams.set('procedure', selectedProcedure.id);
                             }
 
-                            window.location.href = url.toString();
-                        } else {
-                            console.log('Date not changed, ignoring event');
+                            window.history.pushState({}, '', url);
+
+                            // Load availability via AJAX (use yyyy-mm-dd format)
+                            loadAvailability(selectedDate);
+
+                            // Update date navigation buttons
+                            updateDateNavigationButtons();
                         }
-                    },
-                    open: function(e) {
-                        console.log('Datepicker opened!');
                     }
                 });
-                console.log('Datepicker initialized successfully!');
 
                 // Simple click handler - let Gijgo handle the opening
                 if (calendarInputElement) {
@@ -437,8 +517,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.preventDefault();
                         return false;
                     });
-
-                    console.log('Datepicker ready - click on input to open calendar');
                 }
             } catch (error) {
                 console.error('Error initializing datepicker:', error);

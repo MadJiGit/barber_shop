@@ -657,13 +657,8 @@
                 const tab = urlParams.get('tab');
 
                 if (tab) {
-                    // Deactivate all tabs
-                    $('.nav-link').removeClass('active');
-                    $('.tab-pane').removeClass('show active');
-
-                    // Activate requested tab
-                    $('#' + tab + '-tab').addClass('active');
-                    $('#' + tab).addClass('show active');
+                    // Use Bootstrap's tab API to properly activate the tab
+                    $('#' + tab + '-tab').tab('show');
                 }
             });
         </script>

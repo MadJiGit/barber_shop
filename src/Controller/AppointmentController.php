@@ -159,35 +159,27 @@ class AppointmentController extends AbstractController
                 ['id' => $client->getId()]);
         }
 
-        // Get selected date from query parameter, or use today as default
-        $selectedDateStr = $request->query->get('date');
-        if (!$selectedDateStr || !strtotime($selectedDateStr)) {
-            $today = DateTimeHelper::now();
-            $selectedDateStr = $today->format('Y-m-d');
-        } else {
-            $today = DateTimeHelper::now();
-        }
+        // Get actual today (always from server time)
+        $today = DateTimeHelper::now();
+        $todayStr = $today->format('Y-m-d');
 
-        $selectedDate = new DateTimeImmutable($selectedDateStr);
-        $currentTime = $today->format('H:i'); // Current time in Sofia timezone
-
-        // Get occupied slots for selected date
-        $occupiedSlots = $this->appointmentsRepository->getOccupiedSlotsByDate($selectedDateStr);
-
-        // Get barber-procedure mapping and working hours for filtering
+        // Prepare barber data for JavaScript
+        $barbersData = [];
         $barberProcedureMap = [];
-        $barberWorkingHours = [];
 
         foreach ($barbers as $barber) {
+            // Serialize barber for JavaScript
+            $barbersData[] = [
+                'id' => $barber->getId(),
+                'firstName' => $barber->getFirstName(),
+                'lastName' => $barber->getLastName(),
+                'barberTitleBg' => $barber->getBarberTitleBg(),
+                'isBarberJunior' => $barber->isBarberJunior(),
+            ];
+
+            // Get procedure mapping
             $barberProcedures = $this->barberProcedureRepository->findActiveProceduresForBarber($barber);
             $barberProcedureMap[$barber->getId()] = array_map(fn($p) => $p->getId(), $barberProcedures);
-
-            // Get working hours for selected date
-            $workingHours = $this->scheduleService->getWorkingHoursForDate($barber, $selectedDate);
-
-            if ($workingHours) {
-                $barberWorkingHours[$barber->getId()] = $workingHours;
-            }
         }
 
         return $this->render('client/appointment.html.twig',
@@ -197,13 +189,11 @@ class AppointmentController extends AbstractController
                 'appointment' => $appointment,
                 'error' => $error,
                 'barbers' => $barbers,
+                'barbersData' => $barbersData,
                 'procedures' => $procedures,
                 'appointments' => $allAppointments,
-                'today' => $selectedDateStr,
-                'currentTime' => $currentTime,
-                'occupiedSlots' => $occupiedSlots,
+                'today' => $todayStr,
                 'barberProcedureMap' => $barberProcedureMap,
-                'barberWorkingHours' => $barberWorkingHours,
             ]);
     }
 
@@ -657,9 +647,47 @@ class AppointmentController extends AbstractController
         ]);
     }
 
+    // ========================================
+    // API ENDPOINTS
+    // ========================================
+
+    /**
+     * Get availability data for a specific date (AJAX)
+     * Returns occupied slots and barber working hours
+     * @throws Exception
+     */
+    #[Route('/api/availability/{date}', name: 'api_availability', methods: ['GET'])]
+    public function getAvailability(string $date): Response
+    {
+        try {
+            $selectedDate = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Invalid date format'], 400);
+        }
+
+        // Get occupied slots for this date
+        $occupiedSlots = $this->appointmentsRepository->getOccupiedSlotsByDate($date);
+
+        // Get all barbers
+        $barbers = $this->userRepository->getAllBarbersSortedBySeniority();
+
+        // Get working hours for each barber on this date
+        $barberWorkingHours = [];
+        foreach ($barbers as $barber) {
+            $workingHours = $this->scheduleService->getWorkingHoursForDate($barber, $selectedDate);
+            if ($workingHours) {
+                $barberWorkingHours[$barber->getId()] = $workingHours;
+            }
+        }
+
+        return $this->json([
+            'occupiedSlots' => $occupiedSlots,
+            'barberWorkingHours' => $barberWorkingHours,
+        ]);
+    }
 
     // ========================================
-    // HELPERS
+    // HELPER METHODS
     // ========================================
 
     /**
