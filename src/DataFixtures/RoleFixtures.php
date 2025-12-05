@@ -16,7 +16,7 @@ class RoleFixtures extends Fixture
     public const ROLE_REFERENCE_CLIENT = 'ROLE_CLIENT';
     public const ROLE_REFERENCE_DEFAULT = 'ROLE_DEFAULT';
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
     }
 }

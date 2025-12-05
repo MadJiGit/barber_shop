@@ -9,12 +9,15 @@ use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
+use App\Service\EmailService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ProfileController extends AbstractController
@@ -23,17 +26,26 @@ class ProfileController extends AbstractController
     private EntityManagerInterface $em;
     private AppointmentsRepository $appointmentsRepository;
     private BarberScheduleService $scheduleService;
+    private Security $security;
+    private UserPasswordHasherInterface $passwordHasher;
+    private EmailService $emailService;
 
     public function __construct(
         UserRepository $userRepository,
         EntityManagerInterface $em,
         AppointmentsRepository $appointmentsRepository,
-        BarberScheduleService $scheduleService
+        BarberScheduleService $scheduleService,
+        Security $security,
+        UserPasswordHasherInterface $passwordHasher,
+        EmailService $emailService
     ) {
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
         $this->scheduleService = $scheduleService;
+        $this->security = $security;
+        $this->passwordHasher = $passwordHasher;
+        $this->emailService = $emailService;
     }
 
     /**
@@ -69,7 +81,81 @@ class ProfileController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
+
         if ($form->isSubmitted() && $form->isValid()) {
+            // Check if user wants to change password
+            $currentPassword = $form->get('current_password')->getData();
+            $newPassword = $form->get('new_password')->getData();
+            $newPasswordRepeat = $form->get('new_password_repeat')->getData();
+
+            $passwordChangeRequested = !empty($currentPassword) || !empty($newPassword) || !empty($newPasswordRepeat);
+
+            if ($passwordChangeRequested) {
+                // Validate password change fields
+                if (empty($currentPassword)) {
+                    $this->addFlash('error', 'Моля, въведете текущата си парола.');
+                    $tab = $request->query->get('tab', 'profile');
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+                }
+
+                if (empty($newPassword) || empty($newPasswordRepeat)) {
+                    $this->addFlash('error', 'Моля, въведете новата парола два пъти.');
+                    $tab = $request->query->get('tab', 'profile');
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+                }
+
+                if ($newPassword !== $newPasswordRepeat) {
+                    $this->addFlash('error', 'Новите пароли не съвпадат.');
+                    $tab = $request->query->get('tab', 'profile');
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+                }
+
+                if (strlen($newPassword) < 6) {
+                    $this->addFlash('error', 'Новата парола трябва да е минимум 6 символа.');
+                    $tab = $request->query->get('tab', 'profile');
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+                }
+
+                // Verify current password
+                if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    $this->addFlash('error', 'Текущата парола е грешна.');
+                    $tab = $request->query->get('tab', 'profile');
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+                }
+
+                // Generate token for password change confirmation
+                $changeToken = bin2hex(random_bytes(32));
+                $user->setConfirmationToken($changeToken);
+
+                // Set token expiration to 1 hour from now (using Sofia timezone)
+                $expiresAt = DateTimeHelper::now()->modify('+1 hour');
+                $user->setTokenExpiresAt($expiresAt);
+
+                // Hash the new password and store it temporarily in a session or temp field
+                // We'll store the hashed password in the confirmation_token field temporarily
+                // Actually, we need a better approach - let's store it in session
+                $newPasswordHashed = $this->passwordHasher->hashPassword($user, $newPassword);
+                $request->getSession()->set('pending_password_change_' . $user->getId(), $newPasswordHashed);
+
+                $user->setDateLastUpdate(DateTimeHelper::now());
+
+                try {
+                    $this->em->flush();
+                } catch (Exception $e) {
+                    $this->addFlash('error', 'Възникна грешка: ' . $e->getMessage());
+                    return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
+                }
+
+                // Send confirmation email
+                $this->emailService->sendPasswordChangeConfirmation($user, $changeToken, $newPasswordHashed);
+
+                $this->addFlash('success', 'Изпратихме ви имейл с линк за потвърждение на смяната на паролата. Линкът е валиден 1 час.');
+
+                $tab = $request->query->get('tab', 'profile');
+                return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+            }
+
+            // Normal profile update (no password change)
             $firstName = $form->get('first_name')->getData();
             $lastName = $form->get('last_name')->getData();
             $nickName = $form->get('nick_name')->getData();
@@ -86,14 +172,18 @@ class ProfileController extends AbstractController
             $user->setPhone($phone);
             $user->setDateLastUpdate(DateTimeHelper::now());
 
-            $this->em->persist($user);
-            $this->em->flush();
-            $this->em->clear();
+            try {
+                $this->em->flush();
+            } catch (Exception $e) {
+                $this->addFlash('error', 'Възникна грешка при обновяване на профила: ' . $e->getMessage());
+                return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
+            }
 
             $this->addFlash('success', 'Профилът е обновен успешно!');
 
-            $tab = $request->request->get('tab', 'profile');
-            return $this->redirectToRoute('profile_edit', ['id' => $user->getId(), 'tab' => $tab]);
+            // Preserve the active tab (from query string)
+            $tab = $request->query->get('tab', 'profile');
+            return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
         }
 
         // Initialize variables

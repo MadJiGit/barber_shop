@@ -1,0 +1,205 @@
+/**
+ * Authentication Pages Styles
+ * Used by: login, register, forgot_password, reset_password, check_email
+ */
+
+/* Common Section Styles */
+.login-section,
+.register-section,
+.forgot-password-section,
+.reset-password-section,
+.check-email-section {
+    background: #f8f9fa;
+    min-height: 60vh;
+}
+
+/* Form Wrappers */
+.login-form-wrapper,
+.register-form-wrapper,
+.forgot-password-wrapper,
+.reset-password-wrapper,
+.check-email-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 50px 40px;
+}
+
+/* Section Titles */
+.login-form .section-tittle h2,
+.register-form .section-tittle h2,
+.forgot-password-form .section-tittle h2,
+.reset-password-form .section-tittle h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.login-form .section-tittle p,
+.register-form .section-tittle p,
+.forgot-password-form .section-tittle p,
+.reset-password-form .section-tittle p {
+    color: #7f8c8d;
+    font-size: 16px;
+}
+
+/* Form Labels */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.form-label i {
+    color: #d4a024;
+    margin-right: 8px;
+}
+
+/* Form Controls */
+.form-control-lg {
+    padding: 15px 20px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.form-control-lg:focus {
+    border-color: #d4a024;
+    box-shadow: 0 0 0 0.2rem rgba(212, 160, 36, 0.25);
+}
+
+/* Checkboxes */
+.form-check-input:checked {
+    background-color: #d4a024;
+    border-color: #d4a024;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #d4a024;
+    border-color: #d4a024;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #b8891f;
+    border-color: #b8891f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 160, 36, 0.3);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    padding: 15px 20px;
+}
+
+.alert i {
+    margin-right: 10px;
+}
+
+.alert-info {
+    border-left: 4px solid #d4a024;
+    background-color: #fff9e6;
+    border-radius: 8px;
+}
+
+/* Check Email Page - Icon Animation */
+.icon-wrapper {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Cards */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.card-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Registration Page Specific */
+.registration-section {
+    background: #f8f9fa;
+    min-height: 60vh;
+}
+
+.registration-form-wrapper {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 50px 40px;
+}
+
+.registration-form .section-tittle h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.registration-form .section-tittle p {
+    color: #7f8c8d;
+    font-size: 16px;
+}
+
+.register-section .form-group {
+    margin-bottom: 25px;
+}
+
+.register-section .text-muted {
+    font-size: 14px;
+}
+
+.form-check-label {
+    color: #2c3e50;
+}
+
+.form-check-label a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-check-label a:hover {
+    text-decoration: underline;
+}
+
+.form-text {
+    display: block;
+    margin-top: 8px;
+    color: #6c757d;
+}
+
+.form-text i {
+    margin-right: 5px;
+}
+
+.invalid-feedback {
+    display: block;
+    margin-top: 8px;
+    color: #dc3545;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .login-form-wrapper,
+    .register-form-wrapper,
+    .forgot-password-wrapper,
+    .reset-password-wrapper,
+    .check-email-card {
+        padding: 30px 20px;
+    }
+}

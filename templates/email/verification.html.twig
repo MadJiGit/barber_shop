@@ -1,0 +1,30 @@
+{% extends 'email/base.html.twig' %}
+
+{% block title %}Потвърдете вашия имейл{% endblock %}
+
+{% block header %}Добре дошли в Barber Shop!{% endblock %}
+
+{% block body %}
+    <h2>Здравейте{% if user.firstName %}, {{ user.firstName }}{% endif %}!</h2>
+
+    <p>Благодарим ви, че се регистрирахте в Barber Shop!</p>
+
+    <p>За да завършите регистрацията и да активирате вашия акаунт, моля кликнете на бутона по-долу:</p>
+
+    <div style="text-align: center;">
+        <a href="{{ url('app_verify_email', {token: verificationToken}) }}" class="button">
+            Потвърдете имейл адреса
+        </a>
+    </div>
+
+    <p>Ако бутонът не работи, копирайте и поставете следния линк в браузъра си:</p>
+    <p style="word-break: break-all; color: #7f8c8d; font-size: 14px;">
+        {{ url('app_verify_email', {token: verificationToken}) }}
+    </p>
+
+    <p><strong>Важно:</strong> Този линк е валиден за 24 часа. След това ще трябва да се регистрирате отново.</p>
+
+    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
+
+    <p>Ако не сте се регистрирали в Barber Shop, моля игнорирайте този имейл.</p>
+{% endblock %}

@@ -30,7 +30,10 @@ function formatDateForDisplay(dateStr) {
  * Convert date from dd-MM-yyyy to yyyy-mm-dd for API/backend
  */
 function formatDateForAPI(dateStr) {
-    const [day, month, year] = dateStr.split('-');
+    const parts = dateStr.split('-');
+    const day = parts[0].padStart(2, '0');
+    const month = parts[1].padStart(2, '0');
+    const year = parts[2];
     return `${year}-${month}-${day}`;
 }
 
@@ -40,8 +43,7 @@ function formatDateForAPI(dateStr) {
 function updateDayOfWeek() {
     const dayOfWeekElement = document.getElementById('day_of_week');
     if (dayOfWeekElement) {
-        const dayOfWeek = dayNamesBg[currentDate.getDay()];
-        dayOfWeekElement.textContent = dayOfWeek;
+        dayOfWeekElement.textContent = dayNamesBg[currentDate.getDay()];
     }
 }
 
@@ -51,9 +53,19 @@ function updateDayOfWeek() {
 function initializeAppointmentForm(data) {
     appointmentsData = data.appointments || [];
     today = data.today; // Actual server date - never changes
-    currentDate = new Date(data.today); // Start with today, user can change it
+
+    // Parse date as local time, not UTC
+    const [year, month, day] = data.today.split('-');
+    currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+
     barbersData = data.barbers || [];
     barberProcedureMap = data.barberProcedureMap || {};
+
+    // Update day of week display after currentDate is set
+    updateDayOfWeek();
+
+    // Update hidden input for form submission
+    document.getElementById('selected_appointment_date').value = today;
 
     // Load availability for today on initial load
     loadAvailability(today);
@@ -207,13 +219,20 @@ function changeDate(days) {
         return; // Block navigation to past dates
     }
 
-    const dateStr = newDate.toISOString().split('T')[0];
+    // Format date as yyyy-mm-dd using local time, not UTC
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, '0');
+    const day = String(newDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
 
     // Update current date
     currentDate = newDate;
 
     // Update day of week display
     updateDayOfWeek();
+
+    // Update hidden input for form submission
+    document.getElementById('selected_appointment_date').value = dateStr;
 
     // Update URL without reloading page
     const url = new URL(window.location);
@@ -440,9 +459,6 @@ function checkFormValidity() {
  * Initialize on DOM ready
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Update day of week display on initial load
-    updateDayOfWeek();
-
     // Restore selected procedure from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const procedureIdFromUrl = urlParams.get('procedure');
@@ -484,11 +500,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Convert from dd-mm-yyyy to yyyy-mm-dd for internal use
                             const selectedDate = formatDateForAPI(selectedDateDisplay);
 
-                            // Update current date
-                            currentDate = new Date(selectedDate);
+                            // Update current date - parse as local time, not UTC
+                            const [year, month, day] = selectedDate.split('-');
+                            currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 
                             // Update day of week display
                             updateDayOfWeek();
+
+                            // Update hidden input for form submission
+                            document.getElementById('selected_appointment_date').value = selectedDate;
 
                             // Update URL without reloading page (use yyyy-mm-dd format)
                             const url = new URL(window.location);

@@ -13,6 +13,7 @@ use App\Repository\UserRepository;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
+use App\Service\EmailService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -20,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -36,6 +38,7 @@ class AppointmentController extends AbstractController
     private ProcedureRepository $procedureRepository;
     private BarberProcedureRepository $barberProcedureRepository;
     private BarberScheduleService $scheduleService;
+    private EmailService $emailService;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -44,15 +47,17 @@ class AppointmentController extends AbstractController
         AppointmentValidator $appointmentValidator,
         ProcedureRepository $procedureRepository,
         BarberProcedureRepository $barberProcedureRepository,
-        BarberScheduleService $scheduleService
+        BarberScheduleService $scheduleService,
+        EmailService $emailService
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
         $this->userRepository = $userRepository;
         $this->appointmentValidator = $appointmentValidator;
-        $this->procedureRepository = $procedureRepository;              
-        $this->barberProcedureRepository = $barberProcedureRepository; 
-        $this->scheduleService = $scheduleService;                     
+        $this->procedureRepository = $procedureRepository;
+        $this->barberProcedureRepository = $barberProcedureRepository;
+        $this->scheduleService = $scheduleService;
+        $this->emailService = $emailService;
     }
 
     // ========================================
@@ -64,6 +69,7 @@ class AppointmentController extends AbstractController
      * GET: Show booking form
      * POST: Create appointment
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     #[Route('/book/{id}', name: 'appointment_book', methods: ['GET', 'POST'])]
     public function book(Request $request, int|string $id = ''): Response
@@ -84,6 +90,7 @@ class AppointmentController extends AbstractController
         // Handle POST request directly (Symfony form used only for CSRF token)
         if ($request->isMethod('POST')) {
             // Get data from request
+
             $procedureId = $request->request->get('procedures');
             $barberId = $request->request->get('barbers');
             $appointmentStart = $request->request->get('appointment_start');
@@ -153,6 +160,9 @@ class AppointmentController extends AbstractController
 
             $this->appointmentsRepository->save($appointment);
 
+            // Send confirmation email to client
+            $this->emailService->sendAppointmentConfirmation($appointment);
+
             $this->addFlash('success', 'Успешно запазихте час!');
 
             return $this->redirectToRoute('appointment_book',
@@ -200,6 +210,7 @@ class AppointmentController extends AbstractController
     /**
      * Cancel appointment (Client)
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     #[Route('/{id}/client-cancel', name: 'appointment_client_cancel', methods: ['POST'])]
     public function clientCancel(Request $request, int $id): Response
@@ -249,6 +260,9 @@ class AppointmentController extends AbstractController
         $this->em->persist($appointment);
         $this->em->flush();
 
+        // Send cancellation email notification
+        $this->emailService->sendAppointmentCancellation($appointment, 'client');
+
         $this->addFlash('success', 'Часът е успешно отменен.');
 
         $tab = $request->request->get('tab', 'profile');
@@ -296,6 +310,9 @@ class AppointmentController extends AbstractController
         $appointment->setCancellationReason('Отменен за промяна на час');
         $this->em->persist($appointment);
         $this->em->flush();
+
+        // Send cancellation email notification
+        $this->emailService->sendAppointmentCancellation($appointment, 'client');
 
         // Redirect to booking page
         $this->addFlash('info', 'Изберете нов час за вашето посещение.');
@@ -357,6 +374,7 @@ class AppointmentController extends AbstractController
     /**
      * Cancel appointment - Barber side (notifies client)
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     #[Route('/{id}/barber-cancel', name: 'appointment_barber_cancel', methods: ['POST'])]
     public function barberCancel(int $id): Response
@@ -399,7 +417,8 @@ class AppointmentController extends AbstractController
         $this->em->persist($appointment);
         $this->em->flush();
 
-        // TODO: Send email notification to client about cancellation
+        // Send email notification to client about cancellation
+        $this->emailService->sendAppointmentCancellation($appointment, 'barber');
 
         return $this->json([
             'success' => true,
@@ -614,6 +633,7 @@ class AppointmentController extends AbstractController
     /**
      * Cancel appointment (Manager side)
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     #[Route('/{id}/manager-cancel', name: 'appointment_manager_cancel', methods: ['POST'])]
     public function managerCancel(int $id, Request $request): Response
@@ -639,7 +659,8 @@ class AppointmentController extends AbstractController
         $this->em->persist($appointment);
         $this->em->flush();
 
-        // TODO: Send email notification to client
+        // Send email notification to client
+        $this->emailService->sendAppointmentCancellation($appointment, 'manager');
 
         return $this->json([
             'success' => true,
@@ -660,8 +681,8 @@ class AppointmentController extends AbstractController
     public function getAvailability(string $date): Response
     {
         try {
-            $selectedDate = new \DateTimeImmutable($date);
-        } catch (\Exception $e) {
+            $selectedDate = new DateTimeImmutable($date);
+        } catch (Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
 
@@ -691,18 +712,14 @@ class AppointmentController extends AbstractController
     // ========================================
 
     /**
-     * Helper: Check if user exists and has completed profile
+     * Helper: Check if user exists
      */
-    private function checkIfUserExistAndHasProfile(int $id): RedirectResponse|User
+    private function checkIfUserExistAndHasProfile(int $id): User
     {
         $user = $this->userRepository->findOneBy(['id' => $id], []);
 
         if (!$user) {
             throw $this->createNotFoundException('There is no user');
-        }
-
-        if (!$user->getFirstName()) {
-            return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
         }
 
         return $user;

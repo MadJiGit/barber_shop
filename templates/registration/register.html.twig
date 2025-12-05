@@ -70,6 +70,22 @@
                                     </small>
                                 </div>
 
+                                <div class="form-group mb-30">
+                                    <label for="{{ registrationForm.plainRepeatPassword.vars.id }}" class="form-label">
+                                        <i class="fas fa-lock"></i> Повторете парола
+                                    </label>
+                                    {{ form_widget(registrationForm.plainRepeatPassword, {
+                                        'attr': {
+                                            'class': 'form-control form-control-lg',
+                                            'placeholder': 'Паролата трябва да съвпада с предишната'
+                                        }
+                                    }) }}
+                                    {{ form_errors(registrationForm.plainPassword) }}
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle"></i> Паролата трябва да съвпада с предишната
+                                    </small>
+                                </div>
+
                                 <div class="form-check mb-30">
                                     {{ form_widget(registrationForm.agreeTerms, {
                                         'attr': {
@@ -109,117 +125,5 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        .registration-section {
-            background: #f8f9fa;
-            min-height: 60vh;
-        }
-
-        .registration-form-wrapper {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 50px 40px;
-        }
-
-        .registration-form .section-tittle h2 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .registration-form .section-tittle p {
-            color: #7f8c8d;
-            font-size: 16px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .form-label i {
-            color: #d4a024;
-            margin-right: 8px;
-        }
-
-        .form-control-lg {
-            padding: 15px 20px;
-            font-size: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-lg:focus {
-            border-color: #d4a024;
-            box-shadow: 0 0 0 0.2rem rgba(212, 160, 36, 0.25);
-        }
-
-        .form-check-input:checked {
-            background-color: #d4a024;
-            border-color: #d4a024;
-        }
-
-        .form-check-label {
-            color: #2c3e50;
-        }
-
-        .form-check-label a {
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .form-check-label a:hover {
-            text-decoration: underline;
-        }
-
-        .btn-primary {
-            background-color: #d4a024;
-            border-color: #d4a024;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #b8891f;
-            border-color: #b8891f;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 160, 36, 0.3);
-        }
-
-        .alert {
-            border-radius: 10px;
-            padding: 15px 20px;
-        }
-
-        .alert i {
-            margin-right: 10px;
-        }
-
-        .form-text {
-            display: block;
-            margin-top: 8px;
-            color: #6c757d;
-        }
-
-        .form-text i {
-            margin-right: 5px;
-        }
-
-        .invalid-feedback {
-            display: block;
-            margin-top: 8px;
-            color: #dc3545;
-        }
-
-        @media (max-width: 768px) {
-            .registration-form-wrapper {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 {% endblock %}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Barber Shop{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #d4a024 0%, #b8891f 100%);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .email-body {
+            padding: 40px 30px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .email-body h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 20px 0;
+            background-color: #d4a024;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #b8891f;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .email-footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>{% block header %}Barber Shop{% endblock %}</h1>
+        </div>
+        <div class="email-body">
+            {% block body %}{% endblock %}
+        </div>
+        <div class="email-footer">
+            <p>&copy; {{ 'now'|date('Y') }} Barber Shop. Всички права запазени.</p>
+            <p>Това е автоматично генериран имейл. Моля, не отговаряйте.</p>
+        </div>
+    </div>
+</body>
+</html>

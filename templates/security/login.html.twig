@@ -93,10 +93,15 @@
                                 </div>
 
                                 <div class="text-center">
-                                    <p class="mb-0">
+                                    <p class="mb-2">
                                         Нямате профил?
                                         <a href="{{ path('app_register') }}" class="text-primary fw-bold">
                                             Регистрирайте се тук
+                                        </a>
+                                    </p>
+                                    <p class="mb-0">
+                                        <a href="{{ path('app_forgot_password') }}" class="text-muted">
+                                            <i class="fas fa-key"></i> Забравена парола?
                                         </a>
                                     </p>
                                 </div>
@@ -112,88 +117,5 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        .login-section {
-            background: #f8f9fa;
-            min-height: 60vh;
-        }
-
-        .login-form-wrapper {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 50px 40px;
-        }
-
-        .login-form .section-tittle h2 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .login-form .section-tittle p {
-            color: #7f8c8d;
-            font-size: 16px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .form-label i {
-            color: #d4a024;
-            margin-right: 8px;
-        }
-
-        .form-control-lg {
-            padding: 15px 20px;
-            font-size: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-lg:focus {
-            border-color: #d4a024;
-            box-shadow: 0 0 0 0.2rem rgba(212, 160, 36, 0.25);
-        }
-
-        .form-check-input:checked {
-            background-color: #d4a024;
-            border-color: #d4a024;
-        }
-
-        .btn-primary {
-            background-color: #d4a024;
-            border-color: #d4a024;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #b8891f;
-            border-color: #b8891f;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 160, 36, 0.3);
-        }
-
-        .alert {
-            border-radius: 10px;
-            padding: 15px 20px;
-        }
-
-        .alert i {
-            margin-right: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .login-form-wrapper {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 {% endblock %}

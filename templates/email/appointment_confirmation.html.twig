@@ -1,0 +1,72 @@
+{% extends 'email/base.html.twig' %}
+
+{% block body %}
+    <h1 style="color: #28a745; margin-bottom: 20px;">✓ Вашият час е потвърден!</h1>
+
+    <p style="font-size: 16px; line-height: 1.6; color: #333;">
+        Здравейте{{ client.firstName ? ', ' ~ client.firstName : '' }},
+    </p>
+
+    <p style="font-size: 16px; line-height: 1.6; color: #333;">
+        Вашият час в <strong>Barber Shop</strong> е успешно потвърден!
+    </p>
+
+    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 25px 0;">
+        <h3 style="color: #d4a024; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #d4a024; padding-bottom: 10px;">
+            📅 Детайли за вашия час
+        </h3>
+
+        <table style="width: 100%; font-size: 15px; line-height: 1.8;">
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>🗓️ Дата:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.date|date('d.m.Y') }} ({% set dayNames = {0: 'Неделя', 1: 'Понеделник', 2: 'Вторник', 3: 'Сряда', 4: 'Четвъртък', 5: 'Петък', 6: 'Събота'} %}{{ dayNames[appointment.date|date('w')] }})</td>
+            </tr>
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>🕐 Час:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.date|date('H:i') }}</td>
+            </tr>
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>💈 Бръснар:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ barber.firstName }} {{ barber.lastName }}</td>
+            </tr>
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>✂️ Услуга:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.procedureType.type }}</td>
+            </tr>
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>⏱️ Продължителност:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.duration }} мин.</td>
+            </tr>
+            <tr>
+                <td style="color: #666; padding: 5px 0;"><strong>💰 Цена:</strong></td>
+                <td style="color: #333; padding: 5px 0; font-weight: bold;">{{ barber.isBarberJunior ? appointment.procedureType.priceJunior : appointment.procedureType.priceMaster }} лв.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 25px 0;">
+        <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
+            <strong>ℹ️ Важно:</strong> Моля, бъдете на време. Ако имате нужда да отмените или промените часа си, можете да го направите от вашия профил или да се свържете с нас.
+        </p>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ url('profile_edit', {id: client.id}) }}"
+           style="display: inline-block; padding: 15px 40px; background-color: #d4a024; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold; margin-right: 10px;">
+            Вижте вашите часове
+        </a>
+    </div>
+
+    <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
+        Очакваме ви с нетърпение!
+    </p>
+
+    <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 10px;">
+        Поздрави,<br>
+        <strong>Екипът на Barber Shop</strong>
+    </p>
+
+    <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+        📧 За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a>
+    </p>
+{% endblock %}
