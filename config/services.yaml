@@ -29,4 +29,4 @@ services:
     App\Service\EmailService:
         arguments:
             $senderEmail: '%env(MAILER_NOREPLY_EMAIL)%'
-            $senderName: '%env(MAILER_FROM_NAME)%'
+            $senderName: '%env(MAILER_NOREPLY_NAME)%'
