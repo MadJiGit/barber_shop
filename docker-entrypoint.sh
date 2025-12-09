@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-echo "Running database migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || echo "Migrations failed or not needed"
+echo "Checking database schema..."
+# Try to create schema if it doesn't exist (first deployment)
+php bin/console doctrine:schema:update --force --complete || echo "Schema already exists"
 
 echo "Clearing cache..."
 php bin/console cache:clear --no-warmup || echo "Cache clear failed"
