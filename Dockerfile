@@ -30,12 +30,14 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite
 
 WORKDIR /var/www/html
-COPY . .
-COPY --from=vendor /app/vendor ./vendor
-COPY --from=assets /app/public/build ./public/build
+COPY --chown=www-data:www-data . .
+COPY --from=vendor --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=assets --chown=www-data:www-data /app/public/build ./public/build
 
 ENV APP_ENV=prod
-RUN mkdir -p var && chown -R www-data:www-data var
+RUN mkdir -p var/cache var/log && \
+    chown -R www-data:www-data var && \
+    chmod -R 777 var
 
 # Configure Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
