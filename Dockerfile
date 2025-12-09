@@ -1,34 +1,27 @@
-# Use official PHP image with Apache
+# Stage 1 - Composer dependencies
+FROM composer:2 AS vendor
+
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Stage 2 - PHP + Apache
 FROM php:8.2-apache
 
-# Enable Apache mod_rewrite (required for Symfony routing)
+RUN apt-get update && apt-get install -y \
+    git unzip zip libicu-dev libzip-dev libpng-dev \
+    && docker-php-ext-install intl pdo pdo_mysql zip opcache
+
 RUN a2enmod rewrite
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libicu-dev \
-    libzip-dev \
-    && docker-php-ext-install intl pdo pdo_mysql zip
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
 COPY . .
+COPY --from=vendor /app/vendor ./vendor
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install dependencies (production mode)
-RUN composer install --no-dev --optimize-autoloader
-
-# Set proper permissions
 RUN chown -R www-data:www-data /var/www/html/var
 
-# Expose port 80
 EXPOSE 80
-
-# Start Apache
 CMD ["apache2-foreground"]
