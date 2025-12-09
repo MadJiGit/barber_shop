@@ -3,7 +3,7 @@ FROM node:20-alpine AS assets
 
 WORKDIR /app
 COPY package*.json webpack.config.js ./
-RUN npm ci --only=production
+RUN npm ci
 
 COPY assets ./assets
 RUN npm run build
