@@ -18,7 +18,7 @@ FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
     git unzip zip libicu-dev libzip-dev libpng-dev libpq-dev \
-    && docker-php-ext-install intl pdo pdo_pgsql pgsql zip opcache \
+    && docker-php-ext-install intl pdo pdo_pgsql zip opcache \
     && a2enmod rewrite
 
 WORKDIR /var/www/html
