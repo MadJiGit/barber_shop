@@ -4,8 +4,7 @@ FROM php:8.2-cli AS vendor
 # Install system dependencies and PHP extensions for composer stage
 RUN apt-get update && apt-get install -y \
     git unzip zip libicu-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl pdo pdo_pgsql zip \
-    && docker-php-ext-enable pdo_pgsql pgsql
+    && docker-php-ext-install intl pdo pdo_pgsql zip
 
 # Install Composer manually
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
