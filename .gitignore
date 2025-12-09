@@ -28,3 +28,6 @@ public/assets/img/.DS_Store
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+
+template_reference/
