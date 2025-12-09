@@ -3,7 +3,7 @@ FROM php:8.2-cli AS vendor
 
 RUN apt-get update && apt-get install -y \
     git unzip zip libicu-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl pdo pdo_pgsql zip
+    && docker-php-ext-install intl pdo pdo_pgsql pdo_mysql zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -16,7 +16,7 @@ FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
     git unzip zip libicu-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl pdo pdo_pgsql zip \
+    && docker-php-ext-install intl pdo pdo_pgsql pdo_mysql zip \
     && a2enmod rewrite
 
 WORKDIR /var/www/html
