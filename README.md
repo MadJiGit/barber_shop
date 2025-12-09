@@ -58,7 +58,8 @@ We offer installation, customization, branding, and long-term support.
 
 ## Technologies Used
 
-- Symfony 6+
+- PHP 8.3+
+- Symfony 7+
 - Doctrine ORM
 - MySQL
 - Twig Templates
