@@ -14,12 +14,12 @@
 }
 
 .nav-tabs .nav-link:hover {
-    color: #d4a574;
+    color: #d19f68;
     background-color: #e9ecef;
 }
 
 .nav-tabs .nav-link.active {
-    color: #d4a574;
+    color: #d19f68;
     background-color: #fff;
     border-bottom-color: #fff;
     font-weight: 600;
@@ -42,31 +42,8 @@
 }
 
 .user-profile-form .form-control:focus {
-    border-color: #d4a574;
-    box-shadow: 0 0 0 0.2rem rgba(212, 165, 116, 0.25);
+    border-color: #d19f68;
+    box-shadow: 0 0 0 0.2rem rgba(209, 159, 104, 0.25);
 }
 
-.user-profile-form .btn-primary {
-    background-color: #d4a574;
-    border-color: #d4a574;
-    transition: all 0.3s ease;
-}
-
-.user-profile-form .btn-primary:hover {
-    background-color: #c8955f;
-    border-color: #c8955f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 165, 116, 0.4);
-}
-
-.profile-actions .btn-outline-primary {
-    color: #d4a574;
-    border-color: #d4a574;
-    transition: all 0.3s ease;
-}
-
-.profile-actions .btn-outline-primary:hover {
-    background-color: #d4a574;
-    border-color: #d4a574;
-    color: #fff;
-}
+/* btn-primary and btn-outline-primary now defined in buttons.css */

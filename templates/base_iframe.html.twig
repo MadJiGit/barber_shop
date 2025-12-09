@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Barber Shop{% endblock %}</title>
-    <link rel="icon" href="{{ asset('assets/img/favicon_barbershop.png') }}">
+    <title>{% block title %}{{ 'base_iframe.title' | trans }}{% endblock %}</title>
+    <link rel="icon" href="{{ asset('assets/favicon_barbershop.png') }}">
 
     {% block stylesheets %}
         <!-- Bootstrap CSS -->

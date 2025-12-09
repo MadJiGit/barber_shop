@@ -1,0 +1,186 @@
+#  homepage.html.twig
+
+homepage:
+    title: 'Barber Shop - Professional Hair Styling & Grooming'
+    welcome_1: 'Welcome to our Barber Shop!'
+    welcome_2: 'Our Hair Style Makes You Look Elegant'
+    make_appointment: 'Make an Appointment'
+    about_us:
+        title: 'About Us'
+        description: 'At Barber Shop, we provide top-notch grooming'
+        we_provide: 'We provide professional hair styling and grooming services with experienced barbers. Book your appointment online and enjoy our premium services in a modern, comfortable environment.'
+        our_team: 'Our team of skilled professionals is dedicated to giving you the perfect look that matches your style and personality.'
+        become_a_member: 'Become a Member'
+    service:
+        title: 'Professional Services'
+        description: "Our Best Services That We're Offering"
+        service_1:
+            title: 'Stylish Hair Cut'
+            description: "Professional men's haircuts, kids cuts, and modern styling tailored to your preference."
+        service_2:
+            title: 'Hot Towel Shave'
+            description: "Traditional hot towel shave experience with premium products for ultimate relaxation."
+        service_3:
+            title: 'Beard Styling'
+            description: "Expert beard trimming, shaping and grooming to complement your look perfectly."
+    booking:
+        title_1: 'Book Without Account'
+        title_2: 'Make an Appointment'
+        description: 'No registration needed - just fill in your details and pick a time!'
+        email: "You'll receive a confirmation email with your appointment details"
+        manage: 'Manage your booking via the link in the email (cancel or reschedule)'
+        track_description: 'Want to track your appointments?'
+        track_button: 'Create an account'
+        book_now_button: 'BOOK NOW!'
+
+
+# base_iframe.html.twig
+
+base_iframe:
+    title: 'Barber Shop'
+
+# _appointment_table.html.twig
+
+appointment_table:
+    appointment_empty: 'You have no appointments yet.'
+    date: 'Date & Time'
+    client: 'Client'
+    phone: 'Phone'
+    service: 'Service'
+    duration: 'Duration'
+    status: 'Status'
+    action: 'Actions'
+    today: 'Today'
+    confirm: 'Confirmed'
+    completed: 'Completed'
+    cancelled: 'Cancelled'
+    complete_title: 'Mark as Completed'
+    cancel_appointment: 'Cancel Appointment'
+
+#  base.html.twig
+
+base:
+    header:
+        title: 'Barber Shop - Book Your Appointment'
+        description: 'Professional barber shop appointment booking system'
+    nav:
+        home: 'Home'
+        book_appointment: 'Book Appointment'
+        manager: 'Manager'
+        admin: 'Admin'
+        hello: 'Hello'
+        logout: 'Logout'
+        login: 'Login'
+        register: 'Register'
+        BG: 'BG'
+        EN: 'EN'
+    footer:
+        text: 'Barber Shop. All rights reserved.'
+        back_to_top: 'Back to Top'
+        go_to_top: 'Go to Top'
+    btn.become_member: 'Become a Member'
+
+# reset_password.html.twig
+
+reset_password:
+    title: "New password - Barber Shop"
+    new_password: 'New Password'
+    section_new_password_title: 'Set Your New Password'
+    section_new_password_description: 'Choose a strong password for your account.'
+    password_field_placeholder: 'At least 6 characters'
+    password_field_error: 'Password must be at least 6 characters long.'
+    confirm_password: 'Confirm Password'
+    repeat_password: 'Repeat Password'
+    submit_button: 'Save New Password'
+    remember_your_password: 'Remember your password?'
+    to_login: 'Go to Login'
+
+# login.html.twig
+
+login:
+    title: 'Login'
+    section_title: 'Sign in to your account'
+    section_description: 'Welcome back! Enter your login details.'
+    already_logged_in: 'You are already logged in as'
+    to_homepage: 'Go to homepage'
+    email_label: 'Email address'
+    password_label: 'Password'
+    remember_me: 'Remember me'
+    submit: 'Sign In'
+    no_account: "Don't have an account?"
+    register_here: 'Register here'
+    forgot_password: 'Forgot password?'
+
+
+#  forgot_password.html.twig
+
+forgot_password:
+    title: 'Forgot Password - Barber Shop'
+    hero_title: 'Forgot Password'
+    section_title: 'Reset your password'
+    section_description: 'Enter your email address and we will send you a reset link.'
+    email_label: 'Email address'
+    email_placeholder: 'you@example.com'
+    submit: 'Send reset link'
+    remember_password: 'Remember your password?'
+    to_login: 'Sign in here'
+
+# register.html.twig
+
+register:
+    title: 'Register - Barber Shop'
+    hero_title: 'Register'
+    section_title: 'Create your account'
+    section_description: 'Join us and start booking your favourite services.'
+    email_label: 'Email address'
+    email_placeholder: 'you@example.com'
+    password_label: 'Password'
+    password_placeholder: 'At least 6 characters'
+    password_hint: 'Password must be at least 6 characters long'
+    repeat_password_label: 'Repeat password'
+    repeat_password_placeholder: 'Password must match the previous one'
+    repeat_password_hint: 'The password must match the previous one'
+    agree_terms: 'I agree with the'
+    terms_link: 'Terms of Service'
+    submit: 'Register'
+    have_account: 'Already have an account?'
+    login_here: 'Log in here'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,15 +10,13 @@ use App\Repository\AppointmentsRepository;
 use App\Repository\BarberProcedureRepository;
 use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
+use App\Service\AppointmentService;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
 use App\Service\EmailService;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -26,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Centralized Appointment Controller
- * Handles all appointment operations: book, cancel, reschedule, complete, update status
+ * Handles all appointment operations: book, cancel, reschedule, complete, update status.
  */
 #[Route('/appointment')]
 class AppointmentController extends AbstractController
@@ -39,6 +37,7 @@ class AppointmentController extends AbstractController
     private BarberProcedureRepository $barberProcedureRepository;
     private BarberScheduleService $scheduleService;
     private EmailService $emailService;
+    private AppointmentService $appointmentService;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -48,7 +47,8 @@ class AppointmentController extends AbstractController
         ProcedureRepository $procedureRepository,
         BarberProcedureRepository $barberProcedureRepository,
         BarberScheduleService $scheduleService,
-        EmailService $emailService
+        EmailService $emailService,
+        AppointmentService $appointmentService,
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
@@ -58,6 +58,7 @@ class AppointmentController extends AbstractController
         $this->barberProcedureRepository = $barberProcedureRepository;
         $this->scheduleService = $scheduleService;
         $this->emailService = $emailService;
+        $this->appointmentService = $appointmentService;
     }
 
     // ========================================
@@ -65,19 +66,35 @@ class AppointmentController extends AbstractController
     // ========================================
 
     /**
-     * Book new appointment (Client)
+     * Book a new appointment (Client or Guest)
      * GET: Show booking form
-     * POST: Create appointment
-     * @throws Exception
+     * POST: Create appointment.
+     *
+     * @throws \Exception
      * @throws TransportExceptionInterface
      */
-    #[Route('/book/{id}', name: 'appointment_book', methods: ['GET', 'POST'])]
-    public function book(Request $request, int|string $id = ''): Response
+    #[Route('/book/{id?}', name: 'appointment_book', methods: ['GET', 'POST'])]
+    public function book(Request $request, ?int $id = null): Response
     {
         $error = '';
-        $client = $this->checkIfUserExistAndHasProfile($id);
 
-        // Get all barbers initially (will be filtered by JS when procedure is selected)
+        // Determine if user is logged in or guest
+        $authUser = $this->getUser();
+        $client = null;
+        $isGuest = false;
+
+        if ($id) {
+            // ID provided in URL - use it
+            $client = $this->checkIfUserExistAndHasProfile($id);
+        } elseif ($authUser) {
+            // No ID but user is logged in - use logged in user
+            $client = $authUser;
+        } else {
+            // No ID and not logged in - guest booking
+            $isGuest = true;
+        }
+
+        // Get all barbers initially (will be filtered by JS when the procedure is selected)
         $barbers = $this->userRepository->getAllBarbersSortedBySeniority();
         $allAppointments = $this->appointmentsRepository->getAllAppointments();
         // Get only available procedures for booking
@@ -89,17 +106,63 @@ class AppointmentController extends AbstractController
 
         // Handle POST request directly (Symfony form used only for CSRF token)
         if ($request->isMethod('POST')) {
-            // Get data from request
+            // If guest booking - create guest user first
+            if ($isGuest) {
+                $guestEmail = $request->request->get('guest_email');
+                $guestFirstName = $request->request->get('guest_first_name');
+                $guestLastName = $request->request->get('guest_last_name');
+                $guestPhone = $request->request->get('guest_phone');
+                $gdprConsent = $request->request->get('gdpr_consent');
 
+                // Validate guest fields
+                if (!$guestEmail || !$guestFirstName || !$guestLastName || !$guestPhone) {
+                    $this->addFlash('error', 'Моля, попълнете всички полета за контакт.');
+
+                    return $this->redirectToRoute('appointment_book');
+                }
+
+                if (!$gdprConsent) {
+                    $this->addFlash('error', 'Моля, приемете условията за обработка на лични данни.');
+
+                    return $this->redirectToRoute('appointment_book');
+                }
+
+                // Check if email already exists
+                $existingUser = $this->userRepository->findOneBy(['email' => $guestEmail]);
+                if ($existingUser) {
+                    if ($existingUser->getIsActive()) {
+                        // Active user exists - they should log in
+                        $this->addFlash('error', 'Потребител с този имейл вече съществува. Моля, влезте в профила си.');
+
+                        return $this->redirectToRoute('app_login');
+                    }
+                    // Inactive (guest) user exists - reuse it
+                    $client = $existingUser;
+                } else {
+                    // Create a new guest user
+                    $client = $this->appointmentService->createGuestUser(
+                        $guestEmail,
+                        $guestFirstName,
+                        $guestLastName,
+                        $guestPhone
+                    );
+                }
+            }
+
+            // Get appointment data from request
             $procedureId = $request->request->get('procedures');
             $barberId = $request->request->get('barbers');
             $appointmentStart = $request->request->get('appointment_start');
             $pickedHours = $request->request->get('pickedHours');
 
+            // Helper for redirects (with or without id for guests)
+            $redirectParams = $client && !$isGuest ? ['id' => $client->getId()] : [];
+
             // Validate required fields
             if (!$procedureId || !$barberId || !$appointmentStart || !$pickedHours) {
                 $this->addFlash('error', 'Моля, попълнете всички полета.');
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             $procedure = $this->procedureRepository->findOneProcedureById($procedureId);
@@ -108,28 +171,32 @@ class AppointmentController extends AbstractController
             // Validate entities exist
             if (!$procedure || !$barber) {
                 $this->addFlash('error', 'Невалидна услуга или бръснар.');
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             // Validate procedure is available
             if (!$procedure->getAvailable()) {
                 $this->addFlash('error', 'Избраната услуга не е налична в момента.');
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             // Validate barber can perform this procedure
             $canPerform = $this->barberProcedureRepository->canBarberPerformProcedure($barber, $procedure);
             if (!$canPerform) {
                 $this->addFlash('error', 'Избраният бръснар не извършва тази услуга.');
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             // Create appointment datetime
             try {
-                $dateAppointment = new DateTimeImmutable($appointmentStart.' '.$pickedHours);
-            } catch (Exception $e) {
+                $dateAppointment = new \DateTimeImmutable($appointmentStart.' '.$pickedHours);
+            } catch (\Exception $e) {
                 $this->addFlash('error', 'Невалидна дата или час.');
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             $duration = $this->getDurationOfProcedure($procedure, $barber);
@@ -146,27 +213,42 @@ class AppointmentController extends AbstractController
                 foreach ($validationErrors as $validationError) {
                     $this->addFlash('error', $validationError);
                 }
-                return $this->redirectToRoute('appointment_book', ['id' => $client->getId()]);
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
-            // All validations passed - create appointment
-            $appointment->setClient($client);
-            $appointment->setBarber($barber);
-            $appointment->setProcedureType($procedure);
-            $appointment->setDate($dateAppointment);
-            $appointment->setDateAdded();
-            $appointment->setDuration($duration);
-            $appointment->setStatus('confirmed');
+            // All validations passed - create appointment using service
+            if ($client->getIsActive()) {
+                // Registered user - confirmed immediately
+                $appointment = $this->appointmentService->createRegisteredUserAppointment(
+                    $client,
+                    $barber,
+                    $procedure,
+                    $dateAppointment,
+                    $duration
+                );
 
-            $this->appointmentsRepository->save($appointment);
+                // Send confirmation email
+                $this->emailService->sendAppointmentConfirmation($appointment);
 
-            // Send confirmation email to client
-            $this->emailService->sendAppointmentConfirmation($appointment);
+                $this->addFlash('success', 'Успешно запазихте час!');
+            } else {
+                // Guest user - needs confirmation
+                $appointment = $this->appointmentService->createGuestAppointment(
+                    $client,
+                    $barber,
+                    $procedure,
+                    $dateAppointment,
+                    $duration
+                );
 
-            $this->addFlash('success', 'Успешно запазихте час!');
+                // Send confirmation email with token
+                $this->appointmentService->sendGuestConfirmationEmail($appointment);
 
-            return $this->redirectToRoute('appointment_book',
-                ['id' => $client->getId()]);
+                $this->addFlash('success', 'Резервацията е направена! Моля, проверете имейла си за потвърждение.');
+            }
+
+            return $this->redirectToRoute('appointment_book', $redirectParams);
         }
 
         // Get actual today (always from server time)
@@ -189,7 +271,7 @@ class AppointmentController extends AbstractController
 
             // Get procedure mapping
             $barberProcedures = $this->barberProcedureRepository->findActiveProceduresForBarber($barber);
-            $barberProcedureMap[$barber->getId()] = array_map(fn($p) => $p->getId(), $barberProcedures);
+            $barberProcedureMap[$barber->getId()] = array_map(fn ($p) => $p->getId(), $barberProcedures);
         }
 
         return $this->render('client/appointment.html.twig',
@@ -204,12 +286,48 @@ class AppointmentController extends AbstractController
                 'appointments' => $allAppointments,
                 'today' => $todayStr,
                 'barberProcedureMap' => $barberProcedureMap,
+                'isGuest' => $isGuest,
             ]);
     }
 
     /**
-     * Cancel appointment (Client)
-     * @throws Exception
+     * Confirm guest appointment via email token
+     */
+    #[Route('/confirm/{token}', name: 'appointment_guest_confirm', methods: ['GET'])]
+    public function guestConfirm(string $token): Response
+    {
+        $appointment = $this->appointmentService->confirmAppointment($token);
+
+        if (!$appointment) {
+            $this->addFlash('error', 'Невалиден или изтекъл линк за потвърждение.');
+            return $this->redirectToRoute('main');
+        }
+
+        $this->addFlash('success', 'Вашата резервация е потвърдена успешно!');
+        return $this->redirectToRoute('main');
+    }
+
+    /**
+     * Cancel guest appointment via email token
+     */
+    #[Route('/cancel-guest/{token}', name: 'appointment_guest_cancel', methods: ['GET'])]
+    public function guestCancel(string $token): Response
+    {
+        $appointment = $this->appointmentService->cancelAppointmentByToken($token, 'Отказана от клиента');
+
+        if (!$appointment) {
+            $this->addFlash('error', 'Невалиден линк за отказване.');
+            return $this->redirectToRoute('main');
+        }
+
+        $this->addFlash('success', 'Вашата резервация е отказана.');
+        return $this->redirectToRoute('main');
+    }
+
+    /**
+     * Cancel appointment (Client).
+     *
+     * @throws \Exception
      * @throws TransportExceptionInterface
      */
     #[Route('/{id}/client-cancel', name: 'appointment_client_cancel', methods: ['POST'])]
@@ -219,6 +337,7 @@ class AppointmentController extends AbstractController
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('cancel_appointment', $token)) {
             $this->addFlash('error', 'Невалиден CSRF токен.');
+
             return $this->redirectToRoute('main');
         }
 
@@ -227,6 +346,7 @@ class AppointmentController extends AbstractController
 
         if (!$appointment) {
             $this->addFlash('error', 'Часът не е намерен.');
+
             return $this->redirectToRoute('main');
         }
 
@@ -234,6 +354,7 @@ class AppointmentController extends AbstractController
         $authUser = parent::getUser();
         if (!$authUser || $appointment->getClient()->getId() !== $authUser->getId()) {
             $this->addFlash('error', 'Нямате право да отменяте този час.');
+
             return $this->redirectToRoute('main');
         }
 
@@ -242,13 +363,15 @@ class AppointmentController extends AbstractController
         if ($appointment->getDate() <= $now) {
             $this->addFlash('error', 'Не можете да отменяте час, който вече е минал.');
             $tab = $request->request->get('tab', 'profile');
+
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
 
         // Check if already cancelled
-        if ($appointment->getStatus() === 'cancelled') {
+        if ('cancelled' === $appointment->getStatus()) {
             $this->addFlash('warning', 'Този час вече е отменен.');
             $tab = $request->request->get('tab', 'profile');
+
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
 
@@ -266,12 +389,14 @@ class AppointmentController extends AbstractController
         $this->addFlash('success', 'Часът е успешно отменен.');
 
         $tab = $request->request->get('tab', 'profile');
+
         return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
     }
 
     /**
-     * Reschedule appointment (Client)
-     * @throws Exception
+     * Reschedule appointment (Client).
+     *
+     * @throws \Exception
      */
     #[Route('/{id}/reschedule', name: 'appointment_reschedule', methods: ['GET'])]
     public function reschedule(int $id): Response
@@ -281,6 +406,7 @@ class AppointmentController extends AbstractController
 
         if (!$appointment) {
             $this->addFlash('error', 'Часът не е намерен.');
+
             return $this->redirectToRoute('main');
         }
 
@@ -288,6 +414,7 @@ class AppointmentController extends AbstractController
         $authUser = parent::getUser();
         if (!$authUser || $appointment->getClient()->getId() !== $authUser->getId()) {
             $this->addFlash('error', 'Нямате право да променяте този час.');
+
             return $this->redirectToRoute('main');
         }
 
@@ -295,12 +422,14 @@ class AppointmentController extends AbstractController
         $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
             $this->addFlash('error', 'Не можете да променяте час, който вече е минал.');
+
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
         }
 
         // Check if already cancelled
-        if ($appointment->getStatus() === 'cancelled') {
+        if ('cancelled' === $appointment->getStatus()) {
             $this->addFlash('warning', 'Не можете да променяте отменен час.');
+
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
         }
 
@@ -316,6 +445,7 @@ class AppointmentController extends AbstractController
 
         // Redirect to booking page
         $this->addFlash('info', 'Изберете нов час за вашето посещение.');
+
         return $this->redirectToRoute('appointment_book', ['id' => $authUser->getId()]);
     }
 
@@ -325,8 +455,9 @@ class AppointmentController extends AbstractController
 
     /**
      * Complete appointment (Barber)
-     * Mark appointment as completed
-     * @throws Exception
+     * Mark appointment as completed.
+     *
+     * @throws \Exception
      */
     #[Route('/{id}/complete', name: 'appointment_complete', methods: ['POST'])]
     public function complete(int $id): Response
@@ -350,11 +481,11 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already completed or cancelled
-        if ($appointment->getStatus() === 'completed') {
+        if ('completed' === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отбележен като завършен.'], 400);
         }
 
-        if ($appointment->getStatus() === 'cancelled') {
+        if ('cancelled' === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Не можете да завършите отменен час.'], 400);
         }
 
@@ -372,8 +503,9 @@ class AppointmentController extends AbstractController
     }
 
     /**
-     * Cancel appointment - Barber side (notifies client)
-     * @throws Exception
+     * Cancel appointment - Barber side (notifies client).
+     *
+     * @throws \Exception
      * @throws TransportExceptionInterface
      */
     #[Route('/{id}/barber-cancel', name: 'appointment_barber_cancel', methods: ['POST'])]
@@ -398,7 +530,7 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already cancelled
-        if ($appointment->getStatus() === 'cancelled') {
+        if ('cancelled' === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отменен.'], 400);
         }
 
@@ -426,14 +558,13 @@ class AppointmentController extends AbstractController
         ]);
     }
 
-
     // ========================================
     // MANAGER OPERATIONS
     // ========================================
 
     /**
      * Get appointment details (Manager/Admin)
-     * Used by AJAX modal
+     * Used by AJAX modal.
      */
     #[Route('/{id}/details', name: 'appointment_details', methods: ['GET'])]
     public function getDetails(int $id): Response
@@ -452,13 +583,13 @@ class AppointmentController extends AbstractController
             'status' => $appointment->getStatus(),
             'client' => [
                 'id' => $appointment->getClient()->getId(),
-                'name' => $appointment->getClient()->getFirstName() . ' ' . $appointment->getClient()->getLastName(),
+                'name' => $appointment->getClient()->getFirstName().' '.$appointment->getClient()->getLastName(),
                 'email' => $appointment->getClient()->getEmail(),
                 'phone' => $appointment->getClient()->getPhone(),
             ],
             'barber' => [
                 'id' => $appointment->getBarber()->getId(),
-                'name' => $appointment->getBarber()->getFirstName() . ' ' . $appointment->getBarber()->getLastName(),
+                'name' => $appointment->getBarber()->getFirstName().' '.$appointment->getBarber()->getLastName(),
             ],
             'procedure' => [
                 'id' => $appointment->getProcedureType()->getId(),
@@ -470,8 +601,9 @@ class AppointmentController extends AbstractController
 
     /**
      * Update appointment (Manager/Admin)
-     * For future appointments - can change date/time/barber/procedure
-     * @throws Exception
+     * For future appointments - can change date/time/barber/procedure.
+     *
+     * @throws \Exception
      */
     #[Route('/{id}/update', name: 'appointment_update', methods: ['POST'])]
     public function update(int $id, Request $request): Response
@@ -487,8 +619,8 @@ class AppointmentController extends AbstractController
         if ($oldAppointment->getDate() < $now) {
             return $this->json([
                 'success' => false,
-                'error' => 'Не можете да променяте минали часове! Оригиналният час беше на ' .
-                    $oldAppointment->getDate()->format('d.m.Y H:i') . ', който вече е изминал.'
+                'error' => 'Не можете да променяте минали часове! Оригиналният час беше на '.
+                    $oldAppointment->getDate()->format('d.m.Y H:i').', който вече е изминал.',
             ], 400);
         }
 
@@ -509,8 +641,8 @@ class AppointmentController extends AbstractController
 
         // Parse new date and time
         try {
-            $newDateTime = new DateTimeImmutable($data['date'] . ' ' . $data['time']);
-        } catch (Exception $e) {
+            $newDateTime = new \DateTimeImmutable($data['date'].' '.$data['time']);
+        } catch (\Exception $e) {
             return $this->json(['success' => false, 'error' => 'Невалидна дата или час.'], 400);
         }
 
@@ -553,7 +685,7 @@ class AppointmentController extends AbstractController
         $newAppointment->setDate($newDateTime);
         $newAppointment->setDuration($duration);
         $newAppointment->setStatus($data['status'] ?? 'confirmed');
-        $newAppointment->setNotes($data['notes'] ?? 'Презаписан от час #' . $oldAppointment->getId());
+        $newAppointment->setNotes($data['notes'] ?? 'Презаписан от час #'.$oldAppointment->getId());
         $newAppointment->setDateAdded(DateTimeHelper::now());
         $newAppointment->setDateLastUpdate(DateTimeHelper::now());
 
@@ -569,8 +701,9 @@ class AppointmentController extends AbstractController
 
     /**
      * Update appointment status (Manager/Admin)
-     * For past appointments - can only change status and notes
-     * @throws Exception
+     * For past appointments - can only change status and notes.
+     *
+     * @throws \Exception
      */
     #[Route('/{id}/update-status', name: 'appointment_update_status', methods: ['POST'])]
     public function updateStatus(int $id, Request $request): Response
@@ -586,7 +719,7 @@ class AppointmentController extends AbstractController
         if ($appointment->getDate() >= $now) {
             return $this->json([
                 'success' => false,
-                'error' => 'Този endpoint е само за минали часове. Използвайте update за бъдещи часове.'
+                'error' => 'Този endpoint е само за минали часове. Използвайте update за бъдещи часове.',
             ], 400);
         }
 
@@ -602,7 +735,7 @@ class AppointmentController extends AbstractController
         if (!in_array($newStatus, ['completed', 'no_show', 'cancelled'])) {
             return $this->json([
                 'success' => false,
-                'error' => 'Невалиден статус. Разрешени са само: completed, no_show, cancelled.'
+                'error' => 'Невалиден статус. Разрешени са само: completed, no_show, cancelled.',
             ], 400);
         }
 
@@ -626,13 +759,14 @@ class AppointmentController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'message' => 'Статусът е променен на "' . ($statusLabels[$newStatus] ?? $newStatus) . '".',
+            'message' => 'Статусът е променен на "'.($statusLabels[$newStatus] ?? $newStatus).'".',
         ]);
     }
 
     /**
-     * Cancel appointment (Manager side)
-     * @throws Exception
+     * Cancel appointment (Manager side).
+     *
+     * @throws \Exception
      * @throws TransportExceptionInterface
      */
     #[Route('/{id}/manager-cancel', name: 'appointment_manager_cancel', methods: ['POST'])]
@@ -644,7 +778,7 @@ class AppointmentController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Часът не е намерен.'], 404);
         }
 
-        if ($appointment->getStatus() === 'cancelled') {
+        if ('cancelled' === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отменен.'], 400);
         }
 
@@ -674,15 +808,16 @@ class AppointmentController extends AbstractController
 
     /**
      * Get availability data for a specific date (AJAX)
-     * Returns occupied slots and barber working hours
-     * @throws Exception
+     * Returns occupied slots and barber working hours.
+     *
+     * @throws \Exception
      */
     #[Route('/api/availability/{date}', name: 'api_availability', methods: ['GET'])]
     public function getAvailability(string $date): Response
     {
         try {
-            $selectedDate = new DateTimeImmutable($date);
-        } catch (Exception $e) {
+            $selectedDate = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
 
@@ -712,7 +847,7 @@ class AppointmentController extends AbstractController
     // ========================================
 
     /**
-     * Helper: Check if user exists
+     * Helper: Check if user exists.
      */
     private function checkIfUserExistAndHasProfile(int $id): User
     {
@@ -726,7 +861,7 @@ class AppointmentController extends AbstractController
     }
 
     /**
-     * Helper: Get procedure duration based on barber seniority
+     * Helper: Get procedure duration based on barber seniority.
      */
     private function getDurationOfProcedure(Procedure $procedure, User $barber): int|bool
     {

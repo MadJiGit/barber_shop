@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Service\DateTimeHelper;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -36,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var ?string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -59,13 +57,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeInterface $date_added = null;
+    private ?\DateTimeInterface $date_added = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $date_banned = null;
+    private ?\DateTimeInterface $date_banned = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $date_last_update = null;
+    private ?\DateTimeInterface $date_last_update = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $is_active = true;
@@ -77,10 +75,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $confirmation_token = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $token_expires_at = null;
+    private ?\DateTimeInterface $token_expires_at = null;
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct()
     {
@@ -265,42 +263,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getDateAdded(): ?DateTimeInterface
+    public function getDateAdded(): ?\DateTimeInterface
     {
         return $this->date_added;
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    public function setDateAdded(?DateTimeInterface $date = null): static
+    public function setDateAdded(?\DateTimeInterface $date = null): static
     {
         $this->date_added = DateTimeHelper::now();
 
         return $this;
     }
 
-    public function getDateBanned(): ?DateTimeInterface
+    public function getDateBanned(): ?\DateTimeInterface
     {
         return $this->date_banned;
     }
 
-    public function setDateBanned(?DateTimeInterface $date_banned = null): static
+    public function setDateBanned(?\DateTimeInterface $date_banned = null): static
     {
         $this->date_banned = $date_banned;
 
         return $this;
     }
 
-    public function getDateLastUpdate(): ?DateTimeInterface
+    public function getDateLastUpdate(): ?\DateTimeInterface
     {
         return $this->date_last_update;
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    public function setDateLastUpdate(?DateTimeInterface $date_last_update = null): static
+    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
         if ($date_last_update) {
             $this->date_last_update = DateTimeHelper::now();
@@ -329,7 +327,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function setIsBanned(bool $is_banned): static
     {
@@ -353,12 +351,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTokenExpiresAt(): ?DateTimeInterface
+    public function getTokenExpiresAt(): ?\DateTimeInterface
     {
         return $this->token_expires_at;
     }
 
-    public function setTokenExpiresAt(?DateTimeInterface $token_expires_at): static
+    public function setTokenExpiresAt(?\DateTimeInterface $token_expires_at): static
     {
         $this->token_expires_at = $token_expires_at;
 
@@ -366,7 +364,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function isTokenExpired(): bool
     {
@@ -378,7 +376,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Get barber title in Bulgarian based on role
+     * Get barber title in Bulgarian based on role.
      */
     public function getBarberTitleBg(): string
     {
@@ -396,7 +394,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     #[ORM\PreUpdate]
     public function preUpdate(): void
@@ -404,9 +402,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->date_last_update = DateTimeHelper::now();
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->email ?? '';

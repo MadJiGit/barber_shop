@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{% block title %}Barber Shop - Book Your Appointment{% endblock %}</title>
-    <meta name="description" content="Professional barber shop appointment booking system">
+    <title>{% block title %}{{ 'base.header.title' | trans }}{% endblock %}</title>
+    <meta name="description" content="{{ 'base.header.description' | trans }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/favicon.png') }}">
 
@@ -26,6 +26,7 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
         <!-- Custom CSS overrides -->
+        <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="stylesheet" href="{{ asset('css/loading.css') }}">
         <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
@@ -66,27 +67,31 @@
                                     <div class="main-menu f-right d-none d-lg-block">
                                         <nav>
                                             <ul id="navigation">
-                                                <li><a href="{{ path('main') }}">Home</a></li>
+                                                {{ app.request.locale }}
+                                                <li><a href="{{ path('main') }}">{{ 'base.nav.home' | trans }}</a></li>
                                                 {% if app.user %}
-                                                    <li><a href="{{ path('appointment_book', {id: app.user.id}) }}">Book Appointment</a></li>
+                                                    <li><a href="{{ path('appointment_book', {id: app.user.id}) }}">{{ 'base.nav.book_appointment' | trans }}</a></li>
                                                     {% if is_granted('ROLE_MANAGER') %}
-                                                        <li><a href="{{ path('manager_dashboard') }}">Manager</a></li>
+                                                        <li><a href="{{ path('manager_dashboard', {id: app.user.id}) }}">{{ 'base.nav.manager' | trans }}</a></li>
                                                     {% endif %}
                                                     {% if is_granted('ROLE_ADMIN') %}
-                                                        <li><a href="{{ path('admin', {id: app.user.id}) }}">Admin</a></li>
+                                                        <li><a href="{{ path('admin', {id: app.user.id}) }}">{{ 'base.nav.admin' | trans }}</a></li>
                                                     {% endif %}
-                                                    <li><a href="{{ path('profile_edit', {id: app.user.id}) }}">Hello, {{ app.user.nickName ?? app.user.firstName ?? app.user.lastName ?? app.user.email }}</a></li>
-                                                    <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                                                    <li><a href="{{ path('profile_edit', {id: app.user.id}) }}">{{ 'base.nav.hello' | trans }}, {{ app.user.nickName ?? app.user.firstName ?? app.user.lastName ?? app.user.email }}</a></li>
+                                                    <li><a href="{{ path('app_logout') }}">{{ 'base.nav.logout' | trans }}</a></li>
                                                 {% else %}
-                                                    <li><a href="{{ path('app_login') }}">Login</a></li>
-                                                    <li><a href="{{ path('app_register') }}">Register</a></li>
+                                                    <li><a href="{{ path('app_login') }}">{{ 'base.nav.login' | trans }}</a></li>
+                                                    <li><a href="{{ path('app_register') }}">{{ 'base.nav.register' | trans }}</a></li>
                                                 {% endif %}
+                                                <li><a href="{{ path('app_locale', {'_locale': 'bg'}) }}" class="{{ app.request.locale == 'bg' ? 'active' : '' }}">{{ 'base.nav.BG' | trans }}</a></li>
+                                                    |
+                                                <li><a href="{{ path('app_locale', {'_locale': 'en'}) }}" class="{{ app.request.locale == 'en' ? 'active' : '' }}">{{ 'base.nav.EN' | trans }}</a></li>
                                             </ul>
                                         </nav>
                                     </div>
                                     <div class="header-right-btn f-right d-none d-lg-block ml-30">
                                         {% if not app.user %}
-                                            <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
+                                            <a href="{{ path('app_register') }}" class="btn header-btn">{{ 'base.btn.become_member' | trans }}</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -151,13 +156,13 @@
                         <div class="row d-flex justify-content-between align-items-center">
                             <div class="col-xl-9 col-lg-8">
                                 <div class="footer-copy-right">
-                                    <p>&copy; {{ 'now'|date('Y') }} Barber Shop. All rights reserved.</p>
+                                    <p>&copy; {{ 'now'|date('Y') }} {{ 'base.footer.text' | trans }}</p>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-lg-4">
                                 <!-- Back to top -->
                                 <div class="footer-back-link text-right">
-                                    <a href="#" class="back-link">Back to top <i class="ti-angle-up"></i></a>
+                                <a href="#" class="back-link">{{ 'base.footer.back_to_top' | trans }} <i class="ti-angle-up"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +174,7 @@
 
     <!-- Scroll Up -->
     <div id="back-top">
-        <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+        <a title="{{ 'base.footer.go_to_top' | trans }}" href="#"><i class="fas fa-level-up-alt"></i></a>
     </div>
 
     {% block javascripts %}

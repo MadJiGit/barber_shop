@@ -2,91 +2,92 @@
 
 {% if barberAppointments is empty %}
     <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i> Все още нямате записани часове.
+        <i class="fas fa-info-circle"></i> {{ 'appointment_table.appointment_empty' | trans }}
     </div>
 {% else %}
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
-                <tr>
-                    <th>Дата и час</th>
-                    <th>Клиент</th>
-                    <th>Телефон</th>
-                    <th>Услуга</th>
-                    <th>Продължителност</th>
-                    <th>Статус</th>
-                    <th>Действия</th>
-                </tr>
+            <tr>
+                <th> {{ 'appointment_table.date' | trans }} </th>
+                <th> {{ 'appointment_table.client' | trans }} </th>
+                <th> {{ 'appointment_table.phone' | trans }} </th>
+                <th> {{ 'appointment_table.service' | trans }} </th>
+                <th> {{ 'appointment_table.duration' | trans }} </th>
+                <th> {{ 'appointment_table.status' | trans }} </th>
+                <th> {{ 'appointment_table.action' | trans }} </th>
+            </tr>
             </thead>
             <tbody>
-                {% for appointment in barberAppointments %}
-                    {% set appointmentDate = appointment.date %}
-                    {% set isToday = appointmentDate|date('Y-m-d') == 'now'|date('Y-m-d') %}
-                    {% set isPast = appointmentDate < 'now'|date_modify('0 seconds') %}
+            {% for appointment in barberAppointments %}
+                {% set appointmentDate = appointment.date %}
+                {% set isToday = appointmentDate|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                {% set isPast = appointmentDate < 'now'|date_modify('0 seconds') %}
 
-                    <tr class="{{ isToday ? 'table-primary' : '' }} {{ isPast ? 'text-muted' : '' }}">
-                        <td>
-                            <strong>{{ appointmentDate|date('d.m.Y') }}</strong>
-                            <br>
-                            <span class="badge badge-secondary">{{ appointmentDate|date('H:i') }}</span>
-                            {% if isToday %}
-                                <span class="badge badge-info ml-1">Днес</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <strong>{{ appointment.client.firstName }} {{ appointment.client.lastName }}</strong>
-                            {% if appointment.client.nickName %}
-                                <br><small class="text-muted">({{ appointment.client.nickName }})</small>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if appointment.client.phone %}
-                                <a href="tel:{{ appointment.client.phone }}" class="phone-link">
-                                    <i class="fas fa-phone"></i> {{ appointment.client.phone }}
-                                </a>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ appointment.procedureType.type }}
-                        </td>
-                        <td>
-                            {{ appointment.duration }} мин
-                        </td>
-                        <td>
-                            {% if appointment.status == 'confirmed' %}
-                                <span class="badge badge-success">Потвърден</span>
-                            {% elseif appointment.status == 'completed' %}
-                                <span class="badge badge-secondary">Завършен</span>
-                            {% elseif appointment.status == 'cancelled' %}
-                                <span class="badge badge-danger">Отменен</span>
-                            {% else %}
-                                <span class="badge badge-warning">{{ appointment.status }}</span>
-                            {% endif %}
-                        </td>
-                        <td class="actions-cell">
-                            {% if not isPast and appointment.status == 'confirmed' %}
-                                <div class="btn-group-vertical btn-group-sm" role="group">
-                                    <button type="button"
-                                            class="btn btn-success btn-action"
-                                            onclick="completeAppointment({{ appointment.id }})"
-                                            title="Отбележи като завършен">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button type="button"
-                                            class="btn btn-danger btn-action"
-                                            onclick="cancelBarberAppointment({{ appointment.id }})"
-                                            title="Отмени час">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                <tr class="{{ isToday ? 'table-primary' : '' }} {{ isPast ? 'text-muted' : '' }}">
+                    <td>
+                        <strong>{{ appointmentDate|date('d.m.Y') }}</strong>
+                        <br>
+                        <span class="badge badge-secondary">{{ appointmentDate|date('H:i') }}</span>
+                        {% if isToday %}
+{#                            <span class="badge badge-info ml-1">Днес</span>#}
+                            <span class="badge badge-info ml-1">{{ 'appointment_table.today' | trans }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ appointment.client.firstName }} {{ appointment.client.lastName }}</strong>
+                        {% if appointment.client.nickName %}
+                            <br><small class="text-muted">({{ appointment.client.nickName }})</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if appointment.client.phone %}
+                            <a href="tel:{{ appointment.client.phone }}" class="phone-link">
+                                <i class="fas fa-phone"></i> {{ appointment.client.phone }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ appointment.procedureType.type }}
+                    </td>
+                    <td>
+                        {{ appointment.duration }} мин
+                    </td>
+                    <td>
+                        {% if appointment.statusValue == 'confirmed' %}
+                            <span class="badge badge-success">{{ 'appointment_table.confirm' | trans }}</span>
+                        {% elseif appointment.statusValue == 'completed' %}
+                            <span class="badge badge-secondary">{{ 'appointment_table.completed' | trans }}</span>
+                        {% elseif appointment.statusValue == 'cancelled' %}
+                            <span class="badge badge-danger">{{ 'appointment_table.cancelled' | trans }}</span>
+                        {% else %}
+                            <span class="badge badge-warning">{{ appointment.statusValue }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        {% if not isPast and appointment.statusValue == 'confirmed' %}
+                            <div class="btn-group-vertical btn-group-sm" role="group">
+                                <button type="button"
+                                        class="btn btn-success btn-action"
+                                        onclick="completeAppointment({{ appointment.id }})"
+                                        title="{{ 'appointment_table.complete_title' | trans }}">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-danger btn-action"
+                                        onclick="cancelBarberAppointment({{ appointment.id }})"
+                                        title="{{ 'appointment_table.cancel_appointment' | trans }}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

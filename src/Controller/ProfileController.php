@@ -10,9 +10,7 @@ use App\Repository\UserRepository;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
 use App\Service\EmailService;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +35,7 @@ class ProfileController extends AbstractController
         BarberScheduleService $scheduleService,
         Security $security,
         UserPasswordHasherInterface $passwordHasher,
-        EmailService $emailService
+        EmailService $emailService,
     ) {
         $this->userRepository = $userRepository;
         $this->em = $em;
@@ -50,8 +48,9 @@ class ProfileController extends AbstractController
 
     /**
      * Edit user profile - works for ALL roles (CLIENT, BARBER, MANAGER, ADMIN)
-     * Renders different templates based on user role
-     * @throws Exception
+     * Renders different templates based on user role.
+     *
+     * @throws \Exception
      */
     #[Route('/profile/{id}', name: 'profile_edit')]
     public function edit(Request $request, int $id): Response
@@ -71,16 +70,16 @@ class ProfileController extends AbstractController
         // Security check - only owner or admin can edit
         if (!$authUser || ($authUser->getId() !== $user->getId() && !$isAuthUserAdmin)) {
             $this->addFlash('error', 'Нямате достъп до този профил.');
+
             return $this->redirectToRoute('main');
         }
 
         $form = $this->createForm(UserFormType::class, $user);
         try {
             $form->handleRequest($request);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo 'failed : '.$e->getMessage();
         }
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Check if user wants to change password
@@ -95,32 +94,37 @@ class ProfileController extends AbstractController
                 if (empty($currentPassword)) {
                     $this->addFlash('error', 'Моля, въведете текущата си парола.');
                     $tab = $request->query->get('tab', 'profile');
-                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if (empty($newPassword) || empty($newPasswordRepeat)) {
                     $this->addFlash('error', 'Моля, въведете новата парола два пъти.');
                     $tab = $request->query->get('tab', 'profile');
-                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if ($newPassword !== $newPasswordRepeat) {
                     $this->addFlash('error', 'Новите пароли не съвпадат.');
                     $tab = $request->query->get('tab', 'profile');
-                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if (strlen($newPassword) < 6) {
                     $this->addFlash('error', 'Новата парола трябва да е минимум 6 символа.');
                     $tab = $request->query->get('tab', 'profile');
-                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 // Verify current password
                 if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
                     $this->addFlash('error', 'Текущата парола е грешна.');
                     $tab = $request->query->get('tab', 'profile');
-                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                    return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 // Generate token for password change confirmation
@@ -135,14 +139,15 @@ class ProfileController extends AbstractController
                 // We'll store the hashed password in the confirmation_token field temporarily
                 // Actually, we need a better approach - let's store it in session
                 $newPasswordHashed = $this->passwordHasher->hashPassword($user, $newPassword);
-                $request->getSession()->set('pending_password_change_' . $user->getId(), $newPasswordHashed);
+                $request->getSession()->set('pending_password_change_'.$user->getId(), $newPasswordHashed);
 
                 $user->setDateLastUpdate(DateTimeHelper::now());
 
                 try {
                     $this->em->flush();
-                } catch (Exception $e) {
-                    $this->addFlash('error', 'Възникна грешка: ' . $e->getMessage());
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Възникна грешка: '.$e->getMessage());
+
                     return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
                 }
 
@@ -152,7 +157,8 @@ class ProfileController extends AbstractController
                 $this->addFlash('success', 'Изпратихме ви имейл с линк за потвърждение на смяната на паролата. Линкът е валиден 1 час.');
 
                 $tab = $request->query->get('tab', 'profile');
-                return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+                return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
             }
 
             // Normal profile update (no password change)
@@ -174,8 +180,9 @@ class ProfileController extends AbstractController
 
             try {
                 $this->em->flush();
-            } catch (Exception $e) {
-                $this->addFlash('error', 'Възникна грешка при обновяване на профила: ' . $e->getMessage());
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Възникна грешка при обновяване на профила: '.$e->getMessage());
+
                 return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
             }
 
@@ -183,7 +190,8 @@ class ProfileController extends AbstractController
 
             // Preserve the active tab (from query string)
             $tab = $request->query->get('tab', 'profile');
-            return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]) . '?tab=' . $tab);
+
+            return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
         }
 
         // Initialize variables
@@ -210,8 +218,8 @@ class ProfileController extends AbstractController
         $clientDateFrom = $request->query->get('client_date_from', $session->get('client_filter_date_from', null));
         $clientDateTo = $request->query->get('client_date_to', $session->get('client_filter_date_to', null));
         $clientStatuses = $request->query->all('client_statuses') ?: $session->get('client_filter_statuses', ['confirmed', 'pending', 'completed', 'cancelled']);
-        $clientPage = max(1, (int)$request->query->get('client_page', 1));
-        $clientLimit = (int)$request->query->get('client_limit', $session->get('client_filter_limit', 20));
+        $clientPage = max(1, (int) $request->query->get('client_page', 1));
+        $clientLimit = (int) $request->query->get('client_limit', $session->get('client_filter_limit', 20));
 
         // Save filters to session for persistence
         $session->set('client_filter_date_from', $clientDateFrom);
@@ -221,8 +229,8 @@ class ProfileController extends AbstractController
 
         // Convert date strings to DateTimeImmutable
         try {
-            $clientDateFromObj = $clientDateFrom ? new \DateTimeImmutable($clientDateFrom . ' 00:00:00') : null;
-            $clientDateToObj = $clientDateTo ? new \DateTimeImmutable($clientDateTo . ' 23:59:59') : null;
+            $clientDateFromObj = $clientDateFrom ? new \DateTimeImmutable($clientDateFrom.' 00:00:00') : null;
+            $clientDateToObj = $clientDateTo ? new \DateTimeImmutable($clientDateTo.' 23:59:59') : null;
         } catch (\Exception $e) {
             $clientDateFromObj = null;
             $clientDateToObj = null;
@@ -262,8 +270,8 @@ class ProfileController extends AbstractController
             $dateTo = $request->query->get('date_to', $session->get('barber_filter_date_to', date('Y-m-d')));
             $statuses = $request->query->all('statuses') ?: $session->get('barber_filter_statuses', ['confirmed', 'pending']);
             $searchTerm = $request->query->get('search', $session->get('barber_filter_search', ''));
-            $page = max(1, (int)$request->query->get('page', 1));
-            $limit = (int)$request->query->get('limit', $session->get('barber_filter_limit', 20));
+            $page = max(1, (int) $request->query->get('page', 1));
+            $limit = (int) $request->query->get('limit', $session->get('barber_filter_limit', 20));
 
             // Save filters to session for persistence
             $session->set('barber_filter_date_from', $dateFrom);
@@ -274,8 +282,8 @@ class ProfileController extends AbstractController
 
             // Convert date strings to DateTimeImmutable
             try {
-                $dateFromObj = $dateFrom ? new \DateTimeImmutable($dateFrom . ' 00:00:00') : null;
-                $dateToObj = $dateTo ? new \DateTimeImmutable($dateTo . ' 23:59:59') : null;
+                $dateFromObj = $dateFrom ? new \DateTimeImmutable($dateFrom.' 00:00:00') : null;
+                $dateToObj = $dateTo ? new \DateTimeImmutable($dateTo.' 23:59:59') : null;
             } catch (\Exception $e) {
                 $dateFromObj = null;
                 $dateToObj = null;
@@ -313,33 +321,33 @@ class ProfileController extends AbstractController
             $allProcedures = $this->em->getRepository(Procedure::class)->getAvailableProcedures();
             $barberProcedures = $this->em->getRepository(BarberProcedure::class)
                 ->findActiveProceduresForBarber($user);
-            $barberProcedureIds = array_map(fn($p) => $p->getId(), $barberProcedures);
+            $barberProcedureIds = array_map(fn ($p) => $p->getId(), $barberProcedures);
 
             // Get calendar data - check for year/month in query params
             $calendarYear = $request->query->get('year');
             $calendarMonth = $request->query->get('month');
 
             if (!$calendarYear || !$calendarMonth) {
-                $now = new DateTime('now');
-                $calendarYear = (int)$now->format('Y');
-                $calendarMonth = (int)$now->format('m');
+                $now = new \DateTime('now');
+                $calendarYear = (int) $now->format('Y');
+                $calendarMonth = (int) $now->format('m');
             } else {
-                $calendarYear = (int)$calendarYear;
-                $calendarMonth = (int)$calendarMonth;
+                $calendarYear = (int) $calendarYear;
+                $calendarMonth = (int) $calendarMonth;
             }
 
             $calendar = $this->scheduleService->getMonthCalendar($user, $calendarYear, $calendarMonth);
 
             // Calculate previous and next month
-            $currentDate = new DateTime("$calendarYear-$calendarMonth-01");
+            $currentDate = new \DateTime("$calendarYear-$calendarMonth-01");
             $prevMonthDate = (clone $currentDate)->modify('-1 month');
             $nextMonthDate = (clone $currentDate)->modify('+1 month');
 
             $calendarMonthName = $this->getMonthNameBg($calendarMonth);
-            $prevYear = (int)$prevMonthDate->format('Y');
-            $prevMonth = (int)$prevMonthDate->format('m');
-            $nextYear = (int)$nextMonthDate->format('Y');
-            $nextMonth = (int)$nextMonthDate->format('m');
+            $prevYear = (int) $prevMonthDate->format('Y');
+            $prevMonth = (int) $prevMonthDate->format('m');
+            $nextYear = (int) $nextMonthDate->format('Y');
+            $nextMonth = (int) $nextMonthDate->format('m');
         }
 
         // Render different templates based on user type
@@ -370,7 +378,7 @@ class ProfileController extends AbstractController
     }
 
     /**
-     * Helper: Get Bulgarian month name
+     * Helper: Get Bulgarian month name.
      */
     private function getMonthNameBg(int $month): string
     {

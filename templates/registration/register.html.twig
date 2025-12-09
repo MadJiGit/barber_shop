@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Регистрация - Barber Shop{% endblock %}
+{% block title %}{{ 'register.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Регистрация</h2>
+                            <h2>{{ 'register.hero_title' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -28,8 +28,8 @@
                         <div class="registration-form">
                             <!-- Section Title -->
                             <div class="section-tittle text-center mb-50">
-                                <h2>Създайте своя профил</h2>
-                                <p>Присъединете се към нас и започнете да резервирате вашите любими услуги.</p>
+                                <h2>{{ 'register.section_title' | trans }}</h2>
+                                <p>{{ 'register.section_description' | trans }}</p>
                             </div>
 
                             {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
@@ -43,12 +43,12 @@
 
                                 <div class="form-group mb-30">
                                     <label for="{{ registrationForm.email.vars.id }}" class="form-label">
-                                        <i class="fas fa-envelope"></i> Имейл адрес
+                                        <i class="fas fa-envelope"></i> {{ 'register.email_label' | trans }}
                                     </label>
                                     {{ form_widget(registrationForm.email, {
                                         'attr': {
                                             'class': 'form-control form-control-lg',
-                                            'placeholder': 'your@email.com'
+                                            'placeholder': 'register.email_placeholder' | trans
                                         }
                                     }) }}
                                     {{ form_errors(registrationForm.email) }}
@@ -56,33 +56,33 @@
 
                                 <div class="form-group mb-30">
                                     <label for="{{ registrationForm.plainPassword.vars.id }}" class="form-label">
-                                        <i class="fas fa-lock"></i> Парола
+                                        <i class="fas fa-lock"></i> {{ 'register.password_label' | trans }}
                                     </label>
                                     {{ form_widget(registrationForm.plainPassword, {
                                         'attr': {
                                             'class': 'form-control form-control-lg',
-                                            'placeholder': 'Минимум 6 символа'
+                                            'placeholder': 'register.password_placeholder' | trans
                                         }
                                     }) }}
                                     {{ form_errors(registrationForm.plainPassword) }}
                                     <small class="form-text text-muted">
-                                        <i class="fas fa-info-circle"></i> Паролата трябва да е минимум 6 символа
+                                        <i class="fas fa-info-circle"></i> {{ 'register.password_hint' | trans }}
                                     </small>
                                 </div>
 
                                 <div class="form-group mb-30">
                                     <label for="{{ registrationForm.plainRepeatPassword.vars.id }}" class="form-label">
-                                        <i class="fas fa-lock"></i> Повторете парола
+                                        <i class="fas fa-lock"></i> {{ 'register.repeat_password_label' | trans }}
                                     </label>
                                     {{ form_widget(registrationForm.plainRepeatPassword, {
                                         'attr': {
                                             'class': 'form-control form-control-lg',
-                                            'placeholder': 'Паролата трябва да съвпада с предишната'
+                                            'placeholder': 'register.repeat_password_placeholder' | trans
                                         }
                                     }) }}
                                     {{ form_errors(registrationForm.plainPassword) }}
                                     <small class="form-text text-muted">
-                                        <i class="fas fa-info-circle"></i> Паролата трябва да съвпада с предишната
+                                        <i class="fas fa-info-circle"></i> {{ 'register.repeat_password_hint' | trans }}
                                     </small>
                                 </div>
 
@@ -93,22 +93,22 @@
                                         }
                                     }) }}
                                     <label for="{{ registrationForm.agreeTerms.vars.id }}" class="form-check-label">
-                                        Съгласен съм с <a href="#" class="text-primary">Условията за ползване</a>
+                                        {{ 'register.agree_terms' | trans }} <a href="#" class="text-primary">{{ 'register.terms_link' | trans }}</a>
                                     </label>
                                     {{ form_errors(registrationForm.agreeTerms) }}
                                 </div>
 
                                 <div class="d-grid gap-2 mb-30">
                                     <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="fas fa-user-plus"></i> Регистрирай се
+                                        <i class="fas fa-user-plus"></i> {{ 'register.submit' | trans }}
                                     </button>
                                 </div>
 
                                 <div class="text-center">
                                     <p class="mb-0">
-                                        Вече имате профил?
+                                        {{ 'register.have_account' | trans }}
                                         <a href="{{ path('app_login') }}" class="text-primary fw-bold">
-                                            Влезте тук
+                                            {{ 'register.login_here' | trans }}
                                         </a>
                                     </p>
                                 </div>

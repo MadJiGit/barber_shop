@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Вход - Barber Shop{% endblock %}
+{% block title %}{{ 'login.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Вход</h2>
+                            <h2>{{ 'login.title' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -28,8 +28,8 @@
                         <div class="login-form">
                             <!-- Section Title -->
                             <div class="section-tittle text-center mb-50">
-                                <h2>Влезте в профила си</h2>
-                                <p>Добре дошли обратно! Въведете вашите данни за вход.</p>
+                                <h2>{{ 'login.section_title' | trans }}</h2>
+                                <p>{{ 'login.section_description' | trans }}</p>
                             </div>
 
                             {% if error %}
@@ -40,15 +40,15 @@
 
                             {% if app.user %}
                                 <div class="alert alert-info" role="alert">
-                                    <i class="fas fa-info-circle"></i> Вие вече сте влезли като {{ app.user.userIdentifier }}.
-                                    <a href="{{ path('main') }}">Към начална страница</a>
+                                    <i class="fas fa-info-circle"></i> {{ 'login.already_logged_in' | trans }} {{ app.user.userIdentifier }}.
+                                    <a href="{{ path('main') }}">{{ 'login.to_homepage' | trans }}</a>
                                 </div>
                             {% endif %}
 
                             <form method="post">
                                 <div class="form-group mb-30">
                                     <label for="inputEmail" class="form-label">
-                                        <i class="fas fa-envelope"></i> Имейл адрес
+                                        <i class="fas fa-envelope"></i> {{ 'login.email_label' | trans }}
                                     </label>
                                     <input type="email"
                                            value="{{ last_username }}"
@@ -63,7 +63,7 @@
 
                                 <div class="form-group mb-30">
                                     <label for="inputPassword" class="form-label">
-                                        <i class="fas fa-lock"></i> Парола
+                                        <i class="fas fa-lock"></i> {{ 'login.password_label' | trans }}
                                     </label>
                                     <input type="password"
                                            name="password"
@@ -82,26 +82,26 @@
                                            id="remember_me"
                                            class="form-check-input">
                                     <label for="remember_me" class="form-check-label">
-                                        Запомни ме
+                                        {{ 'login.remember_me' | trans }}
                                     </label>
                                 </div>
 
                                 <div class="d-grid gap-2 mb-30">
                                     <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="fas fa-sign-in-alt"></i> Влез
+                                        <i class="fas fa-sign-in-alt"></i> {{ 'login.submit' | trans }}
                                     </button>
                                 </div>
 
                                 <div class="text-center">
                                     <p class="mb-2">
-                                        Нямате профил?
+                                        {{ 'login.no_account' | trans }}
                                         <a href="{{ path('app_register') }}" class="text-primary fw-bold">
-                                            Регистрирайте се тук
+                                            {{ 'login.register_here' | trans }}
                                         </a>
                                     </p>
                                     <p class="mb-0">
                                         <a href="{{ path('app_forgot_password') }}" class="text-muted">
-                                            <i class="fas fa-key"></i> Забравена парола?
+                                            <i class="fas fa-key"></i> {{ 'login.forgot_password' | trans }}
                                         </a>
                                     </p>
                                 </div>

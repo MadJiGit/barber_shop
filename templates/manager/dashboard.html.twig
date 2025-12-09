@@ -127,14 +127,14 @@
                                             <td>{{ appointment.procedureType.type }}</td>
                                             <td>{{ appointment.duration }} мин</td>
                                             <td>
-                                                {% if appointment.status == 'confirmed' %}
+                                                {% if appointment.statusValue == 'confirmed' %}
                                                     <span class="badge badge-success">Потвърден</span>
-                                                {% elseif appointment.status == 'completed' %}
+                                                {% elseif appointment.statusValue == 'completed' %}
                                                     <span class="badge badge-secondary">Завършен</span>
-                                                {% elseif appointment.status == 'cancelled' %}
+                                                {% elseif appointment.statusValue == 'cancelled' %}
                                                     <span class="badge badge-danger">Отменен</span>
                                                 {% else %}
-                                                    <span class="badge badge-warning">{{ appointment.status }}</span>
+                                                    <span class="badge badge-warning">{{ appointment.statusValue }}</span>
                                                 {% endif %}
                                             </td>
                                         </tr>

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Barber Shop - Professional Hair Styling & Grooming{% endblock %}
+{% block title %}{{ 'homepage.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Slider Area Start -->
@@ -12,8 +12,8 @@
                     <div class="row">
                         <div class="col-xl-8 col-lg-9 col-md-11 col-sm-10">
                             <div class="hero__caption">
-                                <span data-animation="fadeInUp" data-delay="0.2s">Welcome to Our Barber Shop</span>
-                                <h1 data-animation="fadeInUp" data-delay="0.5s">Our Hair Style Makes You Look Elegant</h1>
+                                <span data-animation="fadeInUp" data-delay="0.2s">{{ 'homepage.welcome_1' | trans }}</span>
+                                <h1 data-animation="fadeInUp" data-delay="0.5s">{{ 'homepage.welcome_2' | trans }}</h1>
                             </div>
                         </div>
                     </div>
@@ -26,14 +26,14 @@
             {% if app.user %}
                 <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="thumb-content-link">
                     <div class="thumb-content">
-                        <h3>Make an Appointment Now</h3>
+                        <h3>{{ 'homepage.make_appointment' | trans }}</h3>
                         <i class="fas fa-long-arrow-alt-right"></i>
                     </div>
                 </a>
             {% else %}
                 <a href="#guest-booking" class="thumb-content-link">
                     <div class="thumb-content">
-                        <h3>Make an Appointment Now</h3>
+                        <h3>{{ 'homepage.make_appointment' | trans }}</h3>
                         <i class="fas fa-long-arrow-alt-right"></i>
                     </div>
                 </a>
@@ -54,18 +54,18 @@
                 <div class="col-lg-6 col-md-12">
                     <div class="about-caption">
                         <div class="section-tittle section-tittle3 mb-35">
-                            <span>About Our Company</span>
-                            <h2>Professional Barbering Experience</h2>
+                            <span>{{ 'homepage.about_us.title' | trans }}</span>
+                            <h2>{{ 'homepage.about_us.description' | trans }}</h2>
                         </div>
                         <p class="mb-30 pera-bottom">
-                            We provide professional hair styling and grooming services with experienced barbers.
-                            Book your appointment online and enjoy our premium services in a modern, comfortable environment.
+                            {{ 'homepage.about_us.we_provide' | trans }}
                         </p>
                         <p class="pera-top mb-50">
-                            Our team of skilled professionals is dedicated to giving you the perfect look that matches your style and personality.
+                            {{ 'homepage.about_us.our_team' | trans }}
                         </p>
                         {% if not app.user %}
-                            <a href="{{ path('app_register') }}" class="btn header-btn">Become a Member</a>
+                            <a href="{{ path('app_register') }}" class="btn header-btn">{{ 'homepage.about_us.become_a_member' | trans }}</a>
+
                         {% endif %}
                     </div>
                 </div>
@@ -85,8 +85,8 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-xl-7 col-lg-8 col-md-11 col-sm-11">
                     <div class="section-tittle text-center mb-90">
-                        <span>Professional Services</span>
-                        <h2>Our Best Services That We're Offering</h2>
+                        <span>{{ 'homepage.service.title' | trans }}</span>
+                        <h2>{{ 'homepage.service.description' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -95,33 +95,42 @@
                 <div class="col-xl-4 col-lg-4 col-md-6">
                     <div class="services-caption text-center mb-30">
                         <div class="service-icon">
-                            <i class="flaticon-healthcare-and-medical"></i>
+                            {# OLD: Flaticon (to be replaced with purchased font icons) #}
+                            {# <i class="flaticon-healthcare-and-medical"></i> #}
+                            {# NEW: PNG icon (temporary until font purchased) #}
+                            <img src="{{ asset('assets/img/hairstyle.png') }}" alt="Haircut" style="width: 70px; height: 70px;">
                         </div>
                         <div class="service-cap">
-                            <h4><a href="#">Stylish Hair Cut</a></h4>
-                            <p>Professional men's haircuts, kids cuts, and modern styling tailored to your preference.</p>
+                            <h4><a href="#">{{ 'homepage.service.service_1.title' | trans }}</a></h4>
+                            <p>{{ 'homepage.service.service_1.description' | trans }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6">
                     <div class="services-caption active text-center mb-30">
                         <div class="service-icon">
-                            <i class="flaticon-fitness"></i>
+                            {# OLD: Flaticon (to be replaced with purchased font icons) #}
+                            {# <i class="flaticon-fitness"></i> #}
+                            {# NEW: PNG icon (temporary until font purchased) #}
+                            <img src="{{ asset('assets/img/hot-towel.png') }}" alt="Hot Towel Shave" style="width: 70px; height: 70px;">
                         </div>
                         <div class="service-cap">
-                            <h4><a href="#">Hot Towel Shave</a></h4>
-                            <p>Traditional hot towel shave experience with premium products for ultimate relaxation.</p>
+                            <h4><a href="#">{{ 'homepage.service.service_2.title' | trans }}</a></h4>
+                            <p>{{ 'homepage.service.service_2.description' | trans }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-6">
                     <div class="services-caption text-center mb-30">
                         <div class="service-icon">
-                            <i class="flaticon-clock"></i>
+                            {# OLD: Flaticon (to be replaced with purchased font icons) #}
+                            {# <i class="flaticon-clock"></i> #}
+                            {# NEW: PNG icon (temporary until font purchased) #}
+                            <img src="{{ asset('assets/img/beard.png') }}" alt="Beard Styling" style="width: 70px; height: 70px;">
                         </div>
                         <div class="service-cap">
-                            <h4><a href="#">Beard Styling</a></h4>
-                            <p>Expert beard trimming, shaping, and grooming to complement your look perfectly.</p>
+                            <h4><a href="#">{{ 'homepage.service.service_3.title' | trans }}</a></h4>
+                            <p>{{ 'homepage.service.service_3.description' | trans }}</p>
                         </div>
                     </div>
                 </div>
@@ -137,32 +146,34 @@
             <div class="row justify-content-center">
                 <div class="col-xl-8 col-lg-10">
                     <div class="section-tittle text-center mb-60">
-                        <span>Book Without Account</span>
-                        <h2>Make an Appointment</h2>
-                        <p class="mt-20">No registration needed - just fill in your details and pick a time!</p>
+                        <span>{{ 'homepage.booking.title_1' | trans }}</span>
+                        <h2>{{ 'homepage.booking.title_2' | trans }}</h2>
+                        <p class="mt-20">{{ 'homepage.booking.description' | trans }}</p>
                     </div>
 
                     <div class="appointment-info-box">
                         <div class="info-item">
                             <i class="fas fa-envelope"></i>
-                            <p>You'll receive a confirmation email with your appointment details</p>
+                            <p>{{ 'homepage.booking.email' | trans }}</p>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-link"></i>
-                            <p>Manage your booking via the link in the email (cancel or reschedule)</p>
+                            <p>{{ 'homepage.booking.manage' | trans }}</p>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-user-plus"></i>
-                            <p>Want to track your appointments? <a href="{{ path('app_register') }}">Create an account</a></p>
+                            <p>{{ 'homepage.booking.track_description' | trans }}
+                                <a href="{{ path('app_register') }}">{{ 'homepage.booking.track_button' | trans }}</a>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="guest-booking-placeholder text-center mt-60">
-                        <div class="placeholder-content">
-                            <i class="fas fa-calendar-check fa-3x mb-20"></i>
-                            <h4>Guest Booking Form Coming Soon</h4>
-                            <p class="mb-30">We're building a simple booking form for guests. In the meantime, please create an account to book appointments.</p>
-                            <a href="{{ path('app_register') }}" class="btn header-btn">Create Account Now</a>
+                    <div class="guest-booking-action text-center mt-60">
+                        <div class="action-content">
+{#                            <i class="fas fa-calendar-check fa-3x mb-20" style="color: #d4a024;"></i>#}
+{#                            <h4>{{ 'homepage.booking.ready_title' | trans }}</h4>#}
+{#                            <p class="mb-30">{{ 'homepage.booking.ready_description' | trans }}</p>#}
+                            <a href="{{ path('appointment_book') }}" class="btn header-btn btn-lg">{{ 'homepage.booking.book_now_button' | trans }}</a>
                         </div>
                     </div>
                 </div>
@@ -200,7 +211,7 @@
                             {% if app.user %}
                                 <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
-                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
                             {% endif %}
                         </div>
                     </div>
@@ -223,7 +234,7 @@
                             {% if app.user %}
                                 <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
-                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
                             {% endif %}
                         </div>
                     </div>
@@ -247,7 +258,7 @@
                             {% if app.user %}
                                 <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
                             {% else %}
-                                <a href="{{ path('app_register') }}" class="border-btn">Register to Book</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
                             {% endif %}
                         </div>
                     </div>
@@ -291,5 +302,16 @@
         </div>
     </div>
     <!-- Testimonials Area End -->
+
+    <!-- Attribution -->
+    <div class="container pb-20">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="text-muted" style="font-size: 12px;">
+                    <a href="https://www.flaticon.com/free-icons/barbershop" title="barbershop icons" target="_blank" rel="noopener">Barbershop icons created by Smashicons - Flaticon</a>
+                </p>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

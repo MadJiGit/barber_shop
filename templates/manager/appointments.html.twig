@@ -255,14 +255,14 @@
                                             <td class="col-procedure" data-column="procedure">{{ appointment.procedureType.type }}</td>
                                             <td class="col-duration" data-column="duration">{{ appointment.duration }} мин</td>
                                             <td class="col-status" data-column="status">
-                                                {% if appointment.status == 'confirmed' %}
+                                                {% if appointment.statusValue == 'confirmed' %}
                                                     <span class="badge badge-success">Потвърден</span>
-                                                {% elseif appointment.status == 'completed' %}
+                                                {% elseif appointment.statusValue == 'completed' %}
                                                     <span class="badge badge-secondary">Завършен</span>
-                                                {% elseif appointment.status == 'cancelled' %}
+                                                {% elseif appointment.statusValue == 'cancelled' %}
                                                     <span class="badge badge-danger">Отменен</span>
                                                 {% else %}
-                                                    <span class="badge badge-warning">{{ appointment.status }}</span>
+                                                    <span class="badge badge-warning">{{ appointment.statusValue }}</span>
                                                 {% endif %}
                                             </td>
                                             <td class="col-date_added" data-column="date_added">
@@ -272,14 +272,14 @@
                                                 <small>{{ appointment.dateLastUpdate ? appointment.dateLastUpdate|date('d.m.Y H:i') : '—' }}</small>
                                             </td>
                                             <td class="col-actions" data-column="actions">
-                                                {% if appointment.status != 'cancelled' %}
+                                                {% if appointment.statusValue != 'cancelled' %}
                                                     <button type="button"
                                                             class="btn btn-sm btn-primary btn-edit"
                                                             data-appointment-id="{{ appointment.id }}"
                                                             title="Редактирай">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    {% if appointment.status == 'confirmed' %}
+                                                    {% if appointment.statusValue == 'confirmed' %}
                                                         <button type="button"
                                                                 class="btn btn-sm btn-danger btn-cancel"
                                                                 data-appointment-id="{{ appointment.id }}"

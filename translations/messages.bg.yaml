@@ -1,0 +1,197 @@
+#  homepage.html.twig
+
+homepage:
+    title: 'Барбершоп - Професионално подстригване и грижа за мъже'
+    welcome_1: 'Добре дошли в нашия барбершоп!'
+    welcome_2: 'Нашите прически ви правят елегантни'
+    make_appointment: 'Запази час'
+    about_us:
+        title: 'За нас'
+        description: 'В барбершопа предлагаме първокласни услуги за подстригване и грижа за мъже'
+        we_provide: 'Ние предлагаме професионални услуги за подстригване и грижа за мъже с опитни барбери. Запазете своя час онлайн и се насладете на нашите премиум услуги в модерна, комфортна обстановка.'
+        our_team: 'Нашият екип от квалифицирани професионалисти е посветен на това да ви предостави перфектния външен вид, който отговаря на вашия стил и личност.'
+        become_a_member: 'Стани член'
+    service:
+        title: 'Професионални услуги'
+        description: 'Нашите най-добри услуги, които предлагаме'
+        service_1:
+            title: 'Стилно подстригване'
+            description: 'Професионални мъжки прически, детски прически и модерно стилизиране, съобразени с вашите предпочитания.'
+        service_2:
+            title: 'Гореща кърпа и бръснене'
+            description: 'Традиционно изживяване с гореща кърпа и бръснене с премиум продукти за максимална релаксация.'
+        service_3:
+            title: 'Оформяне на брада'
+            description: 'Експертно подстригване, оформяне и грижа за брадата, която перфектно допълва вашия външен вид.'
+        booking:
+            title_1: 'Запази без акаунт'
+            title_2: 'Запази час'
+            description: 'Не е необходима регистрация - просто попълнете вашите данни и изберете час!'
+            email: 'Ще получите потвърждение по имейл с подробности за вашата резервация'
+            manage: 'Управлявайте вашата резервация чрез линка в имейла (отмяна или пренасрочване)'
+            track_description: 'Искате ли да следите вашите резервации?'
+            track_button: 'Създайте акаунт'
+
+
+# base_iframe.html.twig
+
+base_iframe:
+    title: 'Барбершоп'
+
+    # _appointment_table.html.twig
+
+appointment_table:
+    appointment_empty: 'Все още нямате записани часове.'
+    date: 'Дата и час'
+    client: 'Клиент'
+    phone: 'Телефон'
+    service: 'Услуга'
+    duration: 'Продължителност'
+    status: 'Статус'
+    action: 'ействия'
+    today: 'Днес'
+    confirm: 'Потвърден'
+    completed: 'Завършен'
+    cancelled: 'Отменен'
+    complete_title: 'Отбележи като завършен'
+    cancel_appointment: 'Отмени час'
+
+#  base.html.twig
+
+base:
+    header:
+        title: 'Барбершоп - Запази час'
+        description: 'Професионална система за резервация на часове в барбершоп'
+    nav:
+        home: 'Начало'
+        book_appointment: 'Запази час'
+        manager: 'Мениджър'
+        admin: 'Админ'
+        hello: 'Здравей'
+        logout: 'Изход'
+        login: 'Вход'
+        register: 'Регистрация'
+        BG: 'БГ'
+        EN: 'EN'
+    footer:
+        text: 'Барбершоп. Всички права запазени.'
+        back_to_top: 'Обратно нагоре'
+        go_to_top: 'Отиди на върха'
+    btn.become_member: 'Стани член'
+
+# reset_password.html.twig
+
+reset_password:
+    title: 'Нова парола - Барбершоп'
+    new_password: 'Нова парола'
+    section_new_password_title: 'Задайте нова парола'
+    section_new_password_description: 'Изберете силна парола за вашия акаунт.'
+    password_field_placeholder: 'Минимум 6 символа'
+    password_field_error: 'Паролата трябва да е минимум 6 символа'
+    confirm_password: 'Потвърдете паролата'
+    repeat_password: 'Въведете паролата отново'
+    submit_button: 'Запази новата парола'
+    remember_your_password: 'Спомняте си паролата си?'
+    to_login: 'Влезте в акаунта си'
+
+# login.html.twig
+
+login:
+    title: 'Вход'
+    section_title: 'Влезте в профила си'
+    section_description: 'Добре дошли обратно! Въведете вашите данни за вход.'
+    already_logged_in: 'Вие вече сте влезли като'
+    to_homepage: 'Към начална страница'
+    email_label: 'Имейл адрес'
+    password_label: 'Парола'
+    remember_me: 'Запомни ме'
+    submit: 'Влез'
+    no_account: 'Нямате профил?'
+    register_here: 'Регистрирайте се тук'
+    forgot_password: 'Забравена парола?'
+
+#  forgot_password.html.twig
+
+forgot_password:
+    title: 'Забравена парола - Barber Shop'
+    hero_title: 'Забравена парола'
+    section_title: 'Възстановяване на парола'
+    section_description: 'Въведете вашия имейл адрес и ще ви изпратим линк за възстановяване.'
+    email_label: 'Имейл адрес'
+    email_placeholder: 'your@email.com'
+    submit: 'Изпрати линк'
+    remember_password: 'Спомняте си паролата?'
+    to_login: 'Влезте тук'
+
+# register.html.twig
+
+register:
+    title: 'Регистрация - Barber Shop'
+    hero_title: 'Регистрация'
+    section_title: 'Създайте своя профил'
+    section_description: 'Присъединете се към нас и започнете да резервирате вашите любими услуги.'
+    email_label: 'Имейл адрес'
+    email_placeholder: 'your@email.com'
+    password_label: 'Парола'
+    password_placeholder: 'Минимум 6 символа'
+    password_hint: 'Паролата трябва да е минимум 6 символа'
+    repeat_password_label: 'Повторете парола'
+    repeat_password_placeholder: 'Паролата трябва да съвпада с предишната'
+    repeat_password_hint: 'Паролата трябва да съвпада с предишната'
+    agree_terms: 'Съгласен съм с'
+    terms_link: 'Условията за ползване'
+    submit: 'Регистрирай се'
+    have_account: 'Вече имате профил?'
+    login_here: 'Влезте тук'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

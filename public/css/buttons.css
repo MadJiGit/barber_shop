@@ -1,0 +1,313 @@
+/* ================================================
+   UNIFIED BUTTON STYLES - Barber Shop
+   Based on original template design
+   ================================================ */
+
+/* THEME COLORS (from original template) */
+:root {
+    --theme-gold: #d19f68;      /* Main theme color */
+    --theme-gold-dark: #af804d; /* Hover state */
+    --theme-gold-light: #dca73a; /* Accent color */
+}
+
+/* ================================================
+   PRIMARY BUTTONS (Main theme color)
+   ================================================ */
+.btn-primary {
+    background-color: var(--theme-gold);
+    border-color: var(--theme-gold);
+    color: #000000;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--theme-gold-dark);
+    border-color: var(--theme-gold-dark);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(209, 159, 104, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ================================================
+   OUTLINE BUTTONS
+   ================================================ */
+.btn-outline-primary {
+    background-color: transparent;
+    border: 2px solid var(--theme-gold);
+    color: var(--theme-gold);
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 13px 33px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--theme-gold);
+    border-color: var(--theme-gold);
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   SECONDARY BUTTONS
+   ================================================ */
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   DANGER BUTTONS (Delete, Cancel)
+   ================================================ */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: #c82333;
+    border-color: #bd2130;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.btn-outline-danger {
+    background-color: transparent;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 13px 33px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   SUCCESS BUTTONS
+   ================================================ */
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   WARNING BUTTONS
+   ================================================ */
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+    background-color: #e0a800;
+    border-color: #d39e00;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   INFO BUTTONS
+   ================================================ */
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    background-color: #138496;
+    border-color: #117a8b;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ================================================
+   BUTTON SIZES
+   ================================================ */
+.btn-sm {
+    padding: 10px 25px;
+    font-size: 13px;
+}
+
+.btn-lg {
+    padding: 20px 45px;
+    font-size: 17px;
+}
+
+/* ================================================
+   BUTTON GROUPS
+   ================================================ */
+.btn-group .btn {
+    border-radius: 0;
+    margin-right: -2px;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-right: 0;
+}
+
+/* ================================================
+   DISABLED STATE
+   ================================================ */
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ================================================
+   LOADING STATE (with spinner)
+   ================================================ */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: button-spin 0.6s linear infinite;
+}
+
+@keyframes button-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ================================================
+   RESPONSIVE ADJUSTMENTS
+   ================================================ */
+@media (max-width: 768px) {
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-success,
+    .btn-warning,
+    .btn-info {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+
+    .btn-lg {
+        padding: 15px 35px;
+        font-size: 16px;
+    }
+
+    .btn-sm {
+        padding: 8px 20px;
+        font-size: 12px;
+    }
+}

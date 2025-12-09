@@ -132,6 +132,46 @@ class EmailService
     }
 
     /**
+     * Send guest appointment confirmation email with token link
+     */
+    public function sendGuestAppointmentConfirmation(Appointments $appointment, string $confirmUrl, string $cancelUrl): bool
+    {
+        try {
+            $client = $appointment->getClient();
+            $barber = $appointment->getBarber();
+
+            $email = (new TemplatedEmail())
+                ->from(new Address($this->senderEmail, $this->senderName))
+                ->to(new Address($client->getEmail(), $client->getFirstName() ?: ''))
+                ->subject('Потвърдете вашата резервация')
+                ->htmlTemplate('email/guest_appointment_confirmation.html.twig')
+                ->context([
+                    'appointment' => $appointment,
+                    'client' => $client,
+                    'barber' => $barber,
+                    'confirmUrl' => $confirmUrl,
+                    'cancelUrl' => $cancelUrl,
+                ]);
+
+            $this->mailer->send($email);
+            $this->logger->info('Guest appointment confirmation email sent', [
+                'appointment_id' => $appointment->getId(),
+                'client_email' => $client->getEmail(),
+                'token' => $appointment->getConfirmationToken()
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to send guest appointment confirmation email', [
+                'appointment_id' => $appointment->getId(),
+                'error' => $e->getMessage()
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
      * Send appointment cancellation email
      * @throws TransportExceptionInterface
      */

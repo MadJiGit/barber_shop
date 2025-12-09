@@ -8,24 +8,44 @@ use App\Repository\UserRepository;
 use App\Service\DateTimeHelper;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
+    /**
+     * @throws RandomException
+     */
     #[Route('/register', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        EmailService $emailService
-    ): Response
-    {
+        EmailService $emailService,
+        UserRepository $userRepository,
+    ): Response {
+        // Check if this is a guest upgrade BEFORE creating the form
         $user = new User();
+        $isGuestUpgrade = false;
+
+        if ($request->isMethod('POST')) {
+            $email = $request->request->all('registration_form')['email'] ?? null;
+            if ($email) {
+                $existingUser = $userRepository->findOneBy(['email' => $email]);
+
+                // If a guest user exists (no password, inactive) - use it for the form
+                if ($existingUser && !$existingUser->getPassword() && !$existingUser->getIsActive()) {
+                    $user = $existingUser;
+                    $isGuestUpgrade = true;
+                }
+            }
+        }
+
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -36,6 +56,7 @@ class RegistrationController extends AbstractController
 
             if ($plainPassword !== $plainRepeatPassword) {
                 $this->addFlash('error', 'Паролите не съвпадат.');
+
                 return $this->render('registration/register.html.twig', [
                     'registrationForm' => $form,
                 ]);
@@ -44,7 +65,7 @@ class RegistrationController extends AbstractController
             // Encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // Set user as inactive until email is verified
+            // All registrations require email verification (guest or new)
             $user->setIsActive(false);
 
             // Generate verification token
@@ -55,7 +76,11 @@ class RegistrationController extends AbstractController
             $expiresAt = DateTimeHelper::now()->modify('+24 hours');
             $user->setTokenExpiresAt($expiresAt);
 
-            $entityManager->persist($user);
+            // Only persist if it's a new user, not a guest upgrade
+            if (!$isGuestUpgrade) {
+                $entityManager->persist($user);
+            }
+
             $entityManager->flush();
 
             // Send verification email
@@ -73,21 +98,21 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @throws \Exception
+     * @throws \Exception|TransportExceptionInterface
      */
     #[Route('/verify-email/{token}', name: 'app_verify_email')]
     public function verifyEmail(
         string $token,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        EmailService $emailService
-    ): Response
-    {
-        // Find user by confirmation token
+        EmailService $emailService,
+    ): Response {
+        // Find a user by confirmation token
         $user = $userRepository->findOneBy(['confirmation_token' => $token]);
 
         if (!$user) {
             $this->addFlash('error', 'Невалиден или изтекъл линк за потвърждение.');
+
             return $this->redirectToRoute('app_login');
         }
 
@@ -95,6 +120,7 @@ class RegistrationController extends AbstractController
         $now = DateTimeHelper::now();
         if ($user->getTokenExpiresAt() < $now) {
             $this->addFlash('error', 'Линкът за потвърждение е изтекъл. Моля, регистрирайте се отново.');
+
             return $this->redirectToRoute('app_register');
         }
 
@@ -109,6 +135,7 @@ class RegistrationController extends AbstractController
         $emailService->sendWelcomeEmail($user);
 
         $this->addFlash('success', 'Вашият акаунт е потвърден успешно! Можете да влезете.');
+
         return $this->redirectToRoute('app_login');
     }
 }

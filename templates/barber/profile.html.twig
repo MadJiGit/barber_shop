@@ -414,16 +414,16 @@
                                                                 </td>
                                                                 <td>{{ appointment.procedureType.type }}</td>
                                                                 <td>
-                                                                    {% if appointment.status == 'confirmed' %}
+                                                                    {% if appointment.statusValue == 'confirmed' %}
                                                                         <span class="badge badge-primary">Потвърден</span>
-                                                                    {% elseif appointment.status == 'completed' %}
+                                                                    {% elseif appointment.statusValue == 'completed' %}
                                                                         <span class="badge badge-success">Изпълнен</span>
-                                                                    {% elseif appointment.status == 'cancelled' %}
+                                                                    {% elseif appointment.statusValue == 'cancelled' %}
                                                                         <span class="badge badge-danger">Отменен</span>
-                                                                    {% elseif appointment.status == 'no_show' %}
+                                                                    {% elseif appointment.statusValue == 'no_show' %}
                                                                         <span class="badge badge-warning">Недошъл</span>
                                                                     {% else %}
-                                                                        <span class="badge badge-secondary">{{ appointment.status }}</span>
+                                                                        <span class="badge badge-secondary">{{ appointment.statusValue }}</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td class="text-right">
