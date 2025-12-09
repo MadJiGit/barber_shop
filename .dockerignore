@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# PHP
+vendor/
+.env.local
+.env.*.local
+.php-cs-fixer.cache
+.phpunit.cache/
+.phpunit.result.cache
+
+# Symfony
+/var/
+/public/build/
+/public/bundles/
+
+# Build artifacts
+barber_shop_backup_*.sql
+claude.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+README.md
+TODO.md
+CONTROLLER_REFACTORING_PLAN.md
+CONTROLLER_REFACTORING_SUMMARY.md
