@@ -133,6 +133,7 @@ class AppointmentService
         // Confirm appointment
         $appointment->setStatus(AppointmentStatus::CONFIRMED);
         $appointment->setConfirmedAt(DateTimeHelper::now());
+        $appointment->setConfirmationToken(null);
 
         $this->entityManager->flush();
 

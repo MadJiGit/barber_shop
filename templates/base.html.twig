@@ -67,7 +67,6 @@
                                     <div class="main-menu f-right d-none d-lg-block">
                                         <nav>
                                             <ul id="navigation">
-                                                {{ app.request.locale }}
                                                 <li><a href="{{ path('main') }}">{{ 'base.nav.home' | trans }}</a></li>
                                                 {% if app.user %}
                                                     <li><a href="{{ path('appointment_book', {id: app.user.id}) }}">{{ 'base.nav.book_appointment' | trans }}</a></li>

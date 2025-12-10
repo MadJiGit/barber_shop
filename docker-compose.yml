@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: barber-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: barber_shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/procedures_postgres.sql:/docker-entrypoint-initdb.d/procedures.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: barber-shop
+    ports:
+      - "8080:80"
+    env_file:
+      - .env.docker
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/barber_shop"
+      APP_ENV: prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

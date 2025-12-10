@@ -35,35 +35,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getAllRolesByRolesName(string $role): array
     {
-        //        dd($role);
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
+                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
-        if (true) {
-            return $this->createQueryBuilder('u')
-                ->select('u.id',
-                    'u.email',
-                    'u.roles',
-                    'u.first_name',
-                    'u.last_name',
-                    'u.nick_name',
-                    'u.phone',
-                    'u.date_added',
-                    'u.date_banned',
-                    'u.date_last_update')
-            ->andWhere('u.roles LIKE :role')
-            ->setParameter('role', '%'.$role.'%')
-            ->getQuery()
-            ->getArrayResult();
-        } else {
-            $qb = $this->createQueryBuilder('u');
-            $qb->andWhere(
-                $qb->expr()->like('u.roles', ':role')
-            )
-                ->setParameter('role', '%'.$role.'%')
-                ->getQuery()
-                ->getArrayResult();
-
-            return $qb;
-        }
+        return $result->fetchAllAssociative();
     }
 
     public function getWithNoRole(): array
@@ -87,11 +65,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $barber = 'ROLE_BARBER';
 
-        return $this->createQueryBuilder('u')
-            ->where('u.roles like :role')
-            ->setParameter('role', '%'.$barber.'%')
-            ->getQuery()
-            ->getResult();
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT * FROM "user" WHERE CAST(roles AS text) LIKE :role';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['role' => '%'.$barber.'%']);
+
+        $users = [];
+        foreach ($result->fetchAllAssociative() as $row) {
+            $users[] = $this->find($row['id']);
+        }
+
+        return $users;
     }
 
     /**
@@ -137,33 +121,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $role = 'ROLE_CLIENT';
 
-        if (true) {
-            return $this->createQueryBuilder('u')
-                ->select('u.id',
-                    'u.email',
-                    'u.roles',
-                    'u.first_name',
-                    'u.last_name',
-                    'u.nick_name',
-                    'u.phone',
-                    'u.date_added',
-                    'u.date_banned',
-                    'u.date_last_update')
-                ->andWhere('u.roles LIKE :role')
-                ->setParameter('role', '%'.$role.'%')
-                ->getQuery()
-                ->getArrayResult();
-        } else {
-            $qb = $this->createQueryBuilder('u');
-            $qb->andWhere(
-                $qb->expr()->like('u.roles', ':role')
-            )
-                ->setParameter('role', '%'.$role.'%')
-                ->getQuery()
-                ->getArrayResult();
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
+                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
-            return $qb;
-        }
+        return $result->fetchAllAssociative();
     }
 
     public function isUserIsAdmin($id): bool

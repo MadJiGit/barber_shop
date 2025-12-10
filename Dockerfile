@@ -25,9 +25,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    git unzip zip libicu-dev libzip-dev libpq-dev \
+    git unzip zip libicu-dev libzip-dev libpq-dev acl \
     && docker-php-ext-install intl pdo pdo_pgsql pdo_mysql zip \
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 COPY --chown=www-data:www-data . .
@@ -35,14 +36,21 @@ COPY --from=vendor --chown=www-data:www-data /app/vendor ./vendor
 COPY --from=assets --chown=www-data:www-data /app/public/build ./public/build
 
 ENV APP_ENV=prod
-RUN mkdir -p var/cache var/log && \
+RUN mkdir -p var/cache var/log var/sessions && \
     chown -R www-data:www-data var && \
-    chmod -R 777 var
+    setfacl -dR -m u:www-data:rwX -m u:root:rwX var/ && \
+    setfacl -R -m u:www-data:rwX -m u:root:rwX var/
 
 # Configure Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Enable .htaccess overrides
+RUN echo '<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' >> /etc/apache2/sites-available/000-default.conf
 
 # Copy and set up entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/

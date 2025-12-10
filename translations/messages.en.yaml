@@ -146,6 +146,17 @@ register:
     have_account: 'Already have an account?'
     login_here: 'Log in here'
 
+# error.html.twig
+
+error_page:
+    title: 'Error'
+    title_defaults: 'Unknown Error'
+    status_text: 'An error occurred'
+    description: 'Sorry, but something went wrong.'
+    advise: 'Please try again later or contact us, if the problem persists.'
+    button_start: 'Go to Homepage'
+    button_profile: 'Go to Profile'
+
 
 
 
