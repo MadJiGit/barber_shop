@@ -1,0 +1,59 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: barber-shop-db
+    env: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile.postgres
+    envVars:
+      - key: POSTGRES_USER
+        value: barber_user
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGRES_DB
+        value: barber_shop
+    disk:
+      name: postgres-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
+
+  # Web Application
+  - type: web
+    name: barber-shop-web
+    env: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: 0
+      - key: APP_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: barber-shop-db
+          property: connectionString
+      - key: MAILER_DSN
+        sync: false
+      - key: MAILER_NOREPLY_EMAIL
+        value: reg9643@gmail.com
+      - key: MAILER_NOREPLY_NAME
+        value: Barber Shop
+    buildFilter:
+      paths:
+        - src/**
+        - public/**
+        - templates/**
+        - config/**
+        - migrations/**
+        - data/**
+        - composer.json
+        - composer.lock
+        - package.json
+        - package-lock.json
+        - webpack.config.js
+        - Dockerfile
+        - docker-entrypoint.sh

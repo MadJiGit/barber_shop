@@ -1,0 +1,9 @@
+FROM postgres:16
+
+# Copy SQL seed files to initialization directory
+# PostgreSQL automatically executes *.sql files in /docker-entrypoint-initdb.d/ on first run
+COPY data/barbers_postgres.sql /docker-entrypoint-initdb.d/01_barbers.sql
+COPY data/procedures_postgres.sql /docker-entrypoint-initdb.d/02_procedures.sql
+
+# The files will be executed in alphabetical order (01, 02)
+# This ensures barbers (users) are loaded before procedures
