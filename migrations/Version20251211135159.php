@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251211095749 extends AbstractMigration
+final class Version20251211135159 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -28,45 +28,57 @@ final class Version20251211095749 extends AbstractMigration
             // Insert users with hashed password (password: 12345678)
             $hashedPassword = '$2y$13$LVQe5U5gu3IRJoNZps/OruwBC3EieX6o.Mo4Nba0LGkxACe9kipzS';
 
+            // Insert each user separately to avoid ID generation issues
             $connection->executeStatement('
                 INSERT INTO "user" (email, roles, password, first_name, last_name, nick_name, phone, date_added, is_active, is_banned)
-                VALUES
-                (:email1, :roles1, :password1, :first_name1, :last_name1, :nick_name1, :phone1, NOW(), true, false),
-                (:email2, :roles2, :password2, :first_name2, :last_name2, :nick_name2, :phone2, NOW(), true, false),
-                (:email3, :roles3, :password3, :first_name3, :last_name3, :nick_name3, :phone3, NOW(), true, false),
-                (:email4, :roles4, :password4, :first_name4, :last_name4, :nick_name4, :phone4, NOW(), true, false)
+                VALUES (:email, :roles, :password, :first_name, :last_name, :nick_name, :phone, NOW(), true, false)
             ', [
-                'email1' => 'reg9643@gmail.com',
-                'roles1' => '["ROLE_SUPER_ADMIN"]',
-                'password1' => $hashedPassword,
-                'first_name1' => 'Super',
-                'last_name1' => 'Adminev',
-                'nick_name1' => 'Super Admina',
-                'phone1' => '0888888811',
+                'email' => 'reg9643@gmail.com',
+                'roles' => '["ROLE_SUPER_ADMIN"]',
+                'password' => $hashedPassword,
+                'first_name' => 'Super',
+                'last_name' => 'Adminev',
+                'nick_name' => 'Super Admina',
+                'phone' => '0888888811',
+            ]);
 
-                'email2' => 'admin@abv.bg',
-                'roles2' => '["ROLE_ADMIN"]',
-                'password2' => $hashedPassword,
-                'first_name2' => 'Admin',
-                'last_name2' => 'Adminev',
-                'nick_name2' => 'Admina',
-                'phone2' => '0888888811',
+            $connection->executeStatement('
+                INSERT INTO "user" (email, roles, password, first_name, last_name, nick_name, phone, date_added, is_active, is_banned)
+                VALUES (:email, :roles, :password, :first_name, :last_name, :nick_name, :phone, NOW(), true, false)
+            ', [
+                'email' => 'admin@abv.bg',
+                'roles' => '["ROLE_ADMIN"]',
+                'password' => $hashedPassword,
+                'first_name' => 'Admin',
+                'last_name' => 'Adminev',
+                'nick_name' => 'Admina',
+                'phone' => '0888888811',
+            ]);
 
-                'email3' => 'barber_senior@abv.bg',
-                'roles3' => '["ROLE_BARBER_SENIOR"]',
-                'password3' => $hashedPassword,
-                'first_name3' => 'Senior',
-                'last_name3' => 'Barber',
-                'nick_name3' => 'Seniora',
-                'phone3' => '0888888888',
+            $connection->executeStatement('
+                INSERT INTO "user" (email, roles, password, first_name, last_name, nick_name, phone, date_added, is_active, is_banned)
+                VALUES (:email, :roles, :password, :first_name, :last_name, :nick_name, :phone, NOW(), true, false)
+            ', [
+                'email' => 'barber_senior@abv.bg',
+                'roles' => '["ROLE_BARBER_SENIOR"]',
+                'password' => $hashedPassword,
+                'first_name' => 'Senior',
+                'last_name' => 'Barber',
+                'nick_name' => 'Seniora',
+                'phone' => '0888888888',
+            ]);
 
-                'email4' => 'barber@abv.bg',
-                'roles4' => '["ROLE_BARBER"]',
-                'password4' => $hashedPassword,
-                'first_name4' => 'Barber',
-                'last_name4' => 'Barber',
-                'nick_name4' => 'Barbara',
-                'phone4' => '0999999999',
+            $connection->executeStatement('
+                INSERT INTO "user" (email, roles, password, first_name, last_name, nick_name, phone, date_added, is_active, is_banned)
+                VALUES (:email, :roles, :password, :first_name, :last_name, :nick_name, :phone, NOW(), true, false)
+            ', [
+                'email' => 'barber@abv.bg',
+                'roles' => '["ROLE_BARBER"]',
+                'password' => $hashedPassword,
+                'first_name' => 'Barber',
+                'last_name' => 'Barber',
+                'nick_name' => 'Barbara',
+                'phone' => '0999999999',
             ]);
 
             $this->write('Inserted 4 users (Super Admin, Admin, Senior Barber, Barber)');
