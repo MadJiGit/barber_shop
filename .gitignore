@@ -20,6 +20,7 @@
 TODO.md
 claude.txt
 command.md
+CLAUDE.md
 RENDER_DEPLOYMNET.md
 node_modules/
 public/build/
@@ -30,7 +31,10 @@ public/assets/img/.DS_Store
 ###> phpunit/phpunit ###
 /phpunit.xml
 /.phpunit.cache/
+docker-compose.yaml
 ###< phpunit/phpunit ###
+
+barbers_postgres.sql
 
 
 template_reference/
