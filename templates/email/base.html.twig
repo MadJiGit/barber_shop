@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Barber Shop{% endblock %}</title>
+    <title>{% block title %}{{ 'email.base.title' | trans }}{% endblock %}</title>
     <style>
         body {
             margin: 0;
@@ -69,14 +69,14 @@
 <body>
     <div class="email-container">
         <div class="email-header">
-            <h1>{% block header %}Barber Shop{% endblock %}</h1>
+            <h1>{% block header %}{{ 'email.base.header' | trans }}{% endblock %}</h1>
         </div>
         <div class="email-body">
             {% block body %}{% endblock %}
         </div>
         <div class="email-footer">
-            <p>&copy; {{ 'now'|date('Y') }} Barber Shop. Всички права запазени.</p>
-            <p>Това е автоматично генериран имейл. Моля, не отговаряйте.</p>
+            <p>&copy; {{ 'now'|date('Y') }} {{ 'email.base.footer_rights' | trans }}</p>
+            <p>{{ 'email.base.footer_notice' | trans }}</p>
         </div>
     </div>
 </body>

@@ -1,87 +1,87 @@
 {% extends 'email/base.html.twig' %}
 
 {% block body %}
-    <h1 style="color: #ffc107; margin-bottom: 20px;">⏰ Напомняне за вашия час утре</h1>
+    <h1 style="color: #ffc107; margin-bottom: 20px;">{{ 'reminder.title' | trans }}</h1>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
-        Здравейте{{ client.firstName ? ', ' ~ client.firstName : '' }},
+        {{ 'reminder.hello' | trans }}{{ client.firstName ? ', ' ~ client.firstName : '' }},
     </p>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
-        Това е приятелско напомняне, че имате запазен час в <strong>Barber Shop</strong> утре!
+        {{ 'reminder.message' | trans|raw }}
     </p>
 
     <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 25px 0; border-radius: 5px;">
         <h3 style="color: #856404; margin-top: 0; margin-bottom: 15px;">
-            ⏰ Не забравяйте!
+            {{ 'reminder.dont_forget' | trans }}
         </h3>
         <p style="margin: 0; color: #856404; font-size: 18px; font-weight: bold;">
-            Вашият час е утре в {{ appointment.date|date('H:i') }}
+            {{ 'reminder.appointment_time' | trans }} {{ appointment.date|date('H:i') }}
         </p>
     </div>
 
     <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 25px 0;">
         <h3 style="color: #d4a024; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #d4a024; padding-bottom: 10px;">
-            📅 Детайли за вашия час
+            {{ 'reminder.details_title' | trans }}
         </h3>
 
         <table style="width: 100%; font-size: 15px; line-height: 1.8;">
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>🗓️ Дата:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.date' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0; font-weight: bold;">{{ appointment.date|date('d.m.Y') }} ({% set dayNames = {0: 'Неделя', 1: 'Понеделник', 2: 'Вторник', 3: 'Сряда', 4: 'Четвъртък', 5: 'Петък', 6: 'Събота'} %}{{ dayNames[appointment.date|date('w')] }})</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>🕐 Час:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.time' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0; font-weight: bold; font-size: 18px; color: #d4a024;">{{ appointment.date|date('H:i') }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>💈 Бръснар:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.barber' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0;">{{ barber.firstName }} {{ barber.lastName }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>✂️ Услуга:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.service' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0;">{{ appointment.procedureType.type }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>⏱️ Продължителност:</strong></td>
-                <td style="color: #333; padding: 5px 0;">{{ appointment.duration }} мин.</td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.duration' | trans }}:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.duration }} {{ 'reminder.minutes' | trans }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>💰 Цена:</strong></td>
-                <td style="color: #333; padding: 5px 0; font-weight: bold;">{{ barber.isBarberJunior ? appointment.procedureType.priceJunior : appointment.procedureType.priceMaster }} лв.</td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'reminder.price' | trans }}:</strong></td>
+                <td style="color: #333; padding: 5px 0; font-weight: bold;">{{ barber.isBarberJunior ? appointment.procedureType.priceJunior : appointment.procedureType.priceMaster }} {{ 'reminder.currency' | trans }}</td>
             </tr>
         </table>
     </div>
 
     <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 25px 0;">
         <p style="margin: 0; color: #155724; font-size: 14px; line-height: 1.6;">
-            <strong>✓ Подготовка:</strong> Моля, пристигнете 5 минути по-рано. Ако имате нужда от допълнителни услуги, можете да ги обсъдите директно с бръснаря.
+            <strong>✓ {{ 'reminder.preparation_title' | trans }}:</strong> {{ 'reminder.preparation_text' | trans }}
         </p>
     </div>
 
     <div style="background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 25px 0;">
         <p style="margin: 0 0 10px 0; color: #721c24; font-size: 14px; line-height: 1.6;">
-            <strong>⚠️ Трябва да отмените?</strong>
+            <strong>⚠️ {{ 'reminder.cancel_header' | trans }}?</strong>
         </p>
         <p style="margin: 0; color: #721c24; font-size: 14px;">
-            Ако не можете да дойдете, моля отменете часа си навреме от вашия профил или се свържете с нас.
+            {{ 'reminder.cancel_text' | trans }}
         </p>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <a href="{{ url('profile_edit', {id: client.id}) }}"
            style="display: inline-block; padding: 15px 40px; background-color: #d4a024; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
-            Преглед на часа
+            {{ 'reminder.view_appointment' | trans }}
         </a>
     </div>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
-        Очакваме ви с нетърпение утре!
+        {{ 'reminder.see_you' | trans }}
     </p>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 10px;">
-        Поздрави,<br>
-        <strong>Екипът на Barber Shop</strong>
+        {{ 'reminder.regards' | trans }}<br>
+        <strong>{{ 'reminder.team' | trans }}</strong>
     </p>
 
     <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
@@ -90,6 +90,6 @@
     </p>
 
     <p style="font-size: 11px; color: #aaa; margin-top: 15px; text-align: center;">
-        Това е автоматично напомняне, изпратено 24 часа преди вашия час.
+        {{ 'reminder.auto_notice' | trans }}
     </p>
 {% endblock %}

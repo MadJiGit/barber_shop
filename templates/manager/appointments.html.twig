@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Manager - Всички резервации{% endblock %}
+{% block title %}{{ 'appointments.title' | trans }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -15,7 +15,7 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="hero-cap hero-cap2 pt-70 text-center">
-                        <h2>Управление на резервации</h2>
+                        <h2>{{ 'appointments.hero_title' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -27,8 +27,8 @@
 <div class="container-fluid mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h1><i class="fas fa-calendar-alt"></i> Управление на резервации</h1>
-            <p class="text-muted">Преглед и редакция на всички резервации</p>
+            <h1><i class="fas fa-calendar-alt"></i> {{ 'appointments.main_heading' | trans }}</h1>
+            <p class="text-muted">{{ 'appointments.subtitle' | trans }}</p>
         </div>
     </div>
 
@@ -37,10 +37,10 @@
         <div class="col-md-12">
             <div class="btn-group" role="group">
                 <a href="{{ path('manager_dashboard') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home"></i> {{ 'appointments.nav_dashboard' | trans }}
                 </a>
                 <a href="{{ path('manager_appointments') }}" class="btn btn-primary active">
-                    <i class="fas fa-calendar-alt"></i> Всички резервации
+                    <i class="fas fa-calendar-alt"></i> {{ 'appointments.nav_all' | trans }}
                 </a>
             </div>
         </div>
@@ -51,12 +51,12 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-filter"></i> Филтри</h5>
+                    <h5><i class="fas fa-filter"></i> {{ 'appointments.filters.title' | trans }}</h5>
                 </div>
                 <div class="card-body">
                     <form method="get" action="{{ path('manager_appointments') }}" class="form-inline">
                         <div class="form-group mr-3 mb-2">
-                            <label for="date" class="mr-2">Дата:</label>
+                            <label for="date" class="mr-2">{{ 'appointments.filters.date' | trans }}:</label>
                             <input type="date"
                                    name="date"
                                    id="date"
@@ -65,9 +65,9 @@
                         </div>
 
                         <div class="form-group mr-3 mb-2">
-                            <label for="barber" class="mr-2">Барбър:</label>
+                            <label for="barber" class="mr-2">{{ 'appointments.filters.barber' | trans }}:</label>
                             <select name="barber" id="barber" class="form-control">
-                                <option value="">Всички</option>
+                                <option value="">{{ 'appointments.filters.all' | trans }}</option>
                                 {% for barber in allBarbers %}
                                     <option value="{{ barber.id }}"
                                             {% if filterBarberId == barber.id %}selected{% endif %}>
@@ -78,30 +78,30 @@
                         </div>
 
                         <div class="form-group mr-3 mb-2">
-                            <label for="status" class="mr-2">Статус:</label>
+                            <label for="status" class="mr-2">{{ 'appointments.filters.status' | trans }}:</label>
                             <select name="status" id="status" class="form-control">
-                                <option value="">Всички</option>
-                                <option value="confirmed" {% if filterStatus == 'confirmed' %}selected{% endif %}>Потвърдени</option>
-                                <option value="completed" {% if filterStatus == 'completed' %}selected{% endif %}>Завършени</option>
-                                <option value="cancelled" {% if filterStatus == 'cancelled' %}selected{% endif %}>Отменени</option>
+                                <option value="">{{ 'appointments.filters.all' | trans }}</option>
+                                <option value="confirmed" {% if filterStatus == 'confirmed' %}selected{% endif %}>{{ 'appointments.filters.status_confirmed' | trans }}</option>
+                                <option value="completed" {% if filterStatus == 'completed' %}selected{% endif %}>{{ 'appointments.filters.status_completed' | trans }}</option>
+                                <option value="cancelled" {% if filterStatus == 'cancelled' %}selected{% endif %}>{{ 'appointments.filters.status_cancelled' | trans }}</option>
                             </select>
                         </div>
 
                         <div class="form-group mr-3 mb-2">
-                            <label for="client" class="mr-2">Клиент:</label>
+                            <label for="client" class="mr-2">{{ 'appointments.filters.client' | trans }}:</label>
                             <input type="text"
                                    name="client"
                                    id="client"
                                    class="form-control"
-                                   placeholder="Име или email"
+                                   placeholder="{{ 'appointments.filters.client_placeholder' | trans }}"
                                    value="{{ filterClientSearch }}">
                         </div>
 
                         <button type="submit" class="btn btn-primary mb-2 mr-2">
-                            <i class="fas fa-search"></i> Търси
+                            <i class="fas fa-search"></i> {{ 'appointments.filters.search' | trans }}
                         </button>
                         <a href="{{ path('manager_appointments') }}" class="btn btn-secondary mb-2">
-                            <i class="fas fa-times"></i> Изчисти
+                            <i class="fas fa-times"></i> {{ 'appointments.filters.clear' | trans }}
                         </a>
                     </form>
                 </div>
@@ -114,59 +114,63 @@
         <div class="col-md-6">
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="columnToggle" data-toggle="dropdown">
-                    <i class="fas fa-columns"></i> Колони
+                    <i class="fas fa-columns"></i> {{ 'appointments.columns.toggle' | trans }}
                 </button>
                 <div class="dropdown-menu p-3" onclick="event.stopPropagation()">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-id" data-column="id" checked>
-                        <label class="form-check-label" for="col-id">ID</label>
+                        <label class="form-check-label" for="col-id">{{ 'appointments.columns.id' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-date" data-column="date" checked>
-                        <label class="form-check-label" for="col-date">Дата и час</label>
+                        <label class="form-check-label" for="col-date">{{ 'appointments.columns.date' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-client" data-column="client" checked>
-                        <label class="form-check-label" for="col-client">Клиент</label>
+                        <label class="form-check-label" for="col-client">{{ 'appointments.columns.client' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-phone" data-column="phone">
-                        <label class="form-check-label" for="col-phone">Телефон</label>
+                        <label class="form-check-label" for="col-phone">{{ 'appointments.columns.phone' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-barber" data-column="barber" checked>
-                        <label class="form-check-label" for="col-barber">Барбър</label>
+                        <label class="form-check-label" for="col-barber">{{ 'appointments.columns.barber' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-procedure" data-column="procedure" checked>
-                        <label class="form-check-label" for="col-procedure">Услуга</label>
+                        <label class="form-check-label" for="col-procedure">{{ 'appointments.columns.procedure' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-duration" data-column="duration" checked>
-                        <label class="form-check-label" for="col-duration">Време</label>
+                        <label class="form-check-label" for="col-duration">{{ 'appointments.columns.duration' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-status" data-column="status" checked>
-                        <label class="form-check-label" for="col-status">Статус</label>
+                        <label class="form-check-label" for="col-status">{{ 'appointments.columns.status' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-date-added" data-column="date_added">
-                        <label class="form-check-label" for="col-date-added">Дата създаване</label>
+                        <label class="form-check-label" for="col-date-added">{{ 'appointments.columns.date_added' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-date-updated" data-column="date_last_update">
-                        <label class="form-check-label" for="col-date-updated">Дата промяна</label>
+                        <label class="form-check-label" for="col-date-updated">{{ 'appointments.columns.date_updated' | trans }}</label>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input column-toggle" id="col-actions" data-column="actions" checked>
-                        <label class="form-check-label" for="col-actions">Действия</label>
+                        <label class="form-check-label" for="col-actions">{{ 'appointments.columns.actions' | trans }}</label>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 text-right">
             <span class="text-muted">
-                Показани {{ (currentPage - 1) * perPage + 1 }}-{{ min(currentPage * perPage, totalAppointments) }} от {{ totalAppointments }}
+                {{ 'appointments.pagination.shown' | trans({
+                    '%from%': (currentPage - 1) * perPage + 1,
+                    '%to%': min(currentPage * perPage, totalAppointments),
+                    '%total%': totalAppointments
+                }) }}
             </span>
         </div>
     </div>
@@ -176,9 +180,9 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-list"></i> Резервации</h5>
+                    <h5><i class="fas fa-list"></i> {{ 'appointments.table.title' | trans }}</h5>
                     <div>
-                        <label class="mb-0 mr-2">Покажи:</label>
+                        <label class="mb-0 mr-2">{{ 'appointments.table.show' | trans }}:</label>
                         <select class="form-control form-control-sm d-inline-block" style="width: auto;" onchange="changePerPage(this.value)">
                             <option value="10" {{ perPage == 10 ? 'selected' : '' }}>10</option>
                             <option value="20" {{ perPage == 20 ? 'selected' : '' }}>20</option>
@@ -190,7 +194,7 @@
                 <div class="card-body">
                     {% if appointments is empty %}
                         <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Няма намерени резервации.
+                            <i class="fas fa-info-circle"></i> {{ 'appointments.table.no_results' | trans }}
                         </div>
                     {% else %}
                         {% import 'manager/_table_macros.html.twig' as macros %}
@@ -207,24 +211,24 @@
                                 <thead>
                                     <tr>
                                         <th class="col-id" data-column="id">
-                                            {{ macros.sortable_header('ID', 'id', sortBy, sortOrder, params) }}
+                                            {{ macros.sortable_header('appointments.columns.id' | trans, 'id', sortBy, sortOrder, params) }}
                                         </th>
                                         <th class="col-date" data-column="date">
-                                            {{ macros.sortable_header('Дата и час', 'date', sortBy, sortOrder, params) }}
+                                            {{ macros.sortable_header('appointments.columns.date' | trans, 'date', sortBy, sortOrder, params) }}
                                         </th>
-                                        <th class="col-client" data-column="client">Клиент</th>
-                                        <th class="col-phone" data-column="phone">Телефон</th>
-                                        <th class="col-barber" data-column="barber">Барбър</th>
-                                        <th class="col-procedure" data-column="procedure">Услуга</th>
-                                        <th class="col-duration" data-column="duration">Време</th>
-                                        <th class="col-status" data-column="status">Статус</th>
+                                        <th class="col-client" data-column="client">{{ 'appointments.columns.client' | trans }}</th>
+                                        <th class="col-phone" data-column="phone">{{ 'appointments.columns.phone' | trans }}</th>
+                                        <th class="col-barber" data-column="barber">{{ 'appointments.columns.barber' | trans }}</th>
+                                        <th class="col-procedure" data-column="procedure">{{ 'appointments.columns.procedure' | trans }}</th>
+                                        <th class="col-duration" data-column="duration">{{ 'appointments.columns.duration' | trans }}</th>
+                                        <th class="col-status" data-column="status">{{ 'appointments.columns.status' | trans }}</th>
                                         <th class="col-date_added" data-column="date_added">
-                                            {{ macros.sortable_header('Създаден', 'date_added', sortBy, sortOrder, params) }}
+                                            {{ macros.sortable_header('appointments.columns.date_added' | trans, 'date_added', sortBy, sortOrder, params) }}
                                         </th>
                                         <th class="col-date_last_update" data-column="date_last_update">
-                                            {{ macros.sortable_header('Променен', 'date_last_update', sortBy, sortOrder, params) }}
+                                            {{ macros.sortable_header('appointments.columns.date_updated' | trans, 'date_last_update', sortBy, sortOrder, params) }}
                                         </th>
-                                        <th class="col-actions" data-column="actions">Действия</th>
+                                        <th class="col-actions" data-column="actions">{{ 'appointments.columns.actions' | trans }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -253,14 +257,14 @@
                                             </td>
                                             <td class="col-barber" data-column="barber">{{ appointment.barber.firstName }} {{ appointment.barber.lastName }}</td>
                                             <td class="col-procedure" data-column="procedure">{{ appointment.procedureType.type }}</td>
-                                            <td class="col-duration" data-column="duration">{{ appointment.duration }} мин</td>
+                                            <td class="col-duration" data-column="duration">{{ appointment.duration }} {{ 'appointments.table.minutes' | trans }}</td>
                                             <td class="col-status" data-column="status">
                                                 {% if appointment.statusValue == 'confirmed' %}
-                                                    <span class="badge badge-success">Потвърден</span>
+                                                    <span class="badge badge-success">{{ 'appointments.status.confirmed' | trans }}</span>
                                                 {% elseif appointment.statusValue == 'completed' %}
-                                                    <span class="badge badge-secondary">Завършен</span>
+                                                    <span class="badge badge-secondary">{{ 'appointments.status.completed' | trans }}</span>
                                                 {% elseif appointment.statusValue == 'cancelled' %}
-                                                    <span class="badge badge-danger">Отменен</span>
+                                                    <span class="badge badge-danger">{{ 'appointments.status.cancelled' | trans }}</span>
                                                 {% else %}
                                                     <span class="badge badge-warning">{{ appointment.statusValue }}</span>
                                                 {% endif %}
@@ -276,14 +280,14 @@
                                                     <button type="button"
                                                             class="btn btn-sm btn-primary btn-edit"
                                                             data-appointment-id="{{ appointment.id }}"
-                                                            title="Редактирай">
+                                                            title="{{ 'appointments.actions.edit' | trans }}">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     {% if appointment.statusValue == 'confirmed' %}
                                                         <button type="button"
                                                                 class="btn btn-sm btn-danger btn-cancel"
                                                                 data-appointment-id="{{ appointment.id }}"
-                                                                title="Отмени">
+                                                                title="{{ 'appointments.actions.cancel' | trans }}">
                                                             <i class="fas fa-times"></i>
                                                         </button>
                                                     {% endif %}
@@ -304,7 +308,7 @@
                                     {# Previous Button #}
                                     <li class="page-item {{ currentPage == 1 ? 'disabled' : '' }}">
                                         <a class="page-link" href="?{{ params|merge({page: currentPage - 1, perPage: perPage})|url_encode }}">
-                                            <i class="fas fa-chevron-left"></i> Предишна
+                                            <i class="fas fa-chevron-left"></i> {{ 'appointments.pagination.prev' | trans }}
                                         </a>
                                     </li>
 
@@ -339,7 +343,7 @@
                                     {# Next Button #}
                                     <li class="page-item {{ currentPage == totalPages ? 'disabled' : '' }}">
                                         <a class="page-link" href="?{{ params|merge({page: currentPage + 1, perPage: perPage})|url_encode }}">
-                                            Следваща <i class="fas fa-chevron-right"></i>
+                                            {{ 'appointments.pagination.next' | trans }} <i class="fas fa-chevron-right"></i>
                                         </a>
                                     </li>
                                 </ul>
@@ -357,7 +361,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit"></i> Редактиране на резервация</h5>
+                <h5 class="modal-title"><i class="fas fa-edit"></i> {{ 'appointments.modal.edit_title' | trans }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -369,15 +373,15 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit_client">Клиент:</label>
+                                <label for="edit_client">{{ 'appointments.modal.client' | trans }}:</label>
                                 <input type="text" class="form-control" id="edit_client" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit_barber">Барбър: *</label>
+                                <label for="edit_barber">{{ 'appointments.modal.barber' | trans }} *</label>
                                 <select class="form-control" id="edit_barber" required>
-                                    <option value="">Избери барбър</option>
+                                    <option value="">{{ 'appointments.modal.select_barber' | trans }}</option>
                                     {% for barber in allBarbers %}
                                         <option value="{{ barber.id }}">{{ barber.firstName }} {{ barber.lastName }}</option>
                                     {% endfor %}
@@ -389,21 +393,21 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit_date">Дата: *</label>
+                                <label for="edit_date">{{ 'appointments.modal.date' | trans }} *</label>
                                 <input type="date" class="form-control" id="edit_date" required min="{{ 'now'|date('Y-m-d') }}" data-future-only>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit_time">Час: *</label>
+                                <label for="edit_time">{{ 'appointments.modal.time' | trans }} *</label>
                                 <input type="time" class="form-control" id="edit_time" required>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit_procedure">Процедура: *</label>
+                                <label for="edit_procedure">{{ 'appointments.modal.procedure' | trans }} *</label>
                                 <select class="form-control" id="edit_procedure" required>
-                                    <option value="">Избери процедура</option>
+                                    <option value="">{{ 'appointments.modal.select_procedure' | trans }}</option>
                                 </select>
                             </div>
                         </div>
@@ -412,26 +416,26 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit_status">Статус:</label>
+                                <label for="edit_status">{{ 'appointments.modal.status' | trans }}:</label>
                                 <select class="form-control" id="edit_status">
-                                    <option value="confirmed">Потвърден</option>
-                                    <option value="completed">Завършен</option>
-                                    <option value="cancelled">Отменен</option>
+                                    <option value="confirmed">{{ 'appointments.status.confirmed' | trans }}</option>
+                                    <option value="completed">{{ 'appointments.status.completed' | trans }}</option>
+                                    <option value="cancelled">{{ 'appointments.status.cancelled' | trans }}</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="edit_notes">Бележки:</label>
+                        <label for="edit_notes">{{ 'appointments.modal.notes' | trans }}:</label>
                         <textarea class="form-control" id="edit_notes" rows="3"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отказ</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'appointments.modal.cancel' | trans }}</button>
                 <button type="button" class="btn btn-primary" id="saveAppointmentBtn">
-                    <i class="fas fa-save"></i> Запази промените
+                    <i class="fas fa-save"></i> {{ 'appointments.modal.save_changes' | trans }}
                 </button>
             </div>
         </div>

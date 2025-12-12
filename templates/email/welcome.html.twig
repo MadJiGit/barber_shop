@@ -1,53 +1,53 @@
 {% extends 'email/base.html.twig' %}
 
 {% block body %}
-    <h1 style="color: #d4a024; margin-bottom: 20px;">🎉 Добре дошли в Barber Shop!</h1>
+    <h1 style="color: #d4a024; margin-bottom: 20px;">{{ 'welcome.title' | trans }}</h1>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
-        Здравейте{{ user.firstName ? ', ' ~ user.firstName : '' }},
+        {{ 'welcome.hello' | trans }}{{ user.firstName ? ', ' ~ user.firstName : '' }},
     </p>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
-        Благодарим ви, че се регистрирахте в <strong>Barber Shop</strong>! Радваме се, че сте част от нашата общност.
+        {{ 'welcome.thank_you' | trans|raw }}
     </p>
 
     <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0;">
         <p style="margin: 0; color: #155724; font-size: 14px;">
-            <strong>✓ Успешно:</strong> Вашият профил е създаден и можете да започнете да резервирате часове при вашите любими бръснари.
+            <strong>✓ {{ 'welcome.success_label' | trans }}:</strong> {{ 'welcome.success' | trans }}
         </p>
     </div>
 
-    <h3 style="color: #333; margin-top: 30px;">Какво можете да правите в Barber Shop?</h3>
+    <h3 style="color: #333; margin-top: 30px;">{{ 'welcome.what_you_can_do' | trans }}</h3>
 
     <ul style="font-size: 14px; line-height: 1.8; color: #666;">
-        <li><strong>Резервирайте часове онлайн</strong> - Изберете бръснар, услуга и удобно време за вас</li>
-        <li><strong>Преглеждайте вашите часове</strong> - Следете предстоящи и минали визити</li>
-        <li><strong>Управлявайте профила си</strong> - Актуализирайте информация и променяйте парола</li>
-        <li><strong>Получавайте напомняния</strong> - Ще ви изпращаме напомняне 24 часа преди вашия час</li>
+        <li><strong>{{ 'welcome.feature_book' | trans }}</strong> - {{ 'welcome.feature_book_desc' | trans }}</li>
+        <li><strong>{{ 'welcome.feature_review' | trans }}</strong> - {{ 'welcome.feature_review_desc' | trans }}</li>
+        <li><strong>{{ 'welcome.feature_manage' | trans }}</strong> - {{ 'welcome.feature_manage_desc' | trans }}</li>
+        <li><strong>{{ 'welcome.feature_reminders' | trans }}</strong> - {{ 'welcome.feature_reminders_desc' | trans }}</li>
     </ul>
 
     <div style="text-align: center; margin: 30px 0;">
         <a href="{{ url('main') }}"
            style="display: inline-block; padding: 15px 40px; background-color: #d4a024; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
-            Резервирай час сега
+            {{ 'welcome.book_now' | trans }}
         </a>
     </div>
 
     <div style="background-color: #f8f9fa; border-left: 4px solid #6c757d; padding: 15px; margin: 30px 0;">
         <p style="margin: 0; color: #495057; font-size: 14px;">
-            <strong>💡 Съвет:</strong> Добавете нашия имейл адрес в контактите си, за да не пропускате важни съобщения.
+            <strong>💡 {{ 'welcome.tip' | trans }}:</strong> {{ 'welcome.tip_desc' | trans }}
         </p>
     </div>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
-        Ако имате въпроси или нужда от помощ, не се колебайте да се свържете с нас на:
+        {{ 'welcome.contact_intro' | trans }}
     </p>
     <p style="font-size: 14px; color: #666;">
         📧 <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a>
     </p>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
-        Поздрави,<br>
-        <strong>Екипът на Barber Shop</strong>
+        {{ 'welcome.regards' | trans }}<br>
+        <strong>{{ 'welcome.team' | trans }}</strong>
     </p>
 {% endblock %}

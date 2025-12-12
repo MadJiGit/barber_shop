@@ -1,42 +1,42 @@
 {% extends 'email/base.html.twig' %}
 
 {% block body %}
-    <h1 style="color: #dc3545; margin-bottom: 20px;">❌ Вашият час е отменен</h1>
+    <h1 style="color: #dc3545; margin-bottom: 20px;">{{ 'cancel.title' | trans }}</h1>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
-        Здравейте{{ client.firstName ? ', ' ~ client.firstName : '' }},
+        {{ 'cancel.hello' | trans }}{{ client.firstName ? ', ' ~ client.firstName : '' }},
     </p>
 
     <p style="font-size: 16px; line-height: 1.6; color: #333;">
         {% if cancelledBy == 'barber' %}
-            Съжаляваме, но вашият час в <strong>Barber Shop</strong> беше отменен от бръснаря.
+            {{ 'cancel.by_barber' | trans|raw }}
         {% elseif cancelledBy == 'manager' or cancelledBy == 'admin' %}
-            Вашият час в <strong>Barber Shop</strong> беше отменен от мениджъра/администратора.
+            {{ 'cancel.by_manager' | trans|raw }}
         {% else %}
-            Вашият час в <strong>Barber Shop</strong> беше отменен успешно.
+            {{ 'cancel.general' | trans|raw }}
         {% endif %}
     </p>
 
     <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 25px 0;">
         <h3 style="color: #dc3545; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #dc3545; padding-bottom: 10px;">
-            📅 Детайли за отменения час
+            {{ 'cancel.details_title' | trans }}
         </h3>
 
         <table style="width: 100%; font-size: 15px; line-height: 1.8;">
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>🗓️ Дата:</strong></td>
-                <td style="color: #333; padding: 5px 0;">{{ appointment.date|date('d.m.Y') }} ({% set dayNames = {0: 'Неделя', 1: 'Понеделник', 2: 'Вторник', 3: 'Сряда', 4: 'Четвъртък', 5: 'Петък', 6: 'Събота'} %}{{ dayNames[appointment.date|date('w')] }})</td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'cancel.date' | trans }}:</strong></td>
+                <td style="color: #333; padding: 5px 0;">{{ appointment.date|date('d.m.Y') }} ({% set dayNames = {0: ('cancel.sun'|trans), 1: ('cancel.mon'|trans), 2: ('cancel.tue'|trans), 3: ('cancel.wed'|trans), 4: ('cancel.thu'|trans), 5: ('cancel.fri'|trans), 6: ('cancel.sat'|trans)} %}{{ dayNames[appointment.date|date('w')] }})</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>🕐 Час:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'cancel.time' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0;">{{ appointment.date|date('H:i') }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>💈 Бръснар:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'cancel.barber' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0;">{{ barber.firstName }} {{ barber.lastName }}</td>
             </tr>
             <tr>
-                <td style="color: #666; padding: 5px 0;"><strong>✂️ Услуга:</strong></td>
+                <td style="color: #666; padding: 5px 0;"><strong>{{ 'cancel.service' | trans }}:</strong></td>
                 <td style="color: #333; padding: 5px 0;">{{ appointment.procedureType.type }}</td>
             </tr>
         </table>
@@ -45,39 +45,38 @@
     {% if cancelledBy == 'barber' or cancelledBy == 'manager' or cancelledBy == 'admin' %}
         <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 25px 0;">
             <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
-                <strong>⚠️ Внимание:</strong> Този час беше отменен от {{ cancelledBy == 'barber' ? 'бръснаря' : 'мениджъра' }}.
-                Ако имате въпроси или желаете да резервирате друг час, моля свържете се с нас.
+                <strong>⚠️ {{ 'cancel.warning' | trans }}:</strong> {{ 'cancel.extra_warning' | trans({'%who%': (cancelledBy == 'barber' ? ('cancel.by_barber_short'|trans) : ('cancel.by_manager_short'|trans)) }) }}
             </p>
         </div>
     {% endif %}
 
     <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 25px 0;">
         <p style="margin: 0 0 10px 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
-            <strong>💡 Искате да резервирате друг час?</strong>
+            <strong>💡 {{ 'cancel.book_new_title' | trans }}</strong>
         </p>
         <p style="margin: 0; color: #0c5460; font-size: 14px;">
-            Лесно можете да направите нова резервация от нашия сайт.
+            {{ 'cancel.book_new_text' | trans }}
         </p>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <a href="{{ url('appointment_book', {id: client.id}) }}"
            style="display: inline-block; padding: 15px 40px; background-color: #d4a024; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
-            Резервирай нов час
+            {{ 'cancel.book_new_button' | trans }}
         </a>
     </div>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
-        Благодарим за разбирането!
+        {{ 'cancel.thanks' | trans }}
     </p>
 
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 10px;">
-        Поздрави,<br>
-        <strong>Екипът на Barber Shop</strong>
+        {{ 'cancel.regards' | trans }}<br>
+        <strong>{{ 'cancel.team' | trans }}</strong>
     </p>
 
     <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-        📧 За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>
-        📞 Телефон: +359 XXX XXX XXX
+        📧 {{ 'cancel.questions' | trans }}: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>
+        📞 {{ 'cancel.phone' | trans }}: +359 XXX XXX XXX
     </p>
 {% endblock %}

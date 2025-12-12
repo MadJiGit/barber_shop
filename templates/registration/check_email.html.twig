@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Проверете вашия имейл - Barber Shop{% endblock %}
+{% block title %}{{ 'check_email.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Регистрацията е почти завършена!</h2>
+                            <h2>{{ 'check_email.hero_title' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -29,36 +29,33 @@
                             <i class="fas fa-envelope-open-text" style="font-size: 80px; color: #d4a024;"></i>
                         </div>
 
-                        <h3 class="text-center mb-4">Проверете вашата електронна поща</h3>
+                        <h3 class="text-center mb-4">{{ 'check_email.heading' | trans }}</h3>
 
                         <div class="alert alert-info">
                             <p class="mb-3">
-                                <strong>Изпратихме ви имейл на:</strong><br>
+                                <strong>{{ 'check_email.sent_to' | trans }}</strong><br>
                                 <span style="font-size: 18px; color: #2c3e50;">{{ email }}</span>
                             </p>
-                            <p class="mb-0">
-                                Моля, проверете вашата електронна поща и кликнете на линка за потвърждение,
-                                за да активирате вашия акаунт.
-                            </p>
+                            {{ 'check_email.instructions' | trans }}
                         </div>
 
                         <div class="card mt-4">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <i class="fas fa-info-circle text-primary"></i> Важна информация
+                                    <i class="fas fa-info-circle text-primary"></i> {{ 'check_email.info_title' | trans }}
                                 </h5>
                                 <ul class="list-unstyled mb-0">
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success mr-2"></i>
-                                        Линкът за потвърждение е валиден за <strong>24 часа</strong>
+                                        {{ 'check_email.valid_24h' | trans }}
                                     </li>
                                     <li class="mb-2">
                                         <i class="fas fa-check text-success mr-2"></i>
-                                        Проверете и папката "Спам" или "Нежелана поща"
+                                        {{ 'check_email.check_spam' | trans }}
                                     </li>
                                     <li class="mb-0">
                                         <i class="fas fa-check text-success mr-2"></i>
-                                        След потвърждение ще можете да влезете в системата
+                                        {{ 'check_email.after_confirm' | trans }}
                                     </li>
                                 </ul>
                             </div>
@@ -66,9 +63,9 @@
 
                         <div class="text-center mt-5">
                             <p class="text-muted">
-                                Вече потвърдихте имейла си?
+                                {{ 'check_email.already_confirmed' | trans }}
                                 <a href="{{ path('app_login') }}" class="text-primary fw-bold">
-                                    Влезте тук
+                                    {{ 'check_email.login_here' | trans }}
                                 </a>
                             </p>
                         </div>

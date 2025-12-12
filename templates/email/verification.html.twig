@@ -1,30 +1,30 @@
 {% extends 'email/base.html.twig' %}
 
-{% block title %}Потвърдете вашия имейл{% endblock %}
+{% block title %}{{ 'verify.title' | trans }}{% endblock %}
 
-{% block header %}Добре дошли в Barber Shop!{% endblock %}
+{% block header %}{{ 'verify.header' | trans }}{% endblock %}
 
 {% block body %}
-    <h2>Здравейте{% if user.firstName %}, {{ user.firstName }}{% endif %}!</h2>
+    <h2>{{ 'verify.hello' | trans }}{% if user.firstName %}, {{ user.firstName }}{% endif %}!</h2>
 
-    <p>Благодарим ви, че се регистрирахте в Barber Shop!</p>
+    <p>{{ 'verify.thank_you' | trans }}</p>
 
-    <p>За да завършите регистрацията и да активирате вашия акаунт, моля кликнете на бутона по-долу:</p>
+    <p>{{ 'verify.instructions' | trans }}</p>
 
     <div style="text-align: center;">
         <a href="{{ url('app_verify_email', {token: verificationToken}) }}" class="button">
-            Потвърдете имейл адреса
+            {{ 'verify.button' | trans }}
         </a>
     </div>
 
-    <p>Ако бутонът не работи, копирайте и поставете следния линк в браузъра си:</p>
+    <p>{{ 'verify.link_help' | trans }}</p>
     <p style="word-break: break-all; color: #7f8c8d; font-size: 14px;">
         {{ url('app_verify_email', {token: verificationToken}) }}
     </p>
 
-    <p><strong>Важно:</strong> Този линк е валиден за 24 часа. След това ще трябва да се регистрирате отново.</p>
+    <p><strong>{{ 'verify.important' | trans }}:</strong> {{ 'verify.link_expiry' | trans }}</p>
 
     <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
 
-    <p>Ако не сте се регистрирали в Barber Shop, моля игнорирайте този имейл.</p>
+    <p>{{ 'verify.ignore' | trans }}</p>
 {% endblock %}
