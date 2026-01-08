@@ -31,7 +31,7 @@
                     </div>
                 </a>
             {% else %}
-                <a href="#guest-booking" class="thumb-content-link">
+                <a href="{{ path('appointment_book') }}" class="thumb-content-link">
                     <div class="thumb-content">
                         <h3>{{ 'homepage.make_appointment' | trans }}</h3>
                         <i class="fas fa-long-arrow-alt-right"></i>
@@ -98,7 +98,7 @@
                             {# OLD: Flaticon (to be replaced with purchased font icons) #}
                             {# <i class="flaticon-healthcare-and-medical"></i> #}
                             {# NEW: PNG icon (temporary until font purchased) #}
-                            <img src="{{ asset('assets/img/hairstyle.png') }}" alt="Haircut" style="width: 70px; height: 70px;">
+                            <img src="{{ asset('assets/img/hairstyle.png') }}" alt="Haircut">
                         </div>
                         <div class="service-cap">
                             <h4><a href="#">{{ 'homepage.service.service_1.title' | trans }}</a></h4>
@@ -112,7 +112,7 @@
                             {# OLD: Flaticon (to be replaced with purchased font icons) #}
                             {# <i class="flaticon-fitness"></i> #}
                             {# NEW: PNG icon (temporary until font purchased) #}
-                            <img src="{{ asset('assets/img/hot-towel.png') }}" alt="Hot Towel Shave" style="width: 70px; height: 70px;">
+                            <img src="{{ asset('assets/img/hot-towel.png') }}" alt="Hot Towel Shave">
                         </div>
                         <div class="service-cap">
                             <h4><a href="#">{{ 'homepage.service.service_2.title' | trans }}</a></h4>
@@ -126,7 +126,7 @@
                             {# OLD: Flaticon (to be replaced with purchased font icons) #}
                             {# <i class="flaticon-clock"></i> #}
                             {# NEW: PNG icon (temporary until font purchased) #}
-                            <img src="{{ asset('assets/img/beard.png') }}" alt="Beard Styling" style="width: 70px; height: 70px;">
+                            <img src="{{ asset('assets/img/beard.png') }}" alt="Beard Styling">
                         </div>
                         <div class="service-cap">
                             <h4><a href="#">{{ 'homepage.service.service_3.title' | trans }}</a></h4>
@@ -307,7 +307,7 @@
     <div class="container pb-20">
         <div class="row">
             <div class="col-12 text-center">
-                <p class="text-muted" style="font-size: 12px;">
+                <p class="text-muted text-small">
                     <a href="https://www.flaticon.com/free-icons/barbershop" title="barbershop icons" target="_blank" rel="noopener">Barbershop icons created by Smashicons - Flaticon</a>
                 </p>
             </div>

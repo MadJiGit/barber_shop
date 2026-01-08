@@ -1,0 +1,50 @@
+nelmio_security:
+    # prevents framing of the entire site
+    clickjacking:
+        paths:
+            '^/.*': DENY
+
+    # disables content type sniffing for script resources
+    content_type:
+        nosniff: true
+
+    # Send a full URL in the `Referer` header when performing a same-origin request,
+    # only send the origin of the document to secure destination (HTTPS->HTTPS),
+    # and send no header to a less secure destination (HTTPS->HTTP).
+    # If `strict-origin-when-cross-origin` is not supported, use `no-referrer` policy,
+    # no referrer information is sent along with requests.
+    referrer_policy:
+        enabled: true
+        policies:
+            - 'no-referrer'
+            - 'strict-origin-when-cross-origin'
+
+    # Content Security Policy - blocks inline styles and scripts
+    csp:
+        enabled: true
+        hosts: []
+        content_types: []
+        enforce:
+            level1_fallback: true
+            browser_adaptive:
+                enabled: false
+            default-src:
+                - 'self'
+            script-src:
+                - 'self'
+                - 'unsafe-inline' # Temporary - for inline scripts with dynamic data (client_appointment.js initialization)
+                - 'https://cdn.jsdelivr.net' # SweetAlert2
+            style-src:
+                - 'self'
+                - 'unsafe-inline' # Temporary - will remove after testing
+                - 'https://fonts.googleapis.com' # Google Fonts
+            img-src:
+                - 'self'
+                - 'data:'
+            font-src:
+                - 'self'
+                - 'https://fonts.gstatic.com' # Google Fonts
+            connect-src:
+                - 'self'
+            frame-ancestors:
+                - 'none'

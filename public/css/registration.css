@@ -1,0 +1,15 @@
+/* ================================================
+   Registration Pages Styles
+   ================================================ */
+
+/* Check email page - envelope icon */
+.email-icon i {
+    font-size: 80px;
+    color: #d4a024;
+}
+
+/* Email address display */
+.email-display {
+    font-size: 18px;
+    color: #2c3e50;
+}

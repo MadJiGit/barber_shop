@@ -47,3 +47,35 @@
 }
 
 /* btn-primary and btn-outline-primary now defined in buttons.css */
+
+/* Table styles - used in barber profile history */
+.table thead {
+    background-color: #f8f9fa;
+}
+
+/* Action column - prevent text wrapping */
+.table td.text-center {
+    white-space: nowrap;
+}
+
+/* Card header title */
+.user-profile-card .card-header h4 {
+    color: #d4a574;
+}
+
+/* Modal content - hidden by default */
+#modalContent {
+    display: none;
+}
+
+/* Section titles */
+.user-profile-card h4,
+.user-profile-card h5 {
+    color: #d4a574;
+}
+
+/* Small action buttons */
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 12px;
+}

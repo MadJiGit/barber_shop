@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.2",
         "easycorp/easyadmin-bundle": "4.18.0",
+        "nelmio/security-bundle": "^3.6",
         "php-cs-fixer/shim": "^3.63",
         "symfony/asset": "7.3.*",
         "symfony/console": "7.3.*",

@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProcedureRepository;
 use App\Service\DateTimeHelper;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProcedureRepository::class)]
@@ -16,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Procedure
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -39,18 +37,15 @@ class Procedure
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $available = true;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeInterface $date_added = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?\DateTimeInterface $date_added = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $date_last_update = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeInterface $date_last_update = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $date_stopped = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeInterface $date_stopped = null;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->date_added = DateTimeHelper::now();
@@ -69,6 +64,7 @@ class Procedure
     public function setType(string $type): static
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -120,15 +116,12 @@ class Procedure
         return $this;
     }
 
-    public function getDateAdded(): ?DateTimeInterface
+    public function getDateAdded(): ?\DateTimeInterface
     {
         return $this->date_added;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function setDateAdded(?DateTimeInterface $date_added = null): static
+    public function setDateAdded(?\DateTimeInterface $date_added = null): static
     {
         if (!$date_added) {
             $this->date_added = DateTimeHelper::now();
@@ -139,15 +132,12 @@ class Procedure
         return $this;
     }
 
-    public function getDateLastUpdate(): ?DateTimeInterface
+    public function getDateLastUpdate(): ?\DateTimeInterface
     {
         return $this->date_last_update;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function setDateLastUpdate(?DateTimeInterface $date_last_update = null): static
+    public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
         if (!$date_last_update) {
             $this->date_last_update = DateTimeHelper::now();
@@ -158,12 +148,12 @@ class Procedure
         return $this;
     }
 
-    public function getDateStopped(): ?DateTimeInterface
+    public function getDateStopped(): ?\DateTimeInterface
     {
         return $this->date_stopped;
     }
 
-    public function setDateStopped(?DateTimeInterface $date_stopped = null): static
+    public function setDateStopped(?\DateTimeInterface $date_stopped = null): static
     {
         $this->date_stopped = $date_stopped;
 
@@ -180,9 +170,6 @@ class Procedure
         $this->available = $available;
     }
 
-    /**
-     * @throws Exception
-     */
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {

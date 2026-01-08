@@ -39,7 +39,7 @@
             <div class="preloader-inner position-relative">
                 <div class="preloader-circle"></div>
                 <div class="preloader-img pere-text">
-                    <img src="{{ asset('assets/img/logo/loder.png') }}" alt="Loading">
+                    <img src="{{ asset('assets/img/logos/loder.png') }}" alt="Loading">
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                             <div class="col-xl-2 col-lg-2 col-md-1">
                                 <div class="logo">
                                     <a href="{{ path('main') }}">
-                                        <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Barber Shop Logo">
+                                        <img src="{{ asset('assets/img/logos/logos.png') }}" alt="Barber Shop Logo">
                                     </a>
                                 </div>
                             </div>
@@ -83,7 +83,7 @@
                                                     <li><a href="{{ path('app_register') }}">{{ 'base.nav.register' | trans }}</a></li>
                                                 {% endif %}
                                                 <li><a href="{{ path('app_locale', {'_locale': 'bg'}) }}" class="{{ app.request.locale == 'bg' ? 'active' : '' }}">{{ 'base.nav.BG' | trans }}</a></li>
-                                                    |
+                                                |
                                                 <li><a href="{{ path('app_locale', {'_locale': 'en'}) }}" class="{{ app.request.locale == 'en' ? 'active' : '' }}">{{ 'base.nav.EN' | trans }}</a></li>
                                             </ul>
                                         </nav>
@@ -107,19 +107,16 @@
         </header>
     {% endblock %}
 
-    <!-- Flash Messages - Fixed Position Below Header -->
-    {% for type, messages in app.flashes %}
-        {% for message in messages %}
-            <div style="position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 600px;">
-                <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
-                    <strong>{% if type == 'success' %}✓{% elseif type == 'error' %}✗{% endif %}</strong> {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
-        {% endfor %}
-    {% endfor %}
+    <!-- Flash Messages using SweetAlert2 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    showToast('{{ message|escape('js') }}', '{{ type == 'error' ? 'error' : type }}', 5000);
+                {% endfor %}
+            {% endfor %}
+        });
+    </script>
 
     <main>
         {% block body %}
@@ -137,7 +134,7 @@
                                     <!-- Logo -->
                                     <div class="footer-logo">
                                         <a href="{{ path('main') }}">
-                                            <img src="{{ asset('assets/img/logo/logo2_footer.png') }}" alt="Barber Shop">
+                                            <img src="{{ asset('assets/img/logos/logo2_footer.png') }}" alt="Barber Shop">
                                         </a>
                                     </div>
                                     <!-- Social -->
@@ -152,7 +149,8 @@
                         </div>
                     </div>
                     <div class="footer-bottom">
-                        <div class="row d-flex justify-content-between align-items-center">
+{#                        <div class="row d-flex justify-content-between align-items-center">#}
+                        <div class="row d-flex justify-content-center align-items-center">
                             <div class="col-xl-9 col-lg-8">
                                 <div class="footer-copy-right">
                                     <p>&copy; {{ 'now'|date('Y') }} {{ 'base.footer.text' | trans }}</p>
@@ -162,6 +160,14 @@
                                 <!-- Back to top -->
                                 <div class="footer-back-link text-right">
                                 <a href="#" class="back-link">{{ 'base.footer.back_to_top' | trans }} <i class="ti-angle-up"></i></a>
+                                </div>
+                            </div>
+                            <!-- Developer credit (centered) -->
+                            <div class="col-xl-12 col-lg-12 text-center mt-3">
+                                <div class="d-inline-flex align-items-center gap-2">
+                                    {{ 'footer.developed_by'|trans }}&nbsp;&nbsp;<a href="https://mladenraykov.com" target="_blank">
+                                        <img class="madji-img-footer" src="{{ asset('assets/img/logos/logo-no-background.png') }}" alt="MADJI logo">
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -178,6 +184,19 @@
 
     {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <!-- Toast Translations -->
+        <script>
+            window.toastTranslations = {
+                success: '{{ 'toast.title.success'|trans({}, 'flash_messages') }}',
+                error: '{{ 'toast.title.error'|trans({}, 'flash_messages') }}',
+                warning: '{{ 'toast.title.warning'|trans({}, 'flash_messages') }}',
+                info: '{{ 'toast.title.info'|trans({}, 'flash_messages') }}'
+            };
+        </script>
+
         <!-- Template JS -->
         <script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
         <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>

@@ -1,108 +1,66 @@
 /**
- * Simple Toast Notification System
- * Pure JavaScript implementation - no Bootstrap dependency
+ * Toast Notification System using SweetAlert2
+ * Wrapper for consistent API across the application
  */
 
-// Toast container - will be added to body on first use
-let toastContainer = null;
-
 /**
- * Initialize toast container
- */
-function initToastContainer() {
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
-        toastContainer.className = 'toast-container-custom';
-        document.body.appendChild(toastContainer);
-    }
-    return toastContainer;
-}
-
-/**
- * Show toast notification
+ * Show toast notification using SweetAlert2
  * @param {string} message - The message to display
  * @param {string} type - Type: 'success', 'error', 'warning', 'info'
  * @param {number} duration - Duration in ms (default: 4000)
  */
 function showToast(message, type = 'info', duration = 4000) {
-    const container = initToastContainer();
-
-    // Map type to classes and icons
-    const typeConfig = {
-        success: {
-            className: 'toast-success',
-            icon: 'fa-check-circle',
-            title: 'Успех'
-        },
-        error: {
-            className: 'toast-error',
-            icon: 'fa-exclamation-circle',
-            title: 'Грешка'
-        },
-        warning: {
-            className: 'toast-warning',
-            icon: 'fa-exclamation-triangle',
-            title: 'Предупреждение'
-        },
-        info: {
-            className: 'toast-info',
-            icon: 'fa-info-circle',
-            title: 'Информация'
-        }
+    // Map type to SweetAlert2 icons
+    const iconMap = {
+        success: 'success',
+        error: 'error',
+        warning: 'warning',
+        info: 'info'
     };
 
-    const config = typeConfig[type] || typeConfig.info;
-    const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    // Map type to translated titles (from window.toastTranslations)
+    const titleMap = window.toastTranslations || {
+        success: 'Success',
+        error: 'Error',
+        warning: 'Warning',
+        info: 'Information'
+    };
 
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.id = toastId;
-    toast.className = `toast-item ${config.className}`;
-    toast.innerHTML = `
-        <div class="toast-icon">
-            <i class="fas ${config.icon}"></i>
-        </div>
-        <div class="toast-content">
-            <div class="toast-title">${config.title}</div>
-            <div class="toast-message">${message}</div>
-        </div>
-        <button class="toast-close" onclick="closeToast('${toastId}')">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
+    const icon = iconMap[type] || 'info';
+    const title = titleMap[type] || titleMap.info;
 
-    // Add to container
-    container.appendChild(toast);
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: icon,
+        title: title,
+        text: message,
+        showConfirmButton: false,
+        timer: duration,
+        timerProgressBar: true,
 
-    // Trigger animation
-    setTimeout(() => {
-        toast.classList.add('toast-show');
-    }, 10);
+        // Custom styling for barber shop theme
+        background: '#1a1a1a',
+        color: '#ffffff',
+        iconColor: '#d4a373',
 
-    // Auto-hide after duration
-    setTimeout(() => {
-        closeToast(toastId);
-    }, duration);
-}
+        customClass: {
+            popup: 'barber-toast',
+            title: 'barber-toast-title',
+            htmlContainer: 'barber-toast-text',
+            timerProgressBar: 'barber-toast-progress'
+        },
 
-/**
- * Close a specific toast
- * @param {string} toastId - Toast element ID
- */
-function closeToast(toastId) {
-    const toast = document.getElementById(toastId);
-    if (toast) {
-        toast.classList.remove('toast-show');
-        toast.classList.add('toast-hide');
-
-        // Remove from DOM after animation
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }
+        // Animation
+        showClass: {
+            popup: 'swal2-show',
+            backdrop: 'swal2-backdrop-show',
+            icon: 'swal2-icon-show'
+        },
+        hideClass: {
+            popup: 'swal2-hide'
+        }
+    });
 }
 
 /**
@@ -117,4 +75,4 @@ let Toast = {
 
 // Make Toast available globally
 window.Toast = Toast;
-window.closeToast = closeToast;
+window.showToast = showToast;

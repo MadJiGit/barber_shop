@@ -1,0 +1,13 @@
+/* ================================================
+   Error Pages Styles (403, 404, 500, etc.)
+   ================================================ */
+
+.error-icon i {
+    font-size: 120px;
+    color: #d4a373;
+}
+
+.error-icon + h1.display-1 {
+    color: #d4a373;
+    font-weight: bold;
+}

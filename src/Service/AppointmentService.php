@@ -6,6 +6,7 @@ use App\Entity\Appointments;
 use App\Entity\Procedure;
 use App\Entity\User;
 use App\Enum\AppointmentStatus;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Random\RandomException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,10 +15,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class AppointmentService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EmailService $emailService,
-        private UrlGeneratorInterface $urlGenerator,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -34,8 +35,12 @@ class AppointmentService
     /**
      * Create a guest user for appointment booking.
      */
-    public function createGuestUser(string $email, ?string $firstName = null, ?string $lastName = null, ?string $phone = null): User
-    {
+    public function createGuestUser(
+        string $email,
+        ?string $firstName = null,
+        ?string $lastName = null,
+        ?string $phone = null,
+    ): User {
         $user = new User();
         $user->setEmail($email);
         $user->setFirstName($firstName);
@@ -55,13 +60,12 @@ class AppointmentService
      * Create appointment with confirmation token for guest users.
      *
      * @throws RandomException
-     * @throws \Exception
      */
     public function createGuestAppointment(
         User $client,
         User $barber,
         Procedure $procedure,
-        \DateTimeInterface $date,
+        DateTimeInterface $date,
         int $duration,
     ): Appointments {
         $appointment = new Appointments();
@@ -91,7 +95,7 @@ class AppointmentService
         User $client,
         User $barber,
         Procedure $procedure,
-        \DateTimeInterface $date,
+        DateTimeInterface $date,
         int $duration,
     ): Appointments {
         $appointment = new Appointments();
@@ -113,8 +117,6 @@ class AppointmentService
 
     /**
      * Confirm appointment using token.
-     *
-     * @throws \Exception
      */
     public function confirmAppointment(string $token): ?Appointments
     {
@@ -142,8 +144,6 @@ class AppointmentService
 
     /**
      * Cancel appointment using token.
-     *
-     * @throws \Exception
      */
     public function cancelAppointmentByToken(string $token, ?string $reason = null): ?Appointments
     {

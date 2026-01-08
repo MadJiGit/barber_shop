@@ -5,16 +5,16 @@
             {% include 'buttons/go_back_logout_buttons.html.twig'  %}
             {% if user is defined %}
                 <h1>
-                    HELLO {{ user.nickName ? user.nickName : user.email }}
+                    {{ 'dashboard.hello' | trans }} {{ user.nickName ? user.nickName : user.email }}
                 </h1>
 {#                {% if user.isUserIsSuperAdmin is define && user.isUserIsSuperAdmin %}#}
                 {% if user.isUserIsSuperAdmin is defined and user.isUserIsSuperAdmin %}
-                    <h3>ADMIN MENU</h3>
-                    <a href="{{ path('view_all_clients') }}"><button type="button" class="button success_btn">List clients</button></a>
-                    <a href="{{ path('list_all_barbers') }}"><button type="button" class="button success_btn">List barbers</button></a>
-                    <a href="{{ path('list_without_role') }}"><button type="button" class="button success_btn">List with no roles</button></a>
+                    <h3>{{ 'dashboard.admin_menu.title' | trans }}</h3>
+                    <a href="{{ path('view_all_clients') }}"><button type="button" class="button success_btn">{{ 'dashboard.admin_menu.list_clients' | trans }}</button></a>
+                    <a href="{{ path('list_all_barbers') }}"><button type="button" class="button success_btn">{{ 'dashboard.admin_menu.list_barbers' | trans }}</button></a>
+                    <a href="{{ path('list_without_role') }}"><button type="button" class="button success_btn">{{ 'dashboard.admin_menu.list_without_roles' | trans }}</button></a>
                     {% if user.isUserIsSuperAdmin %}
-                        <a href="{{ path('admin_procedures', {id: user.id}) }}"><button type="button" class="button success_btn">Procedure panel</button></a>
+                        <a href="{{ path('admin_procedure_index') }}"><button type="button" class="button success_btn">{{ 'dashboard.admin_menu.procedure_panel' | trans }}</button></a>
                     {% endif %}
                 {% endif %}
 {#                <a href="{{ path('app_logout') }}">Logout</a>#}

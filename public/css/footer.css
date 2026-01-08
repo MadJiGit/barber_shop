@@ -1,0 +1,10 @@
+.madji-img-footer {
+    height: 30px;
+    width: auto;
+    vertical-align: middle;
+    transition: opacity 0.2s;
+}
+
+.madji-img-footer:hover {
+    opacity: 0.8;
+}

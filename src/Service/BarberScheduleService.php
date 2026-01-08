@@ -17,7 +17,7 @@ class BarberScheduleService
     public function __construct(
         BarberScheduleRepository $scheduleRepository,
         BarberScheduleExceptionRepository $exceptionRepository,
-        AppointmentsRepository $appointmentsRepository
+        AppointmentsRepository $appointmentsRepository,
     ) {
         $this->scheduleRepository = $scheduleRepository;
         $this->exceptionRepository = $exceptionRepository;
@@ -26,16 +26,16 @@ class BarberScheduleService
 
     /**
      * Get monthly calendar data for barber
-     * Returns array of dates with their availability status
+     * Returns array of dates with their availability status.
      *
      * @return array [
-     *   'date' => '2025-11-27',
-     *   'dayOfWeek' => 4,
-     *   'status' => 'available|unavailable|partial|full',
-     *   'working' => true|false,
-     *   'occupiedSlots' => 3,
-     *   'totalSlots' => 18
-     * ]
+     *               'date' => '2025-11-27',
+     *               'dayOfWeek' => 4,
+     *               'status' => 'available|unavailable|partial|full',
+     *               'working' => true|false,
+     *               'occupiedSlots' => 3,
+     *               'totalSlots' => 18
+     *               ]
      */
     public function getMonthCalendar(User $barber, int $year, int $month): array
     {
@@ -58,7 +58,7 @@ class BarberScheduleService
 
         while ($currentDate <= $lastDay) {
             $dateStr = $currentDate->format('Y-m-d');
-            $dayOfWeek = (int)$currentDate->format('w'); // 0-6
+            $dayOfWeek = (int) $currentDate->format('w'); // 0-6
 
             // Get default schedule for this day of week
             $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
@@ -67,6 +67,7 @@ class BarberScheduleService
             $endTime = $daySchedule['end'] ?? null;
 
             // Check for exception
+            $excludedSlotsCount = 0;
             if (isset($exceptionsMap[$dateStr])) {
                 $exception = $exceptionsMap[$dateStr];
 
@@ -79,6 +80,11 @@ class BarberScheduleService
                     $startTime = $exception->getStartTime()?->format('H:i');
                     $endTime = $exception->getEndTime()?->format('H:i');
                 }
+
+                // Count excluded slots
+                if ($exception->getExcludedSlots()) {
+                    $excludedSlotsCount = count($exception->getExcludedSlots());
+                }
             }
 
             // Calculate occupied slots if working
@@ -87,13 +93,15 @@ class BarberScheduleService
 
             if ($working && $startTime && $endTime) {
                 $totalSlots = $this->calculateTotalSlots($startTime, $endTime);
+                // Subtract excluded slots from total
+                $totalSlots -= $excludedSlotsCount;
                 $occupiedSlots = $this->getOccupiedSlotsCount($barber, $currentDate);
             }
 
             // Determine status
             $status = 'unavailable'; // Default: not working
             if ($working) {
-                if ($occupiedSlots == 0) {
+                if (0 == $occupiedSlots) {
                     $status = 'available'; // Fully available
                 } elseif ($occupiedSlots < $totalSlots) {
                     $status = 'partial'; // Some slots occupied
@@ -120,19 +128,19 @@ class BarberScheduleService
     }
 
     /**
-     * Get day schedule with all time slots for modal
+     * Get day schedule with all time slots for modal.
      *
      * @return array [
-     *   'time' => '09:00',
-     *   'available' => true,
-     *   'locked' => false,
-     *   'client' => null|'Name'
-     * ]
+     *               'time' => '09:00',
+     *               'available' => true,
+     *               'locked' => false,
+     *               'client' => null|'Name'
+     *               ]
      */
     public function getDaySchedule(User $barber, \DateTimeImmutable $date): array
     {
         $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
-        $dayOfWeek = (int)$date->format('w');
+        $dayOfWeek = (int) $date->format('w');
 
         // Get default schedule
         $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
@@ -189,7 +197,7 @@ class BarberScheduleService
     }
 
     /**
-     * Calculate total number of 30-min slots between start and end time
+     * Calculate total number of 30-min slots between start and end time.
      */
     private function calculateTotalSlots(string $startTime, string $endTime): int
     {
@@ -201,7 +209,7 @@ class BarberScheduleService
     }
 
     /**
-     * Get count of occupied slots for barber on specific date
+     * Get count of occupied slots for barber on specific date.
      */
     private function getOccupiedSlotsCount(User $barber, \DateTimeImmutable $date): int
     {
@@ -212,7 +220,7 @@ class BarberScheduleService
 
     /**
      * Generate array of time slots in 30-min intervals
-     * Example: ['09:00', '09:30', '10:00', '10:30', ...]
+     * Example: ['09:00', '09:30', '10:00', '10:30', ...].
      */
     private function generateTimeSlots(string $startTime, string $endTime): array
     {
@@ -229,16 +237,14 @@ class BarberScheduleService
     }
 
     /**
-     * Check if barber is working at specific date and time
+     * Check if barber is working at specific date and time.
      *
-     * @param User $barber
-     * @param \DateTimeImmutable $dateTime
      * @return bool True if barber is working at this time
      */
     public function isBarberWorkingAt(User $barber, \DateTimeImmutable $dateTime): bool
     {
         $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
-        $dayOfWeek = (int)$dateTime->format('w');
+        $dayOfWeek = (int) $dateTime->format('w');
 
         // Get default schedule for this day
         $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
@@ -274,21 +280,18 @@ class BarberScheduleService
 
         // Check if time is within working hours
         $appointmentTime = $dateTime->format('H:i');
+
         return $appointmentTime >= $startTime && $appointmentTime < $endTime;
     }
 
     /**
      * Get working hours for barber on specific date
-     * Returns null if not working, otherwise ['start' => 'HH:MM', 'end' => 'HH:MM']
-     *
-     * @param User $barber
-     * @param \DateTimeImmutable $date
-     * @return array|null
+     * Returns null if not working, otherwise ['start' => 'HH:MM', 'end' => 'HH:MM'].
      */
     public function getWorkingHoursForDate(User $barber, \DateTimeImmutable $date): ?array
     {
         $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
-        $dayOfWeek = (int)$date->format('w');
+        $dayOfWeek = (int) $date->format('w');
 
         // Get default schedule
         $daySchedule = $schedule->getScheduleForDay($dayOfWeek);
@@ -318,12 +321,12 @@ class BarberScheduleService
         return [
             'start' => $startTime,
             'end' => $endTime,
-            'excludedSlots' => $exception?->getExcludedSlots() ?? []
+            'excludedSlots' => $exception?->getExcludedSlots() ?? [],
         ];
     }
 
     /**
-     * Save schedule exception (full day off or custom hours)
+     * Save schedule exception (full day off or custom hours).
      */
     public function saveException(
         User $barber,
@@ -333,7 +336,7 @@ class BarberScheduleService
         ?string $endTime = null,
         ?array $excludedSlots = null,
         ?string $reason = null,
-        ?User $createdBy = null
+        ?User $createdBy = null,
     ): BarberScheduleException {
         // Check if exception already exists
         $exception = $this->exceptionRepository->findByBarberAndDate($barber, $date);
@@ -356,7 +359,8 @@ class BarberScheduleService
             $exception->setEndTime(new \DateTime($endTime));
         }
 
-        if ($excludedSlots) {
+        // Always set excluded slots (even if empty array) to allow clearing them
+        if (null !== $excludedSlots) {
             $exception->setExcludedSlots($excludedSlots);
         }
 

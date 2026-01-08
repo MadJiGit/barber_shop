@@ -1,0 +1,418 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Графици на бръснари{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/barber_calendar.css') }}">
+{% endblock %}
+
+{% block body %}
+<!--? Hero Start -->
+<div class="slider-area2">
+    <div class="slider-height2 d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap hero-cap2 pt-70 text-center">
+                        <h2>Графици на бръснари</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="fas fa-user-clock"></i> Графици на бръснари</h1>
+            <p class="text-muted">Управление на работните графици на всички бръснари</p>
+        </div>
+    </div>
+
+    {# Navigation #}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <a href="{{ path('manager_dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home"></i> Табло
+                </a>
+                <a href="{{ path('manager_appointments') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-alt"></i> Всички резервации
+                </a>
+                <a href="{{ path('manager_barber_schedules') }}" class="btn btn-primary active">
+                    <i class="fas fa-user-clock"></i> Графици на бръснари
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Barber Selection #}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="barberSelect" class="form-label"><strong>Изберете бръснар:</strong></label>
+            <select id="barberSelect" class="form-control" onchange="selectBarber(this.value)">
+                <option value="">-- Изберете бръснар --</option>
+                {% for barber in barbers %}
+                    <option value="{{ barber.id }}" {% if selectedBarber and selectedBarber.id == barber.id %}selected{% endif %}>
+                        {{ barber.firstName }} {{ barber.lastName }} ({{ barber.getBarberTitleBg() }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    {# Calendar Section (only show if barber is selected) #}
+    {% if selectedBarber %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3>{{ selectedBarber.firstName }} {{ selectedBarber.lastName }} - {{ monthName }} {{ year }}</h3>
+            </div>
+        </div>
+
+        <div class="container-fluid py-4">
+            <!-- Calendar Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: prevYear, month: prevMonth}) }}"
+                           class="btn btn-outline-secondary">
+                            <i class="fas fa-chevron-left"></i> Предишен
+                        </a>
+                        <h2 class="mb-0">
+                            <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
+                        </h2>
+                        <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: nextYear, month: nextMonth}) }}"
+                           class="btn btn-outline-secondary">
+                            Следващ <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="calendar-legend d-flex justify-content-center gap-3">
+                        <span class="legend-item">
+                            <span class="legend-box legend-available"></span> Свободен
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-box legend-partial"></span> Частично зает
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-box legend-full"></span> Пълен
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-box legend-unavailable"></span> Не работи
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="calendar-grid">
+                        <!-- Weekday headers -->
+                        <div class="calendar-header">
+                            <div class="calendar-day-name">Понеделник</div>
+                            <div class="calendar-day-name">Вторник</div>
+                            <div class="calendar-day-name">Сряда</div>
+                            <div class="calendar-day-name">Четвъртък</div>
+                            <div class="calendar-day-name">Петък</div>
+                            <div class="calendar-day-name">Събота</div>
+                            <div class="calendar-day-name">Неделя</div>
+                        </div>
+
+                        <!-- Calendar days -->
+                        <div class="calendar-body">
+                            {% set firstDayOfWeek = calendar[0].dayOfWeek %}
+                            {% set offset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1 %}
+
+                            {# Empty cells before first day #}
+                            {% if offset > 0 %}
+                                {% for i in 1..offset %}
+                                    <div class="calendar-cell empty"></div>
+                                {% endfor %}
+                            {% endif %}
+
+                            {# Actual calendar days #}
+                            {% for day in calendar %}
+                                {% set dateObj = day.date|date('Y-m-d') %}
+                                {% set dayNum = day.date|date('d') %}
+
+                                <div class="calendar-cell calendar-day status-{{ day.status }}"
+                                     data-date="{{ day.date }}"
+                                     data-working="{{ day.working ? 'true' : 'false' }}"
+                                     data-occupied="{{ day.occupiedSlots }}"
+                                     data-total="{{ day.totalSlots }}"
+                                     onclick="openDayModal('{{ day.date }}')">
+                                    <div class="day-number">{{ dayNum }}</div>
+                                    {% if day.working %}
+                                        <div class="day-info">
+                                            <small>{{ day.occupiedSlots }}/{{ day.totalSlots }}</small>
+                                        </div>
+                                    {% else %}
+                                        <div class="day-info">
+                                            <small>Почивка</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Моля, изберете бръснар от падащото меню, за да видите неговия график.
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Day Schedule Modal -->
+<div class="modal fade" id="dayScheduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span id="modalDate"></span> - <span id="modalDayName"></span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Loading indicator -->
+                <div id="modalLoading" class="text-center py-4">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p class="mt-3">Зареждане...</p>
+                </div>
+
+                <!-- Content -->
+                <div id="modalContent" style="display: none;">
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="workingCheckbox" checked>
+                        <label class="form-check-label" for="workingCheckbox">
+                            <strong>Работя този ден</strong>
+                        </label>
+                    </div>
+
+                    <div id="workingHoursSection">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label>Начало:</label>
+                                <input type="time" class="form-control" id="startTime" value="09:00">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Край:</label>
+                                <input type="time" class="form-control" id="endTime" value="18:00">
+                            </div>
+                        </div>
+
+                        <h6>Часове:</h6>
+                        <div id="timeSlotsContainer" class="time-slots-grid">
+                            <!-- Time slots will be populated by JavaScript -->
+                        </div>
+
+                        <div class="mt-3">
+                            <label>Причина (по желание):</label>
+                            <input type="text" class="form-control" id="scheduleReason"
+                                   placeholder="напр. Лична причина, Отпуск, и т.н.">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Откаж
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveSchedule()">
+                    <i class="fas fa-save"></i> Запази
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Store selected barber ID for AJAX calls
+        let selectedBarberId = {{ selectedBarber ? selectedBarber.id : 'null' }};
+
+        function selectBarber(barberId) {
+            if (barberId) {
+                window.location.href = '{{ path('manager_barber_schedules') }}?barber_id=' + barberId;
+            }
+        }
+
+        // Global variables
+        let currentDate = null;
+        let currentSlots = [];
+
+        /**
+         * Open day modal to edit schedule
+         */
+        function openDayModal(date) {
+            if (!selectedBarberId) {
+                Toast.error('Моля, първо изберете бръснар');
+                return;
+            }
+
+            currentDate = date;
+            const modal = $('#dayScheduleModal');
+
+            // Reset modal
+            $('#modalLoading').show();
+            $('#modalContent').hide();
+
+            // Format date for display
+            const dateObj = new Date(date);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            $('#modalDate').text(dateObj.toLocaleDateString('bg-BG', options));
+
+            modal.modal('show');
+
+            // Load day schedule via AJAX
+            fetch(`/manager/barber/${selectedBarberId}/schedule/day/${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#modalDayName').text(data.dayOfWeek);
+                    currentSlots = data.slots;
+
+                    renderTimeSlots(data.slots);
+
+                    $('#modalLoading').hide();
+                    $('#modalContent').show();
+                })
+                .catch(error => {
+                    console.error('Error loading schedule:', error);
+                    Toast.error('Грешка при зареждане на графика');
+                    modal.modal('hide');
+                });
+        }
+
+        /**
+         * Render time slots in modal
+         */
+        function renderTimeSlots(slots) {
+            const container = $('#timeSlotsContainer');
+            container.empty();
+
+            if (slots.length === 0) {
+                container.html('<p class="text-muted">Този ден не е работен по подразбиране.</p>');
+                $('#workingCheckbox').prop('checked', false);
+                $('#workingHoursSection').hide();
+                return;
+            }
+
+            $('#workingCheckbox').prop('checked', true);
+            $('#workingHoursSection').show();
+
+            slots.forEach(slot => {
+                const div = $('<div>').addClass('time-slot-checkbox');
+
+                if (slot.locked) {
+                    // Locked slots (with client) - disabled and checked
+                    div.addClass('locked');
+                    div.html(`
+                        <input type="checkbox" disabled checked>
+                        <label>
+                            ${slot.time}
+                            <span class="client-name">🔒 ${slot.client || 'Зает'}</span>
+                        </label>
+                    `);
+                } else {
+                    // Available or excluded slots - manager can check/uncheck
+                    const checked = slot.available ? 'checked' : '';
+                    const label = slot.available
+                        ? `${slot.time}`
+                        : `${slot.time} <span class="text-danger">(изключен от бръснар)</span>`;
+                    div.html(`
+                        <input type="checkbox" ${checked} data-time="${slot.time}">
+                        <label>${label}</label>
+                    `);
+                }
+
+                container.append(div);
+            });
+        }
+
+        /**
+         * Working checkbox toggle
+         */
+        $(document).on('change', '#workingCheckbox', function() {
+            if ($(this).is(':checked')) {
+                $('#workingHoursSection').show();
+            } else {
+                $('#workingHoursSection').hide();
+            }
+        });
+
+        /**
+         * Save schedule via AJAX
+         */
+        function saveSchedule() {
+            if (!selectedBarberId) {
+                Toast.error('Моля, първо изберете бръснар');
+                return;
+            }
+
+            const isWorking = $('#workingCheckbox').is(':checked');
+            const startTime = $('#startTime').val();
+            const endTime = $('#endTime').val();
+            const reason = $('#scheduleReason').val();
+
+            // Get excluded slots (unchecked available slots)
+            const excludedSlots = [];
+            $('#timeSlotsContainer input[type="checkbox"]:not(:disabled)').each(function() {
+                if (!$(this).is(':checked')) {
+                    excludedSlots.push($(this).data('time'));
+                }
+            });
+
+            const data = {
+                date: currentDate,
+                is_available: isWorking,
+                start_time: isWorking ? startTime : null,
+                end_time: isWorking ? endTime : null,
+                excluded_slots: excludedSlots.length > 0 ? excludedSlots : null,
+                reason: reason || null
+            };
+
+            fetch(`/manager/barber/${selectedBarberId}/schedule/save`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Toast.success('Графикът е запазен успешно!');
+                    $('#dayScheduleModal').modal('hide');
+                    // Reload page to show updated calendar (preserve barber_id)
+                    const currentUrl = new URL(window.location.href);
+                    window.location.href = currentUrl.href;
+                } else {
+                    Toast.error(result.error || 'Неизвестна грешка');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving schedule:', error);
+                Toast.error('Грешка при запазване на графика');
+            });
+        }
+    </script>
+{% endblock %}

@@ -46,12 +46,19 @@ function restoreActiveTab() {
     const urlParams = new URLSearchParams(window.location.search);
     const activeTab = urlParams.get('tab');
 
+    // Only run for client profiles (not barber profiles with #barberTabs)
+    const profileTabs = document.getElementById('profileTabs');
+    if (!profileTabs) {
+        return; // Exit if not on client profile page
+    }
+
     if (activeTab) {
-        // Deactivate all tabs
+        // Deactivate all tabs (only within #profileTabs)
         document.querySelectorAll('#profileTabs .nav-link').forEach(tab => {
             tab.classList.remove('active');
         });
-        document.querySelectorAll('.tab-pane').forEach(pane => {
+        // FIXED: Only select .tab-pane that are children of the profile tabs container
+        document.querySelectorAll('#profileTabs + .tab-content .tab-pane').forEach(pane => {
             pane.classList.remove('show', 'active');
         });
 

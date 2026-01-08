@@ -8,7 +8,7 @@
     <thead>
     <tr>
     {% for field in fields %}
-        <th>{{ field }}</th>
+        <th>{{ field|trans }}</th>
     {% endfor %}
     </tr>
     </thead>
@@ -21,7 +21,7 @@
         <td>{{ client.email }}</td>
         <td>
         {% for role in client.roles %}
-            {{ role|lower }}
+            {{ ('roles.' ~ role|lower)|trans }}
         {% endfor %}
         </td>
         <td>{{ client.first_name }}</td>
@@ -31,12 +31,11 @@
         <td>{{ client.date_added|date('d-m-Y') }}</td>
         <td>{{ client.date_banned|date('d-m-Y') }}</td>
         <td>{{ client.date_last_update|date('d-m-Y') }}</td>
-        {% if user.userIsSuperAdmin %}
-            <td><a href={{ path('admin_profile_edit', {id: client.id} ) }}><button type="button">edit</button></a></td>
+        {% if app.user.isUserIsSuperAdmin %}
+            <td><a href={{ path('admin_user_edit', {id: client.id} ) }}><button type="button">{{ 'admin.users.actions.edit' | trans }}</button></a></td>
         {% endif %}
     <tr>
     {% endfor %}
     </tbody>
 </table>
 {% endblock %}
-

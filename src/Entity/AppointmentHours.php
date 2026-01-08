@@ -16,7 +16,7 @@ class AppointmentHours
         '6' => '15:00',
         '7' => '16:00',
         '8' => '17:00',
-//        '9' => '18:00',
+        //        '9' => '18:00',
     ];
 
     public static function getAppointmentHours(): array

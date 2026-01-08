@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use App\Repository\BarberScheduleExceptionRepository;
 use App\Service\DateTimeHelper;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 
 #[ORM\Entity(repositoryClass: BarberScheduleExceptionRepository::class)]
 #[ORM\Table(name: 'barber_schedule_exception')]
@@ -15,7 +13,7 @@ use Exception;
 class BarberScheduleException
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -24,21 +22,21 @@ class BarberScheduleException
     private ?User $barber = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?DateTimeInterface $date = null;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $is_available = true;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $start_time = null;
+    private ?\DateTimeInterface $start_time = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $end_time = null;
+    private ?\DateTimeInterface $end_time = null;
 
     /**
      * Array of excluded time slots in HH:MM format
      * Example: ["15:00", "15:30", "16:00", "16:30"]
-     * Used when barber is working but wants to exclude specific hours
+     * Used when barber is working but wants to exclude specific hours.
      */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $excluded_slots = null;
@@ -46,16 +44,13 @@ class BarberScheduleException
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reason = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeInterface $created_at = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'created_by', referencedColumnName: 'id', nullable: true)]
     private ?User $created_by = null;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->created_at = DateTimeHelper::now();
@@ -78,12 +73,12 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getDate(): ?DateTimeInterface
+    public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(DateTimeInterface $date): static
+    public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
 
@@ -102,24 +97,24 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getStartTime(): ?DateTimeInterface
+    public function getStartTime(): ?\DateTimeInterface
     {
         return $this->start_time;
     }
 
-    public function setStartTime(?DateTimeInterface $start_time): static
+    public function setStartTime(?\DateTimeInterface $start_time): static
     {
         $this->start_time = $start_time;
 
         return $this;
     }
 
-    public function getEndTime(): ?DateTimeInterface
+    public function getEndTime(): ?\DateTimeInterface
     {
         return $this->end_time;
     }
 
-    public function setEndTime(?DateTimeInterface $end_time): static
+    public function setEndTime(?\DateTimeInterface $end_time): static
     {
         $this->end_time = $end_time;
 
@@ -139,7 +134,7 @@ class BarberScheduleException
     }
 
     /**
-     * Check if a specific time slot is excluded
+     * Check if a specific time slot is excluded.
      */
     public function isSlotExcluded(string $timeSlot): bool
     {
@@ -162,7 +157,7 @@ class BarberScheduleException
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
@@ -180,7 +175,7 @@ class BarberScheduleException
     }
 
     /**
-     * Check if this is a full day off (not available at all)
+     * Check if this is a full day off (not available at all).
      */
     public function isFullDayOff(): bool
     {
@@ -188,28 +183,25 @@ class BarberScheduleException
     }
 
     /**
-     * Check if this has custom working hours
+     * Check if this has custom working hours.
      */
     public function hasCustomHours(): bool
     {
-        return $this->is_available && ($this->start_time !== null || $this->end_time !== null);
+        return $this->is_available && (null !== $this->start_time || null !== $this->end_time);
     }
 
     /**
-     * Check if this only excludes specific slots
+     * Check if this only excludes specific slots.
      */
     public function hasExcludedSlotsOnly(): bool
     {
         return $this->is_available
-            && $this->excluded_slots !== null
+            && null !== $this->excluded_slots
             && count($this->excluded_slots) > 0
-            && $this->start_time === null
-            && $this->end_time === null;
+            && null === $this->start_time
+            && null === $this->end_time;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return sprintf('%s - %s',

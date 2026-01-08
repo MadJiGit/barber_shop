@@ -1,0 +1,6 @@
+toast:
+  title:
+    success: 'Успех'
+    error: 'Грешка'
+    warning: 'Предупреждение'
+    info: 'Информация'

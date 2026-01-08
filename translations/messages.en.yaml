@@ -39,6 +39,10 @@ homepage:
 base_iframe:
     title: 'Barber Shop'
 
+footer:
+    developed_by: 'Developed by'
+    all_rights: 'All Rights Reserved'
+
 # _appointment_table.html.twig
 
 appointment_table:
@@ -111,7 +115,6 @@ login:
     register_here: 'Register here'
     forgot_password: 'Forgot password?'
 
-
 #  forgot_password.html.twig
 
 forgot_password:
@@ -157,6 +160,26 @@ error_page:
     button_start: 'Go to Homepage'
     button_profile: 'Go to Profile'
 
+# error403.html.twig
+
+error403:
+    title: "Access Denied - 403"
+    heading: "Access Denied"
+    description: "You do not have the required permissions to access this page."
+    advice: "If you believe this is a mistake, please contact the administrator."
+    button_home: "Back to homepage"
+    button_profile: "Go to profile"
+    button_login: "Login"
+
+# error404.html.twig
+
+error404:
+    title: "Page Not Found - 404"
+    heading: "Page Not Found"
+    description: "The page you are looking for does not exist or has been removed."
+    advice: "Please check the URL or return to the homepage."
+    button_home: "Back to homepage"
+    button_appointment: "Book appointment"
 
 # check_email.html.twig
 
@@ -196,7 +219,6 @@ appointments:
         client_placeholder: "Name or email"
         search: "Search"
         clear: "Clear"
-
     columns:
         toggle: "Columns"
         id: "ID"
@@ -210,27 +232,22 @@ appointments:
         date_added: "Created At"
         date_updated: "Updated At"
         actions: "Actions"
-
     table:
         title: "Appointments"
         show: "Show"
         no_results: "No appointments found."
         minutes: "min"
-
     status:
         confirmed: "Confirmed"
         completed: "Completed"
         cancelled: "Cancelled"
-
     actions:
         edit: "Edit"
         cancel: "Cancel"
-
     pagination:
         shown: "Showing %from%–%to% of %total%"
         prev: "Previous"
         next: "Next"
-
     modal:
         edit_title: "Edit Appointment"
         client: "Client"
@@ -283,6 +300,7 @@ verify:
     link_expiry: "This link is valid for 24 hours. After that, you'll need to register again."
     ignore: "If you did not register at Barber Shop, please ignore this email."
 
+
 # password_reset.html.twig
 
 password_reset:
@@ -306,15 +324,12 @@ password_changed:
     confirmation: "We confirm that the password for your <strong>Barber Shop</strong> account has been successfully changed."
     success_label: "Success"
     success_text: "Your new password is now active and can be used to sign in."
-
     security_header: "Important for your security"
     security_warning: "If you did <strong>NOT</strong> request this change, please contact us immediately at:"
-
     tips_header: "Security Tips"
     tip_unique: "Use a unique password that you haven't used on other sites"
     tip_no_share: "Never share your password with anyone"
     tip_change_often: "Change your password periodically"
-
     regards: "Regards,"
     team: "The Barber Shop Team"
 
@@ -361,6 +376,7 @@ guest_confirm:
     team: "The Barber Shop Team"
     validity: "This confirmation link is valid for 24 hours."
 
+
 # base.html.twig
 
 email:
@@ -370,16 +386,15 @@ email:
         footer_rights: "Barber Shop. All rights reserved."
         footer_notice: "This is an automated email. Please do not reply."
 
+
 # appointment_reminder.html.twig
 
 reminder:
     title: "⏰ Reminder for your appointment tomorrow"
     hello: "Hello"
     message: "This is a friendly reminder that you have an appointment at <strong>Barber Shop</strong> tomorrow!"
-
     dont_forget: "Don't forget!"
     appointment_time: "Your appointment is tomorrow at"
-
     details_title: "Your Appointment Details"
     date: "Date"
     time: "Time"
@@ -387,49 +402,37 @@ reminder:
     service: "Service"
     duration: "Duration"
     price: "Price"
-
     minutes: "min"
     currency: "BGN"
-
     preparation_title: "Preparation"
     preparation_text: "Please arrive 5 minutes earlier. If you need additional services, you can discuss them directly with the barber."
-
     cancel_header: "Need to cancel"
     cancel_text: "If you cannot come, please cancel your appointment on time from your profile or contact us."
-
     view_appointment: "View Appointment"
-
     see_you: "We're looking forward to seeing you tomorrow!"
     regards: "Regards,"
     team: "The Barber Shop Team"
-
     auto_notice: "This is an automated reminder sent 24 hours before your appointment."
 
 
 # appointment_confirmation.html.twig
-
 
 confirm:
     title: "✓ Your appointment is confirmed!"
     hello: "Hello"
     message: "Your appointment at <strong>Barber Shop</strong> has been successfully confirmed!"
     details_title: "Appointment Details"
-
     date: "Date"
     time: "Time"
     barber: "Barber"
     service: "Service"
     duration: "Duration"
     price: "Price"
-
     minutes: "min."
     currency: "BGN"
-
     important: "Important"
     important_text: "Please be on time. If you need to cancel or change your appointment, you can do so from your profile or by contacting us."
-
     view_appointments: "View Your Appointments"
-
     see_you: "We're looking forward to seeing you!"
     regards: "Regards,"
     team: "The Barber Shop Team"
@@ -439,18 +442,14 @@ confirm:
 cancel:
     title: "❌ Your appointment has been cancelled"
     hello: "Hello"
-
     by_barber: "We are sorry, but your appointment at <strong>Barber Shop</strong> was cancelled by the barber."
     by_manager: "Your appointment at <strong>Barber Shop</strong> was cancelled by the manager/administrator."
     general: "Your appointment at <strong>Barber Shop</strong> has been cancelled successfully."
-
     details_title: "Cancelled Appointment Details"
-
     date: "Date"
     time: "Time"
     barber: "Barber"
     service: "Service"
-
     sun: "Sunday"
     mon: "Monday"
     tue: "Tuesday"
@@ -458,41 +457,375 @@ cancel:
     thu: "Thursday"
     fri: "Friday"
     sat: "Saturday"
-
     warning: "Warning"
     extra_warning: "This appointment was cancelled by %who%. If you have questions or want to book a new appointment, please contact us."
-
     by_barber_short: "the barber"
     by_manager_short: "the manager"
-
     book_new_title: "Want to book another appointment?"
     book_new_text: "You can easily make a new reservation from our website."
     book_new_button: "Book a new appointment"
-
     thanks: "Thank you for your understanding!"
     regards: "Regards,"
     team: "The Barber Shop Team"
-
     questions: "For questions"
     phone: "Phone"
 
 
+# profile.html.twig
+
+profile:
+    title: "My Profile - Barber Shop"
+    hero_title: "My Profile"
+    tabs:
+        profile: "My Profile"
+        history: "History"
+        appointments: "Appointments"
+        history_title: "Visit History"
+    form:
+        email: "Email"
+        first_name: "First name"
+        last_name: "Last name"
+        nickname_help: "Optional. If left empty, we will use your name."
+        phone: "Phone"
+        member_since: "Member since"
+    password:
+        title: "Change password"
+        important: "Important"
+        info: "After submitting the password fields, you will receive an email with a confirmation link. The password will be changed after confirmation."
+        current: "Current password"
+        new: "New password"
+        repeat: "Repeat new password"
+        hint: "Minimum 6 characters"
+    actions:
+        back: "Back to home"
+        save: "Save changes"
+    appointments:
+        filters:
+            from_date: "From date"
+            to_date: "To date"
+            status: "Status"
+        actions:
+            filter: "Filter"
+            clear: "Clear"
+            edit: "Edit appointment"
+            cancel: "Cancel appointment"
+        results: "Showing %shown% of %total% records"
+        per_page: "Show"
+        table:
+            date: "Date"
+            time: "Time"
+            barber: "Barber"
+            service: "Service"
+            status: "Status"
+            price: "Price"
+            actions: "Actions"
+        empty: "No appointments found for the selected period."
+        status:
+            pending: "Pending"
+            confirmed: "Confirmed"
+            completed: "Completed"
+            completed_done: "Completed"
+            cancelled: "Cancelled"
+            no_show: "No-show"
+        currency: "BGN"
+    history:
+        filters:
+            from_date: "From date"
+            to_date: "To date"
+            status: "Status"
+        actions:
+            filter: "Filter"
+            clear: "Clear"
+            edit: "Edit appointment"
+            cancel: "Cancel appointment"
+        results: "Showing %shown% of %total% records"
+        per_page: "Show"
+        table:
+            date: "Date"
+            time: "Time"
+            barber: "Barber"
+            service: "Service"
+            status: "Status"
+            price: "Price"
+            actions: "Actions"
+        empty: "No appointments found for the selected period."
+        status:
+            pending: "Pending"
+            confirmed: "Confirmed"
+            completed: "Completed"
+            completed_done: "Completed"
+            cancelled: "Cancelled"
+            no_show: "No-show"
+        currency: "BGN"
+
+# appointment.html.twig
+
+appointment:
+    title: "Book an Appointment - Barber Shop"
+    hero_title: "Book an Appointment"
+    section:
+        choose_range: "Choose the time range in which you would like to book your appointment."
+    guest:
+        title: "Your contact details"
+        first_name: "First name"
+        first_name_placeholder: "Enter your first name"
+        last_name: "Last name"
+        last_name_placeholder: "Enter your last name"
+        email: "Email"
+        phone: "Phone"
+        phone_placeholder: "+359 888 123 456"
+        gdpr: "I agree to the processing of my personal data in accordance with the <a href=\"#\" target=\"_blank\">Privacy Policy</a>"
+    procedure:
+        title: "Select a service"
+        placeholder: "Select a service..."
+    date:
+        title: "Date"
+    days:
+        sun: "Sunday"
+        mon: "Monday"
+        tue: "Tuesday"
+        wed: "Wednesday"
+        thu: "Thursday"
+        fri: "Friday"
+        sat: "Saturday"
+    loading_slots: "Loading available time slots..."
+    actions:
+        submit: "Book Appointment"
+    hint:
+        select_service_time: "Select a service and time to continue"
+    profile_incomplete:
+        title: "Complete your profile"
+        text: "Please complete your profile information before booking an appointment."
+        button: "Complete profile"
+
+# go_back_logout_buttons.html.twig
+
+common:
+    actions:
+        go_back: "Go back"
+        logout: "Logout"
 
 
+# barber/profile.html.twig
 
+barber:
+    edit:
+        title: "Edit Profile - Barber Shop"
+        hero: "My Profile"
+    tabs:
+        calendar: "Schedule"
+        appointments: "Appointments"
+        procedures: "Services"
+        history: "History"
+        profile: "My profile"
+    calendar:
+        prev: "Previous"
+        next: "Next"
+        legend:
+            available: "Available"
+            partial: "Partially booked"
+            full: "Fully booked"
+            unavailable: "Not working"
+        weekdays:
+            mon: "Mon"
+            tue: "Tue"
+            wed: "Wed"
+            thu: "Thu"
+            fri: "Fri"
+            sat: "Sat"
+            sun: "Sun"
+        day_off: "Day off"
+    appointments:
+        title: "Записани часове"
+        filters:
+            from_date: "От дата"
+            to_date: "До дата"
+            status: "Статус"
+        status:
+            pending: "Чакащи"
+            confirmed: "Потвърдени"
+            completed: "Завършени"
+            cancelled: "Отменени"
+        search:
+            label: "Търси клиент"
+            placeholder: "Име, имейл, телефон..."
+        actions:
+            filter: "Филтрирай"
+            clear: "Изчисти"
+        results: "Показани %shown% от %total% записа"
+        per_page: "Показвай"
+    procedures:
+        title: "Services I provide"
+        description: "Select the services you can perform. Clients will see only you when they choose this service."
+        price: "Price"
+        duration: "Duration"
+        minutes: "min"
+        currency: "BGN"
+        actions:
+            save: "Save changes"
+    history:
+        title: "Visit history"
+        table:
+            date: "Date"
+            time: "Time"
+            barber: "Barber"
+            service: "Service"
+            status: "Status"
+            price: "Price"
+            actions: "Actions"
+        empty: "No visit history."
+        status:
+            confirmed: "Confirmed"
+            completed: "Completed"
+            cancelled: "Cancelled"
+            no_show: "No-show"
+        currency: "BGN"
+    schedule:
+        loading: "Loading..."
+        working_day: "Working this day"
+        start: "Start"
+        end: "End"
+        slots: "Time slots"
+        reason: "Reason (optional)"
+        reason_placeholder: "e.g. Personal reason, Vacation, etc."
+        actions:
+            cancel: "Cancel"
+            save: "Save"
 
+# barber/calendar.html.twig
 
+calendar:
+    title: "Schedule"
+    prev: "Previous"
+    next: "Next"
+    legend:
+        available: "Available"
+        partial: "Partially booked"
+        full: "Fully booked"
+        unavailable: "Not working"
+    weekdays:
+        mon: "Mon"
+        tue: "Tue"
+        wed: "Wed"
+        thu: "Thu"
+        fri: "Fri"
+        sat: "Sat"
+        sun: "Sun"
+    day_off: "Day off"
+    schedule:
+        loading: "Loading..."
+        working_day: "Working this day"
+        start: "Start"
+        end: "End"
+        slots: "Time slots"
+        reason: "Reason (optional)"
+        reason_placeholder: "e.g. Personal reason, Vacation, etc."
+        actions:
+            cancel: "Cancel"
+            save: "Save"
 
+# admin/users
 
+admin:
+    users:
+        actions:
+            edit: "Edit"
+roles:
+    role_user: "User"
+    role_admin: "Admin"
+    role_editor: "Editor"
+    role_super_admin: "Super admin"
 
+# admin/user_edit.html.twig
 
+user_edit:
+    title: "Edit Profile - Barber Shop"
+    hero_admin: "Edit user"
+    hero_user: "My profile"
+    form:
+        email: "Email"
+        email_placeholder: "example@email.com"
+        first_name: "First name"
+        first_name_placeholder: "First name"
+        last_name: "Last name"
+        last_name_placeholder: "Last name"
+        nickname: "Nickname"
+        nickname_placeholder: "Nickname"
+        phone: "Phone"
+        phone_placeholder: "+359 888 123 456"
+    admin_section:
+        title: "Administrator settings"
+        roles: "Roles"
+        date_added: "Registration date"
+        date_banned: "Ban date"
+        date_updated: "Last update"
+    actions:
+        save: "Save changes"
+        go_back_home: "Back to homepage"
 
+# procedures.html.twig
 
+procedures:
+    title: "Manage procedures"
+    confirm_delete: "Are you sure you want to delete this procedure?"
+    yes: "Yes"
+    no: "No"
+    not_available: "N/A"
+    actions:
+        edit: "Edit"
+        delete: "Delete"
 
+# procedures_forms.html.twig
 
+procedures_forms:
+    title: "Manage procedures"
 
+# admin/dashboard.html.twig
 
+dashboard:
+    hello: "Hello"
+    admin_menu:
+        title: "Admin menu"
+        list_clients: "List clients"
+        list_barbers: "List barbers"
+        list_without_roles: "List without roles"
+        procedure_panel: "Procedure panel"
 
+# manager/dashboard.html.twig
+
+manager_dashboard:
+    title: "Manager Dashboard"
+    subtitle: "Overview of bookings and operations"
+    nav:
+        dashboard: "Dashboard"
+        all_appointments: "All appointments"
+        barber_schedules: "Barber Schedules"
+    stats:
+        today: "Today"
+        confirmed: "Confirmed"
+        completed: "Completed"
+        this_week: "This week"
+        this_month: "This month"
+        total_appointments: "Total appointments"
+        barbers: "Barbers"
+        active_barbers: "Active staff"
+    today:
+        title: "Today's appointments"
+        empty: "No appointments for today."
+    table:
+        time: "Time"
+        client: "Client"
+        barber: "Barber"
+        service: "Service"
+        duration: "Duration"
+        status: "Status"
+    status:
+        confirmed: "Confirmed"
+        completed: "Completed"
+        cancelled: "Cancelled"
+    actions:
+        view_all: "View all appointments"
+    minutes: "min"
 
 
 

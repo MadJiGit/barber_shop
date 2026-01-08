@@ -18,11 +18,11 @@ INSERT INTO `procedures` (`type`, `price_master`, `price_junior`, `duration_mast
 ('Haircut + Hot Towel Shave', '50.00', '42.00', 60, 75, 1, NOW()),
 
 -- Premium Services
-('Premium Haircut + Styling', '40.00', '35.00', 45, 55, 1, NOW()),
-('Head Massage', '20.00', '15.00', 20, 25, 1, NOW()),
-('Hair Coloring', '50.00', '45.00', 90, 120, 1, NOW()),
-('Highlights', '60.00', '55.00', 120, 150, 1, NOW()),
+('Premium Haircut + Styling', '40.00', '35.00', 45, 55, 0, NOW()),
+('Head Massage', '20.00', '15.00', 20, 25, 0, NOW()),
+('Hair Coloring', '50.00', '45.00', 90, 120, 0, NOW()),
+('Highlights', '60.00', '55.00', 120, 150, 0, NOW()),
 
 -- Special Services
-('Wedding/Event Styling', '80.00', '70.00', 90, 120, 1, NOW()),
-('Consultation', '0.00', '0.00', 15, 15, 1, NOW());
+('Wedding/Event Styling', '80.00', '70.00', 90, 120, 0, NOW()),
+('Consultation', '0.00', '0.00', 15, 15, 0, NOW());

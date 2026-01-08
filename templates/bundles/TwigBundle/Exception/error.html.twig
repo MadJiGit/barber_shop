@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ 'error_page.title' | trans }} - {{ status_code ?? ('error_page.title_defaults' | trans) }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/error_pages.css') }}">
+{% endblock %}
 {#{% block title %}greshka{% endblock %}#}
 
 {% block body %}
@@ -27,9 +32,9 @@
             <div class="col-xl-8 col-lg-10">
                 <div class="text-center">
                     <div class="error-icon mb-4">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 120px; color: #d4a373;"></i>
+                        <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h1 class="display-1 mb-4" style="color: #d4a373; font-weight: bold;">{{ status_code ?? '500' }}</h1>
+                    <h1 class="display-1 mb-4">{{ status_code ?? '500' }}</h1>
 {#                    <h2 class="mb-4">{{ status_text ?? 'Възникна грешка' }}</h2>#}
                     <h2 class="mb-4">{{ status_text ?? ('error_page.status_text' | trans) }}</h2>
                     <p class="lead mb-4">

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Редактиране на профил - Barber Shop{% endblock %}
+{% block title %}{{ 'barber.edit.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Моят профил</h2>
+                            <h2>{{ 'barber.edit.hero' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -26,28 +26,28 @@
                 <!-- Barber Tabs Navigation -->
                 <ul class="nav nav-tabs mb-4" id="barberTabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="calendar-tab" data-toggle="tab" href="#calendar" role="tab">
-                            <i class="fas fa-calendar-alt"></i> График
+                        <a class="nav-link" id="calendar-tab" data-toggle="tab" href="#calendar" role="tab">
+                            <i class="fas fa-calendar-alt"></i> {{ 'barber.tabs.calendar' | trans }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="appointments-tab" data-toggle="tab" href="#appointments" role="tab">
-                            <i class="fas fa-clock"></i> Записани часове
+                            <i class="fas fa-clock"></i> {{ 'barber.tabs.appointments' | trans }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="procedures-tab" data-toggle="tab" href="#procedures" role="tab">
-                            <i class="fas fa-cut"></i> Услуги
+                            <i class="fas fa-cut"></i> {{ 'barber.tabs.procedures' | trans }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab">
-                            <i class="fas fa-history"></i> История
+                            <i class="fas fa-history"></i> {{ 'barber.tabs.history' | trans }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab">
-                            <i class="fas fa-user"></i> Моят профил
+                            <i class="fas fa-user"></i> {{ 'barber.tabs.profile' | trans }}
                         </a>
                     </li>
                 </ul>
@@ -55,7 +55,7 @@
                 <!-- Tab Content for Barber -->
                 <div class="tab-content" id="barberTabsContent">
                     <!-- Calendar Tab (Default for barbers) -->
-                    <div class="tab-pane fade show active" id="calendar" role="tabpanel">
+                    <div class="tab-pane fade" id="calendar" role="tabpanel">
                         {% if calendar is not empty %}
                             <div class="container-fluid py-4">
                                 <!-- Calendar Header -->
@@ -64,14 +64,14 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ prevYear }}&month={{ prevMonth }}"
                                                class="btn btn-outline-secondary">
-                                                <i class="fas fa-chevron-left"></i> Предишен
+                                                <i class="fas fa-chevron-left"></i> {{ 'barber.calendar.prev' | trans }}
                                             </a>
                                             <h2 class="mb-0">
                                                 <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
                                             </h2>
                                             <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ nextYear }}&month={{ nextMonth }}"
                                                class="btn btn-outline-secondary">
-                                                Следващ <i class="fas fa-chevron-right"></i>
+                                                {{ 'barber.calendar.next' | trans }} <i class="fas fa-chevron-right"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -82,16 +82,16 @@
                                     <div class="col-12">
                                         <div class="calendar-legend d-flex justify-content-center gap-3">
                                             <span class="legend-item">
-                                                <span class="legend-box legend-available"></span> Свободен
+                                                <span class="legend-box legend-available"></span> {{ 'barber.calendar.legend.available' | trans }}
                                             </span>
                                             <span class="legend-item">
-                                                <span class="legend-box legend-partial"></span> Частично зает
+                                                <span class="legend-box legend-partial"></span> {{ 'barber.calendar.legend.partial' | trans }}
                                             </span>
                                             <span class="legend-item">
-                                                <span class="legend-box legend-full"></span> Напълно зает
+                                                <span class="legend-box legend-full"></span> {{ 'barber.calendar.legend.full' | trans }}
                                             </span>
                                             <span class="legend-item">
-                                                <span class="legend-box legend-unavailable"></span> Не работя
+                                                <span class="legend-box legend-unavailable"></span> {{ 'barber.calendar.legend.unavailable' | trans }}
                                             </span>
                                         </div>
                                     </div>
@@ -103,13 +103,13 @@
                                         <div class="calendar-grid">
                                             <!-- Weekday headers -->
                                             <div class="calendar-header">
-                                                <div class="calendar-day-name">Пон</div>
-                                                <div class="calendar-day-name">Вто</div>
-                                                <div class="calendar-day-name">Сря</div>
-                                                <div class="calendar-day-name">Чет</div>
-                                                <div class="calendar-day-name">Пет</div>
-                                                <div class="calendar-day-name">Съб</div>
-                                                <div class="calendar-day-name">Нед</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.mon' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.tue' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.wed' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.thu' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.fri' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.sat' | trans }}</div>
+                                                <div class="calendar-day-name">{{ 'barber.calendar.weekdays.sun' | trans }}</div>
                                             </div>
 
                                             <!-- Calendar days -->
@@ -128,10 +128,13 @@
                                                 {% for day in calendar %}
                                                     {% set dateObj = day.date|date('Y-m-d') %}
                                                     {% set dayNum = day.date|date('d') %}
+                                                    {% set today = 'now'|date('Y-m-d') %}
+                                                    {% set isPast = dateObj < today %}
 
-                                                    <div class="calendar-cell calendar-day status-{{ day.status }}"
+                                                    <div class="calendar-cell calendar-day status-{{ day.status }} {{ isPast ? 'past-day-readonly' : '' }}"
                                                          data-date="{{ day.date }}"
                                                          data-working="{{ day.working ? 'true' : 'false' }}"
+                                                         data-past="{{ isPast ? 'true' : 'false' }}"
                                                          onclick="openDayModal('{{ day.date }}')">
                                                         <div class="day-number">{{ dayNum|number_format(0, '', '') }}</div>
 
@@ -146,7 +149,7 @@
                                                             {% endif %}
                                                         {% else %}
                                                             <div class="day-info">
-                                                                <small class="text-muted">Почивен</small>
+                                                                <small class="text-muted">{{ 'barber.calendar.day_off' | trans }}</small>
                                                             </div>
                                                         {% endif %}
                                                     </div>
@@ -164,7 +167,7 @@
                     <div class="tab-pane fade" id="appointments" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-12">
-                                <h3 class="mb-4"><i class="fas fa-clock"></i> Записани часове</h3>
+                                <h3 class="mb-4"><i class="fas fa-clock"></i> {{ 'barber.appointments.title' | trans }}</h3>
 
                                 <!-- Filters -->
                                 <div class="card mb-4">
@@ -175,7 +178,7 @@
                                             <div class="row">
                                                 <!-- Date From -->
                                                 <div class="col-md-3">
-                                                    <label for="date_from">От дата:</label>
+                                                    <label for="date_from">{{ 'barber.appointments.filters.from_date' | trans }}:</label>
                                                     <input type="date"
                                                            class="form-control"
                                                            id="date_from"
@@ -185,7 +188,7 @@
 
                                                 <!-- Date To -->
                                                 <div class="col-md-3">
-                                                    <label for="date_to">До дата:</label>
+                                                    <label for="date_to">{{ 'barber.appointments.filters.to_date' | trans }}:</label>
                                                     <input type="date"
                                                            class="form-control"
                                                            id="date_to"
@@ -195,33 +198,33 @@
 
                                                 <!-- Status Filter -->
                                                 <div class="col-md-3">
-                                                    <label>Статус:</label>
+                                                    <label>{{ 'barber.appointments.filters.status' | trans }}:</label>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="statuses[]" value="pending" id="status_pending" {{ 'pending' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_pending">Чакащи</label>
+                                                        <label class="form-check-label" for="status_pending">{{ 'barber.appointments.status.pending' | trans }}</label>
                                                     </div>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="statuses[]" value="confirmed" id="status_confirmed" {{ 'confirmed' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_confirmed">Потвърдени</label>
+                                                        <label class="form-check-label" for="status_confirmed">{{ 'barber.appointments.status.confirmed' | trans }}</label>
                                                     </div>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="statuses[]" value="completed" id="status_completed" {{ 'completed' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_completed">Завършени</label>
+                                                        <label class="form-check-label" for="status_completed">{{ 'barber.appointments.status.completed' | trans }}</label>
                                                     </div>
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="statuses[]" value="cancelled" id="status_cancelled" {{ 'cancelled' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_cancelled">Отменени</label>
+                                                        <label class="form-check-label" for="status_cancelled">{{ 'barber.appointments.status.cancelled' | trans }}</label>
                                                     </div>
                                                 </div>
 
                                                 <!-- Search -->
                                                 <div class="col-md-3">
-                                                    <label for="search">Търси клиент:</label>
+                                                    <label for="search">{{ 'barber.appointments.search.label' | trans }}:</label>
                                                     <input type="text"
                                                            class="form-control"
                                                            id="search"
                                                            name="search"
-                                                           placeholder="Име, имейл, телефон..."
+                                                           placeholder="{{ 'barber.appointments.search.placeholder' | trans }}"
                                                            value="{{ filters.search }}">
                                                 </div>
                                             </div>
@@ -229,10 +232,10 @@
                                             <div class="row mt-3">
                                                 <div class="col-md-12">
                                                     <button type="submit" class="btn btn-primary">
-                                                        <i class="fas fa-filter"></i> Филтрирай
+                                                        <i class="fas fa-filter"></i> {{ 'barber.appointments.actions.filter' | trans }}
                                                     </button>
                                                     <a href="{{ path('profile_edit', {id: user.id, tab: 'appointments'}) }}" class="btn btn-secondary ml-2">
-                                                        <i class="fas fa-undo"></i> Изчисти
+                                                        <i class="fas fa-undo"></i> {{ 'barber.appointments.actions.clear' | trans }}
                                                     </a>
                                                 </div>
                                             </div>
@@ -244,7 +247,10 @@
                                 {% if appointmentsPagination %}
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <p class="text-muted mb-0">
-                                            Показани {{ barberAppointments|length }} от {{ appointmentsPagination.total }} записа
+                                            {{ 'barber.appointments.results' | trans({
+                                                '%shown%': barberAppointments|length,
+                                                '%total%': appointmentsPagination.total
+                                            }) }}
                                         </p>
                                         <form method="GET" action="{{ path('profile_edit', {id: user.id}) }}" class="form-inline">
                                             <input type="hidden" name="tab" value="appointments">
@@ -256,7 +262,7 @@
                                             <input type="hidden" name="search" value="{{ filters.search }}">
                                             <input type="hidden" name="page" value="{{ appointmentsPagination.page }}">
 
-                                            <label class="mr-2 mb-0">Показвай:</label>
+                                            <label class="mr-2 mb-0">{{ 'barber.appointments.per_page' | trans }}:</label>
                                             <select name="limit" class="form-control form-control-sm" onchange="this.form.submit()">
                                                 <option value="10" {{ filters.limit == 10 ? 'selected' : '' }}>10</option>
                                                 <option value="20" {{ filters.limit == 20 ? 'selected' : '' }}>20</option>
@@ -321,8 +327,8 @@
                     <div class="tab-pane fade" id="procedures" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-10">
-                                <h3 class="mb-4"><i class="fas fa-cut"></i> Услуги, които извършвам</h3>
-                                <p class="text-muted">Изберете услугите, които можете да извършвате. Клиентите ще виждат само вас, когато изберат тази услуга.</p>
+                                <h3 class="mb-4"><i class="fas fa-cut"></i> {{ 'barber.procedures.title' | trans }}</h3>
+                                <p class="text-muted">{{ 'barber.procedures.description' | trans }}</p>
 
                                 <div class="card shadow-sm border-0 mt-4">
                                     <div class="card-body p-4">
@@ -344,9 +350,11 @@
                                                                 <br>
                                                                 <small class="text-muted">
                                                                     {% if user.isBarberJunior %}
-                                                                        Цена: {{ procedure.priceJunior }} лв | Време: {{ procedure.durationJunior }} мин
+                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceJunior }} {{ 'barber.procedures.currency' | trans }} |
+                                                                        {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationJunior }} {{ 'barber.procedures.minutes' | trans }}
                                                                     {% else %}
-                                                                        Цена: {{ procedure.priceMaster }} лв | Време: {{ procedure.durationMaster }} мин
+                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceMaster }} {{ 'barber.procedures.currency' | trans }} |
+                                                                        {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationMaster }} {{ 'barber.procedures.minutes' | trans }}
                                                                     {% endif %}
                                                                 </small>
                                                             </label>
@@ -357,7 +365,7 @@
 
                                             <div class="text-center mt-4">
                                                 <button type="submit" class="btn btn-primary btn-lg">
-                                                    <i class="fas fa-save"></i> Запази промените
+                                                    <i class="fas fa-save"></i> {{ 'barber.procedures.actions.save' | trans }}
                                                 </button>
                                             </div>
                                         </form>
@@ -372,22 +380,22 @@
                     <div class="tab-pane fade" id="history" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-10">
-                                <h3 class="mb-4"><i class="fas fa-history"></i> История на посещения</h3>
+                                <h3 class="mb-4"><i class="fas fa-history"></i> {{ 'barber.history.title' | trans }}</h3>
 
                                 <!-- Appointments History Section -->
                                 <div class="card shadow-sm border-0">
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
                                             <table class="table table-hover mb-0">
-                                                <thead style="background-color: #f8f9fa;">
+                                                <thead>
                                                     <tr>
-                                                        <th>Дата</th>
-                                                        <th>Час</th>
-                                                        <th>Бръснар</th>
-                                                        <th>Услуга</th>
-                                                        <th>Статус</th>
-                                                        <th class="text-right">Цена</th>
-                                                        <th class="text-center">Действия</th>
+                                                        <th>{{ 'barber.history.table.date' | trans }}</th>
+                                                        <th>{{ 'barber.history.table.time' | trans }}</th>
+                                                        <th>{{ 'barber.history.table.barber' | trans }}</th>
+                                                        <th>{{ 'barber.history.table.service' | trans }}</th>
+                                                        <th>{{ 'barber.history.table.status' | trans }}</th>
+                                                        <th class="text-right">{{ 'barber.history.table.price' | trans }}</th>
+                                                        <th class="text-center">{{ 'barber.history.table.actions' | trans }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -396,7 +404,7 @@
                                                         <tr>
                                                             <td colspan="7" class="text-center py-4 text-muted">
                                                                 <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                                                                <p class="mb-0">Няма история на посещения.</p>
+                                                                <p class="mb-0">{{ 'barber.history.empty' | trans }}</p>
                                                             </td>
                                                         </tr>
                                                     {% else %}
@@ -415,25 +423,25 @@
                                                                 <td>{{ appointment.procedureType.type }}</td>
                                                                 <td>
                                                                     {% if appointment.statusValue == 'confirmed' %}
-                                                                        <span class="badge badge-primary">Потвърден</span>
+                                                                        <span class="badge badge-primary">{{ 'barber.history.status.confirmed' | trans }}</span>
                                                                     {% elseif appointment.statusValue == 'completed' %}
-                                                                        <span class="badge badge-success">Изпълнен</span>
+                                                                        <span class="badge badge-success">{{ 'barber.history.status.completed' | trans }}</span>
                                                                     {% elseif appointment.statusValue == 'cancelled' %}
-                                                                        <span class="badge badge-danger">Отменен</span>
+                                                                        <span class="badge badge-danger">{{ 'barber.history.status.cancelled' | trans }}</span>
                                                                     {% elseif appointment.statusValue == 'no_show' %}
-                                                                        <span class="badge badge-warning">Недошъл</span>
+                                                                        <span class="badge badge-warning">{{ 'barber.history.status.no_show' | trans }}</span>
                                                                     {% else %}
                                                                         <span class="badge badge-secondary">{{ appointment.statusValue }}</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td class="text-right">
                                                                     {% if appointment.barber.isBarberJunior %}
-                                                                        {{ appointment.procedureType.priceJunior }} лв
+                                                                        {{ appointment.procedureType.priceJunior }} {{ 'barber.history.currency' | trans }}
                                                                     {% else %}
-                                                                        {{ appointment.procedureType.priceMaster }} лв
+                                                                        {{ appointment.procedureType.priceMaster }} {{ 'barber.history.currency' | trans }}
                                                                     {% endif %}
                                                                 </td>
-                                                                <td class="text-center" style="white-space: nowrap;">
+                                                                <td class="text-center">
                                                                     <span class="text-muted">—</span>
                                                                 </td>
                                                             </tr>
@@ -458,7 +466,7 @@
                     <!-- User Info Card -->
                     <div class="card user-profile-card shadow-sm border-0">
                         <div class="card-header bg-white border-bottom py-3">
-                            <h4 class="mb-0 text-center" style="color: #d4a574;">
+                            <h4 class="mb-0 text-center">
                                 <i class="fas fa-user-edit"></i>
                                 {% if user.nickName %}
                                     {{ user.nickName }}
@@ -625,16 +633,16 @@
                     <div class="modal-body">
                         <div id="modalLoading" class="text-center py-5">
                             <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p class="mt-3">Зареждане...</p>
+                            <p class="mt-3">{{ 'barber.schedule.loading' | trans }}</p>
                         </div>
 
-                        <div id="modalContent" style="display: none;">
+                        <div id="modalContent">
                             <!-- Working checkbox -->
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="workingCheckbox" checked>
                                     <label class="custom-control-label" for="workingCheckbox">
-                                        <strong>Работя този ден</strong>
+                                        <strong>{{ 'barber.schedule.working_day' | trans }}</strong>
                                     </label>
                                 </div>
                             </div>
@@ -642,18 +650,18 @@
                             <div id="workingHoursSection">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label>Начало:</label>
+                                        <label>{{ 'barber.schedule.start' | trans }}:</label>
                                         <input type="time" class="form-control" id="startTime" value="09:00">
                                     </div>
                                     <div class="col-md-6">
-                                        <label>Край:</label>
+                                        <label>{{ 'barber.schedule.end' | trans }}:</label>
                                         <input type="time" class="form-control" id="endTime" value="18:00">
                                     </div>
                                 </div>
 
                                 <!-- Time slots -->
                                 <div class="mb-3">
-                                    <label><strong>Часове:</strong></label>
+                                    <label><strong>{{ 'barber.schedule.slots' | trans }}:</strong></label>
                                     <div id="timeSlotsContainer" class="time-slots-grid">
                                         <!-- Will be populated by JS -->
                                     </div>
@@ -661,17 +669,17 @@
 
                                 <!-- Reason -->
                                 <div class="form-group">
-                                    <label>Причина (по желание):</label>
+                                    <label>{{ 'barber.schedule.reason' | trans }}:</label>
                                     <input type="text" class="form-control" id="scheduleReason"
-                                           placeholder="напр. Лична причина, Отпуск, и т.н.">
+                                           placeholder="{{ 'barber.schedule.reason_placeholder' | trans }}">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отказ</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'barber.schedule.actions.cancel' | trans }}</button>
                         <button type="button" class="btn btn-primary" onclick="saveSchedule()">
-                            <i class="fas fa-save"></i> Запази
+                            <i class="fas fa-save"></i> {{ 'barber.schedule.actions.save' | trans }}
                         </button>
                     </div>
                 </div>
@@ -696,18 +704,6 @@
     {% if user.isBarber %}
         <script src="{{ asset('js/barber_appointments.js') }}"></script>
         <script src="{{ asset('js/barber_calendar.js') }}"></script>
-
-        <script>
-            // Activate correct tab from URL parameter
-            $(document).ready(function() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const tab = urlParams.get('tab');
-
-                if (tab) {
-                    // Use Bootstrap's tab API to properly activate the tab
-                    $('#' + tab + '-tab').tab('show');
-                }
-            });
-        </script>
+        <script src="{{ asset('js/barber_profile.js') }}"></script>
     {% endif %}
 {% endblock %}

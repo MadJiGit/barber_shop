@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Appointments;
+use App\Entity\BarberScheduleException;
 use App\Entity\User;
 use App\Enum\AppointmentStatus;
 use App\Service\DateTimeHelper;
@@ -184,6 +185,23 @@ class AppointmentsRepository extends ServiceEntityRepository
         // Group by barber ID and format times
         $occupiedSlots = [];
         foreach ($appointments as $appointment) {
+            // Skip expired pending confirmations (older than 15 minutes)
+            // These are guest reservations that were never confirmed via email
+            if ($appointment->getStatus() === AppointmentStatus::PENDING_CONFIRMATION) {
+                $now = DateTimeHelper::now();
+                $createdAt = $appointment->getDateAdded();
+
+                if ($createdAt) {
+                    $minutesElapsed = ($now->getTimestamp() - $createdAt->getTimestamp()) / 60;
+
+                    if ($minutesElapsed > 15) {
+                        // Ignore this expired pending appointment
+                        // It will remain in database for history/analytics
+                        continue;
+                    }
+                }
+            }
+
             $barberId = $appointment->getBarber()->getId();
             $startTime = $appointment->getDate();
 
@@ -207,36 +225,9 @@ class AppointmentsRepository extends ServiceEntityRepository
             }
         }
 
-        // Also get excluded slots from barber_schedule_exception
-        $em = $this->getEntityManager();
-        $exceptions = $em->getRepository(\App\Entity\BarberScheduleException::class)
-            ->findBy(['date' => new \DateTimeImmutable($date)]);
-
-        foreach ($exceptions as $exception) {
-            $barberId = $exception->getBarber()->getId();
-
-            // If barber is not available at all this day
-            if (!$exception->getIsAvailable()) {
-                // Mark entire day as occupied (all possible slots)
-                if (!isset($occupiedSlots[$barberId])) {
-                    $occupiedSlots[$barberId] = [];
-                }
-                // Add marker that entire day is unavailable
-                $occupiedSlots[$barberId][] = '__FULL_DAY_OFF__';
-                continue;
-            }
-
-            // If barber has excluded specific slots
-            if ($exception->getExcludedSlots()) {
-                if (!isset($occupiedSlots[$barberId])) {
-                    $occupiedSlots[$barberId] = [];
-                }
-
-                foreach ($exception->getExcludedSlots() as $excludedSlot) {
-                    $occupiedSlots[$barberId][] = $excludedSlot;
-                }
-            }
-        }
+        // Note: We do NOT include excluded slots or day-off markers here.
+        // This method should ONLY return slots occupied by actual client appointments.
+        // Excluded slots and schedule exceptions are handled separately in BarberScheduleService.
 
         return $occupiedSlots;
     }

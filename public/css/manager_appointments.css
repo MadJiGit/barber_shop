@@ -18,6 +18,11 @@
     margin-top: 20px;
 }
 
+/* Per-page selector */
+.form-control-sm.d-inline-block {
+    width: auto;
+}
+
 #appointmentsTable tbody tr {
     transition: background-color 0.2s ease;
 }

@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class BusinessHours
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -50,6 +50,7 @@ class BusinessHours
     public function getDayName(): string
     {
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
         return $days[$this->day_of_week];
     }
 
@@ -92,6 +93,7 @@ class BusinessHours
     public function isOpenOn(\DateTimeInterface $date): bool
     {
         $dayOfWeek = (int) $date->format('w');
+
         return $dayOfWeek === $this->day_of_week && !$this->is_closed;
     }
 }

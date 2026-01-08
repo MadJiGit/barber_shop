@@ -1,8 +1,8 @@
-{% include '/admin/admin_menu.html.twig' %}
-{% block body %}
-    <h3>MANAGE APPOINTMENT</h3>
+{% extends 'base.html.twig' %}
 
-    {% if user.userIsSuperAdmin %}
+{% block body %}
+    <h3>{{ 'procedures_forms.title' | trans }}</h3>
+    {% if app.user and app.user.isUserIsSuperAdmin %}
         {{ form_start(form) }}
         {{ form_end(form) }}
     {% endif %}

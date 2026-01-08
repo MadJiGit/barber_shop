@@ -1,8 +1,8 @@
 {% block back_button %}
     <div>
         {% if user is defined %}
-            <button onClick="window.history.back();" type="button" class="button warning_btn">Go back</button>
-            <a href="{{ path('app_logout') }}"><button type="button" class="button warning_btn">Logout</button></a>
+            <button onClick="window.history.back();" type="button" class="button warning_btn">{{ 'common.actions.go_back' | trans }}</button>
+            <a href="{{ path('app_logout') }}"><button type="button" class="button warning_btn">{{ 'common.actions.logout' | trans }}</button></a>
 {#        {% else %}#}
 {#            <a href="{{ path('app_login') }}"><button type="button" class="button info_btn">Login</button></a>#}
 {#            <a href="{{ path('app_register') }}"><button type="button" class="button info_btn">Register</button></a>#}

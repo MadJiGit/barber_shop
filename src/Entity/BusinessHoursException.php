@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BusinessHoursExceptionRepository;
+use App\Service\DateTimeHelper;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,7 +35,7 @@ class BusinessHoursException
     #[ORM\JoinColumn(name: 'barber_id', referencedColumnName: 'id', nullable: true)]
     private ?User $barber = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

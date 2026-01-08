@@ -57,13 +57,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         match: true, )]
     private ?string $phone = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeInterface $date_added = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_banned = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_last_update = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
@@ -75,12 +75,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $confirmation_token = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $token_expires_at = null;
 
-    /**
-     * @throws \Exception
-     */
     public function __construct()
     {
         $this->setDateAdded();
@@ -269,9 +266,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->date_added;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function setDateAdded(?\DateTimeInterface $date = null): static
     {
         $this->date_added = DateTimeHelper::now();
@@ -296,9 +290,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->date_last_update;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
         if ($date_last_update) {
@@ -327,9 +318,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->is_banned;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function setIsBanned(bool $is_banned): static
     {
         $this->is_banned = $is_banned;
@@ -364,9 +352,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function isTokenExpired(): bool
     {
         if (!$this->token_expires_at) {
@@ -394,9 +379,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return '';
     }
 
-    /**
-     * @throws \Exception
-     */
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {

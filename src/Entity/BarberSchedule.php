@@ -4,11 +4,8 @@ namespace App\Entity;
 
 use App\Repository\BarberScheduleRepository;
 use App\Service\DateTimeHelper;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
-use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: BarberScheduleRepository::class)]
 #[ORM\Table(name: 'barber_schedule')]
@@ -16,7 +13,7 @@ use InvalidArgumentException;
 class BarberSchedule
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -31,21 +28,17 @@ class BarberSchedule
      *   "1": {"start": "09:00", "end": "18:00", "working": true},  // Monday
      *   "2": {"start": "09:00", "end": "18:00", "working": true},  // Tuesday
      *   ...
-     *   "6": {"start": "09:00", "end": "13:00", "working": true}   // Saturday - until noon
-     * }
+     *   "6": {"start": "09:00", "end": "13:00", "working": true}   // Saturday - until noon.
      */
     #[ORM\Column(type: Types::JSON)]
     private array $schedule_data = [];
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeInterface $created_at = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeInterface $updated_at = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updated_at = null;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->created_at = DateTimeHelper::now();
@@ -93,9 +86,6 @@ class BarberSchedule
         return $this->schedule_data;
     }
 
-    /**
-     * @throws Exception
-     */
     public function setScheduleData(array $schedule_data): static
     {
         $this->schedule_data = $schedule_data;
@@ -105,19 +95,19 @@ class BarberSchedule
     }
 
     /**
-     * Get schedule for specific day of week (0-6)
+     * Get schedule for specific day of week (0-6).
      */
     public function getScheduleForDay(int $dayOfWeek): ?array
     {
         if ($dayOfWeek < 0 || $dayOfWeek > 6) {
-            throw new InvalidArgumentException('Day of week must be between 0 and 6');
+            throw new \InvalidArgumentException('Day of week must be between 0 and 6');
         }
 
-        return $this->schedule_data[(string)$dayOfWeek] ?? null;
+        return $this->schedule_data[(string) $dayOfWeek] ?? null;
     }
 
     /**
-     * Check if barber is working on specific day of week
+     * Check if barber is working on specific day of week.
      */
     public function isWorkingOnDay(int $dayOfWeek): bool
     {
@@ -128,7 +118,7 @@ class BarberSchedule
 
     /**
      * Get working hours for specific day of week
-     * Returns ['start' => '09:00', 'end' => '18:00'] or null if not working
+     * Returns ['start' => '09:00', 'end' => '18:00'] or null if not working.
      */
     public function getWorkingHoursForDay(int $dayOfWeek): ?array
     {
@@ -144,35 +134,29 @@ class BarberSchedule
         ];
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?DateTimeInterface $updated_at): static
+    public function setUpdatedAt(?\DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
 
         return $this;
     }
 
-    /**
-     * @throws Exception
-     */
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {
         $this->updated_at = DateTimeHelper::now();
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return sprintf('График за %s',

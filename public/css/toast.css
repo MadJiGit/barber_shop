@@ -1,196 +1,67 @@
 /**
- * Simple Toast Notifications CSS
- * Pure CSS implementation with animations
+ * Custom Toast Styles for SweetAlert2
+ * Barber Shop Theme
  */
 
-/* Toast container */
-.toast-container-custom {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 99999;
-    pointer-events: none;
-    max-width: 400px;
+/* Custom toast styling */
+.barber-toast {
+    border: 2px solid #d4a373 !important;
+    border-radius: 8px !important;
+    font-family: 'Poppins', sans-serif !important;
+    box-shadow: 0 4px 20px rgba(212, 163, 115, 0.3) !important;
 }
 
-/* Individual toast item */
-.toast-item {
-    pointer-events: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-bottom: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    opacity: 0;
-    transform: translateX(400px);
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    border-left: 4px solid;
+.barber-toast-title {
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    color: #d4a373 !important;
 }
 
-/* Show animation */
-.toast-item.toast-show {
-    opacity: 1;
-    transform: translateX(0);
+.barber-toast-text {
+    font-size: 14px !important;
+    color: #ffffff !important;
 }
 
-/* Hide animation */
-.toast-item.toast-hide {
-    opacity: 0;
-    transform: translateX(400px);
+.barber-toast-progress {
+    background: #d4a373 !important;
 }
 
-/* Toast icon */
-.toast-icon {
-    font-size: 24px;
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: white;
+/* Success toast accent */
+.swal2-success.swal2-icon-show {
+    border-color: #28a745 !important;
 }
 
-/* Toast content */
-.toast-content {
-    flex: 1;
-    min-width: 0;
+.swal2-success .swal2-success-ring {
+    border-color: rgba(40, 167, 69, 0.3) !important;
 }
 
-.toast-title {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 4px;
-    color: #333;
+/* Error toast accent */
+.swal2-error.swal2-icon-show {
+    border-color: #dc3545 !important;
 }
 
-.toast-message {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
-    word-wrap: break-word;
+/* Warning toast accent */
+.swal2-warning.swal2-icon-show {
+    border-color: #ffc107 !important;
 }
 
-/* Toast close button */
-.toast-close {
-    background: none;
-    border: none;
-    color: #999;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: color 0.2s;
-}
-
-.toast-close:hover {
-    color: #333;
-}
-
-/* Success variant */
-.toast-success {
-    border-left-color: #28a745;
-}
-
-.toast-success .toast-icon {
-    background-color: #28a745;
-}
-
-.toast-success .toast-title {
-    color: #28a745;
-}
-
-/* Error variant */
-.toast-error {
-    border-left-color: #dc3545;
-}
-
-.toast-error .toast-icon {
-    background-color: #dc3545;
-}
-
-.toast-error .toast-title {
-    color: #dc3545;
-}
-
-/* Warning variant */
-.toast-warning {
-    border-left-color: #ffc107;
-}
-
-.toast-warning .toast-icon {
-    background-color: #ffc107;
-    color: #000;
-}
-
-.toast-warning .toast-title {
-    color: #856404;
-}
-
-/* Info variant */
-.toast-info {
-    border-left-color: #17a2b8;
-}
-
-.toast-info .toast-icon {
-    background-color: #17a2b8;
-}
-
-.toast-info .toast-title {
-    color: #17a2b8;
+/* Info toast accent */
+.swal2-info.swal2-icon-show {
+    border-color: #17a2b8 !important;
 }
 
 /* Responsive adjustments */
-@media (max-width: 576px) {
-    .toast-container-custom {
-        right: 10px;
-        left: 10px;
-        top: 10px;
-        max-width: none;
+@media (max-width: 480px) {
+    .barber-toast {
+        max-width: 90% !important;
+        margin: 0 auto !important;
     }
 
-    .toast-item {
-        transform: translateY(-100px);
+    .barber-toast-title {
+        font-size: 14px !important;
     }
 
-    .toast-item.toast-show {
-        transform: translateY(0);
-    }
-
-    .toast-item.toast-hide {
-        transform: translateY(-100px);
-    }
-}
-
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-    .toast-item {
-        background: #2d2d2d;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    .toast-title {
-        color: #fff;
-    }
-
-    .toast-message {
-        color: #ccc;
-    }
-
-    .toast-close {
-        color: #999;
-    }
-
-    .toast-close:hover {
-        color: #fff;
+    .barber-toast-text {
+        font-size: 13px !important;
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Запазете час - Barber Shop{% endblock %}
+{% block title %}{{ 'appointment.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Запазете час</h2>
+                            <h2>{{ 'appointment.hero_title' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     <div class="col-xl-11 col-lg-12">
                         <!-- Section Title -->
                         <div class="section-tittle text-center mb-50">
-                            <h2>Изберете часовия диапазон, в който желаете да запазите своя час.</h2>
+                            <h2>{{ 'appointment.section.choose_range' | trans }}</h2>
                         </div>
 
                         <!-- Appointment Form -->
@@ -49,29 +49,29 @@
                                     <div class="col-12">
                                         <div class="guest-info-section">
                                             <h4 class="form-section-title text-center mb-30">
-                                                <i class="fas fa-user"></i> Вашите данни за контакт
+                                                <i class="fas fa-user"></i> {{ 'appointment.guest.title' | trans }}
                                             </h4>
                                             <div class="row">
                                                 <div class="col-md-6 mb-20">
-                                                    <label for="guest_first_name" class="form-label">Име *</label>
+                                                    <label for="guest_first_name" class="form-label">{{ 'appointment.guest.first_name' | trans }} *</label>
                                                     <input type="text"
                                                            class="form-control"
                                                            id="guest_first_name"
                                                            name="guest_first_name"
                                                            required
-                                                           placeholder="Въведете вашето име">
+                                                           placeholder="{{ 'appointment.guest.first_name_placeholder' | trans }}">
                                                 </div>
                                                 <div class="col-md-6 mb-20">
-                                                    <label for="guest_last_name" class="form-label">Фамилия *</label>
+                                                    <label for="guest_last_name" class="form-label">{{ 'appointment.guest.last_name' | trans }} *</label>
                                                     <input type="text"
                                                            class="form-control"
                                                            id="guest_last_name"
                                                            name="guest_last_name"
                                                            required
-                                                           placeholder="Въведете вашата фамилия">
+                                                           placeholder="{{ 'appointment.guest.last_name_placeholder' | trans }}">
                                                 </div>
                                                 <div class="col-md-6 mb-20">
-                                                    <label for="guest_email" class="form-label">Имейл *</label>
+                                                    <label for="guest_email" class="form-label">{{ 'appointment.guest.email' | trans }} *</label>
                                                     <input type="email"
                                                            class="form-control"
                                                            id="guest_email"
@@ -80,13 +80,13 @@
                                                            placeholder="your@email.com">
                                                 </div>
                                                 <div class="col-md-6 mb-20">
-                                                    <label for="guest_phone" class="form-label">Телефон *</label>
+                                                    <label for="guest_phone" class="form-label">{{ 'appointment.guest.phone' | trans }} *</label>
                                                     <input type="tel"
                                                            class="form-control"
                                                            id="guest_phone"
                                                            name="guest_phone"
                                                            required
-                                                           placeholder="+359 888 123 456">
+                                                           placeholder="{{ 'appointment.guest.phone_placeholder' | trans }}">
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-check">
@@ -96,7 +96,7 @@
                                                                name="gdpr_consent"
                                                                required>
                                                         <label class="form-check-label" for="gdpr_consent">
-                                                            Съгласен съм с обработката на личните ми данни съгласно <a href="#" target="_blank">Privacy Policy</a> *
+                                                            {{ 'appointment.guest.gdpr' | trans|raw }} *
                                                         </label>
                                                     </div>
                                                 </div>
@@ -111,11 +111,11 @@
                                 <div class="col-lg-12 mb-40">
                                     <div class="form-section text-center">
                                         <h4 class="form-section-title justify-content-center">
-                                            <i class="fas fa-cut"></i> Изберете услуга
+                                            <i class="fas fa-cut"></i> {{ 'appointment.procedure.title' | trans }}
                                         </h4>
                                         <div class="procedure-select-wrapper">
                                             <select name="procedure_select" id="procedure_select" class="custom-select-new" onchange="handleProcedureChange()">
-                                                <option value="">Изберете услуга...</option>
+                                                <option value="">{{ 'appointment.procedure.placeholder' | trans }}</option>
                                                 {% for procedure in procedures %}
                                                     <option value="{{ procedure.id }}"
                                                             data-duration-master="{{ procedure.durationMaster }}"
@@ -134,7 +134,7 @@
                                 <!-- Date Selection -->
                                 <div class="col-lg-12 mb-40">
                                     <div class="form-section text-center">
-                                        <h4 class="form-section-title mb-20">Дата:</h4>
+                                        <h4 class="form-section-title mb-20">{{ 'appointment.date.title' | trans }}:</h4>
                                         <div class="date-control-wrapper-new">
                                             <button class="date-arrow-btn-new" type="button" onclick="changeDate(-1)">
                                                 <i class="fas fa-chevron-left"></i>
@@ -150,7 +150,15 @@
                                             </button>
                                         </div>
                                         <div class="day-of-week-display" id="day_of_week">
-                                            {% set dayNames = {0: 'Неделя', 1: 'Понеделник', 2: 'Вторник', 3: 'Сряда', 4: 'Четвъртък', 5: 'Петък', 6: 'Събота'} %}
+                                            {% set dayNames = {
+                                                0: ('appointment.days.sun'|trans),
+                                                1: ('appointment.days.mon'|trans),
+                                                2: ('appointment.days.tue'|trans),
+                                                3: ('appointment.days.wed'|trans),
+                                                4: ('appointment.days.thu'|trans),
+                                                5: ('appointment.days.fri'|trans),
+                                                6: ('appointment.days.sat'|trans)
+                                            } %}
                                             {{ dayNames[today|date('w')] }}
                                         </div>
                                     </div>
@@ -162,7 +170,7 @@
                                     <div id="barbers-container">
                                         <div class="text-center text-muted p-4">
                                             <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                                            <p>Зареждане на свободни часове...</p>
+                                            <p>{{ 'appointment.loading_slots' | trans }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -175,10 +183,10 @@
                                             disabled
                                             name="submit_appointment"
                                             value="1">
-                                        <i class="fas fa-check"></i> Запази час
+                                        <i class="fas fa-check"></i> {{ 'appointment.actions.submit' | trans }}
                                     </button>
                                     <div class="selection-summary mt-3" id="selection_summary">
-                                        <small class="text-muted">Изберете услуга и час за да продължите</small>
+                                        <small class="text-muted">{{ 'appointment.hint.select_service_time' | trans }}</small>
                                     </div>
                                 </div>
                             </div>
@@ -190,10 +198,10 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-8 text-center">
                         <div class="alert alert-warning">
-                            <h4>Завършете профила си</h4>
-                            <p>Моля, попълнете информацията за профила си преди да запазите час.</p>
-                            <a href="{{ path('profile_edit', {id: user.id}) }}" class="btn btn-primary mt-3">
-                                Завърши профил
+                            <h4>{{ 'appointment.profile_incomplete.title' | trans }}</h4>
+                            <p>{{ 'appointment.profile_incomplete.text' | trans }}</p>
+                            <a href="{{ path('profile_edit', {id: app.user.id}) }}" class="btn btn-primary mt-3">
+                                {{ 'appointment.profile_incomplete.button' | trans }}
                             </a>
                         </div>
                     </div>

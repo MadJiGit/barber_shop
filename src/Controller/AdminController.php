@@ -8,9 +8,7 @@ use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
 use App\Repository\ProcedureRepository;
 use App\Repository\UserRepository;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,8 +31,12 @@ class AdminController extends AbstractController
     public function adminUser(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneById($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException('Потребителят не е намерен.');
+        }
+
         if (!in_array('ROLE_SUPER_ADMIN', $user->getRoles())) {
-            // TODO exceptions need here
             return $this->redirectToRoute('user', ['username' => $user->getEmail()]);
         }
 
@@ -113,7 +115,7 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo 'failed : '.$e->getMessage();
         }
 
@@ -124,13 +126,13 @@ class AdminController extends AbstractController
             $user->setNickName($form->get('nick_name')->getData());
             $user->setPhone($form->get('phone')->getData());
             $user->setRoles($temp_roles);
-            $user->setDateLastUpdate(new DateTime('now'));
+            $user->setDateLastUpdate(new \DateTime('now'));
 
             $this->em->persist($user);
             $this->em->flush();
             $this->em->clear();
 
-            return $this->redirectToRoute('admin_menu',
+            return $this->redirectToRoute('legacy_admin_menu',
                 ['id' => parent::getUser()->getId()]
             );
         }
@@ -163,11 +165,12 @@ class AdminController extends AbstractController
     }
 
     /**
-     * List all procedures
+     * List all procedures.
      */
     #[Route('/procedures', name: 'legacy_admin_procedures')]
     public function listProcedures(Request $request): Response
     {
+        /** @var User $userAuth */
         $userAuth = parent::getUser();
         $user = $this->userRepository->findOneById($userAuth->getId());
 
@@ -192,11 +195,12 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Add new procedure
+     * Add new procedure.
      */
     #[Route('/procedure/add', name: 'legacy_admin_procedure_add')]
     public function addProcedure(Request $request): Response
     {
+        /** @var User $userAuth */
         $userAuth = parent::getUser();
         $user = $this->userRepository->findOneById($userAuth->getId());
 
@@ -209,8 +213,8 @@ class AdminController extends AbstractController
 
         try {
             $form->handleRequest($request);
-        } catch (Exception $e) {
-            $this->addFlash('error', 'Грешка: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Грешка: '.$e->getMessage());
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -222,7 +226,8 @@ class AdminController extends AbstractController
             $this->em->clear();
 
             $this->addFlash('success', 'Процедурата е добавена успешно.');
-            return $this->redirectToRoute('admin_procedures');
+
+            return $this->redirectToRoute('legacy_admin_procedures');
         }
 
         return $this->render('admin/procedure_form.html.twig', [
@@ -232,11 +237,12 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Edit procedure
+     * Edit procedure.
      */
     #[Route('/procedure/{id}/edit', name: 'legacy_admin_procedure_edit')]
     public function editProcedure(Request $request, int $id): Response
     {
+        /** @var User $userAuth */
         $userAuth = parent::getUser();
 
         if (!$userAuth->isUserIsSuperAdmin()) {
@@ -247,15 +253,16 @@ class AdminController extends AbstractController
 
         if (!$procedure) {
             $this->addFlash('error', 'Процедурата не е намерена.');
-            return $this->redirectToRoute('admin_procedures');
+
+            return $this->redirectToRoute('legacy_admin_procedures');
         }
 
         $form = $this->createForm(ProcedureFormType::class, $procedure);
 
         try {
             $form->handleRequest($request);
-        } catch (Exception $e) {
-            $this->addFlash('error', 'Грешка: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Грешка: '.$e->getMessage());
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -265,7 +272,8 @@ class AdminController extends AbstractController
             $this->em->clear();
 
             $this->addFlash('success', 'Процедурата е редактирана успешно.');
-            return $this->redirectToRoute('admin_procedures');
+
+            return $this->redirectToRoute('legacy_admin_procedures');
         }
 
         return $this->render('admin/procedure_form.html.twig', [
@@ -275,11 +283,12 @@ class AdminController extends AbstractController
     }
 
     /**
-     * Delete procedure
+     * Delete procedure.
      */
     #[Route('/procedure/{id}/delete', name: 'legacy_admin_procedure_delete')]
     public function deleteProcedure(Request $request, int $id): Response
     {
+        /** @var User $userAuth */
         $userAuth = parent::getUser();
 
         if (!$userAuth->isUserIsSuperAdmin()) {
@@ -297,6 +306,6 @@ class AdminController extends AbstractController
             $this->addFlash('error', 'Процедурата не е намерена.');
         }
 
-        return $this->redirectToRoute('admin_procedures');
+        return $this->redirectToRoute('legacy_admin_procedures');
     }
 }

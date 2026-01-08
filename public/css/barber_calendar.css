@@ -116,6 +116,22 @@
     opacity: 0.6;
 }
 
+/* Past days - read-only (slightly dimmed but keep original status color) */
+.past-day-readonly {
+    opacity: 0.7;
+    background: #f4e5ca !important;
+    position: relative;
+}
+
+.past-day-readonly::after {
+    content: '🔒';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
 /* Legend */
 .calendar-legend {
     display: flex;

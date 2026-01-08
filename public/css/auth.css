@@ -69,9 +69,21 @@
 }
 
 /* Checkboxes */
+
+.form-check-input {
+    position: absolute;
+    margin-top: .5rem;
+    margin-left: -1.25rem;
+}
+
 .form-check-input:checked {
     background-color: #d19f68;
     border-color: #d19f68;
+}
+
+.form-check-label {
+    margin-bottom: 0;
+    margin-left: 10px;
 }
 
 /* btn-primary now defined in buttons.css */

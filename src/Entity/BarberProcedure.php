@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use App\Repository\BarberProcedureRepository;
 use App\Service\DateTimeHelper;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 
 #[ORM\Entity(repositoryClass: BarberProcedureRepository::class)]
 #[ORM\Table(name: 'barber_procedure')]
@@ -15,7 +13,7 @@ use Exception;
 class BarberProcedure
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -30,15 +28,12 @@ class BarberProcedure
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $can_perform = true;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?DateTimeImmutable $valid_from = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?\DateTimeImmutable $valid_from = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeImmutable $valid_until = null;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $valid_until = null;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->valid_from = DateTimeHelper::now();
@@ -85,24 +80,24 @@ class BarberProcedure
         return $this;
     }
 
-    public function getValidFrom(): ?DateTimeImmutable
+    public function getValidFrom(): ?\DateTimeImmutable
     {
         return $this->valid_from;
     }
 
-    public function setValidFrom(DateTimeImmutable $valid_from): static
+    public function setValidFrom(\DateTimeImmutable $valid_from): static
     {
         $this->valid_from = $valid_from;
 
         return $this;
     }
 
-    public function getValidUntil(): ?DateTimeImmutable
+    public function getValidUntil(): ?\DateTimeImmutable
     {
         return $this->valid_until;
     }
 
-    public function setValidUntil(?DateTimeImmutable $valid_until): static
+    public function setValidUntil(?\DateTimeImmutable $valid_until): static
     {
         $this->valid_until = $valid_until;
 
@@ -110,8 +105,7 @@ class BarberProcedure
     }
 
     /**
-     * Check if this barber-procedure mapping is currently valid
-     * @throws Exception
+     * Check if this barber-procedure mapping is currently valid.
      */
     public function isCurrentlyValid(): bool
     {
@@ -125,16 +119,13 @@ class BarberProcedure
             return false;
         }
 
-        if ($this->valid_until !== null && $this->valid_until < $now) {
+        if (null !== $this->valid_until && $this->valid_until < $now) {
             return false;
         }
 
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return sprintf('%s - %s',

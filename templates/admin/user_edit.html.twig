@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Редактиране на профил - Barber Shop{% endblock %}
+{% block title %}{{ 'user_edit.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>{% if is_granted('ROLE_ADMIN') %}Редактиране на потребител{% else %}Моят профил{% endif %}</h2>
+                            <h2>{% if is_granted('ROLE_ADMIN') %}{{ 'user_edit.hero_admin' | trans }}{% else %}{{ 'user_edit.hero_user' | trans }}{% endif %}</h2>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     <!-- User Info Card -->
                     <div class="card shadow-sm border-0 mb-4">
                         <div class="card-header bg-white border-bottom py-3">
-                            <h4 class="mb-0 text-center" style="color: #d4a574;">
+                            <h4 class="mb-0 text-center">
                                 <i class="fas fa-user-edit"></i>
                                 {% if user.nickName %}
                                     {{ user.nickName }}
@@ -43,45 +43,45 @@
                                 <!-- Email -->
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label font-weight-bold">
-                                        <i class="fas fa-envelope text-muted"></i> Email
+                                        <i class="fas fa-envelope text-muted"></i> {{ 'user_edit.form.email' | trans }}
                                     </label>
-                                    {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'example@email.com'}}) }}
+                                    {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'user_edit.form.email_placeholder' | trans}}) }}
                                     {{ form_errors(form.email) }}
                                 </div>
 
                                 <!-- First Name -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label font-weight-bold">
-                                        <i class="fas fa-user text-muted"></i> Име
+                                        <i class="fas fa-user text-muted"></i> {{ 'user_edit.form.first_name' | trans }}
                                     </label>
-                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Име'}}) }}
+                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'user_edit.form.first_name_placeholder' | trans}}) }}
                                     {{ form_errors(form.first_name) }}
                                 </div>
 
                                 <!-- Last Name -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label font-weight-bold">
-                                        <i class="fas fa-user text-muted"></i> Фамилия
+                                        <i class="fas fa-user text-muted"></i> {{ 'user_edit.form.last_name' | trans }}
                                     </label>
-                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Фамилия'}}) }}
+                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'user_edit.form.last_name_placeholder' | trans}}) }}
                                     {{ form_errors(form.last_name) }}
                                 </div>
 
                                 <!-- Nickname -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label font-weight-bold">
-                                        <i class="fas fa-signature text-muted"></i> Прякор
+                                        <i class="fas fa-signature text-muted"></i> {{ 'user_edit.form.nickname' | trans }}
                                     </label>
-                                    {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Прякор'}}) }}
+                                    {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'user_edit.form.nickname_placeholder' | trans}}) }}
                                     {{ form_errors(form.nick_name) }}
                                 </div>
 
                                 <!-- Phone -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label font-weight-bold">
-                                        <i class="fas fa-phone text-muted"></i> Телефон
+                                        <i class="fas fa-phone text-muted"></i> {{ 'user_edit.form.phone' | trans }}
                                     </label>
-                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg', 'placeholder': '+359 888 123 456'}}) }}
+                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'user_edit.form.phone_placeholder' | trans}}) }}
                                     {{ form_errors(form.phone) }}
                                 </div>
 
@@ -89,15 +89,15 @@
                                     <!-- Admin Only Fields -->
                                     <div class="col-12 mt-4 mb-3">
                                         <hr>
-                                        <h5 class="text-center" style="color: #d4a574;">
-                                            <i class="fas fa-shield-alt"></i> Администраторски настройки
+                                        <h5 class="text-center admin-section-title">
+                                            <i class="fas fa-shield-alt"></i> {{ 'user_edit.admin_section.title' | trans }}
                                         </h5>
                                     </div>
 
                                     <!-- Roles -->
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label font-weight-bold">
-                                            <i class="fas fa-user-tag text-muted"></i> Роли
+                                            <i class="fas fa-user-tag text-muted"></i> {{ 'user_edit.admin_section.roles' | trans }}
                                         </label>
                                         {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
                                         {{ form_errors(form.roles) }}
@@ -106,7 +106,7 @@
                                     <!-- Date Added (readonly) -->
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label font-weight-bold text-muted">
-                                            <i class="fas fa-calendar-plus"></i> Дата на регистрация
+                                            <i class="fas fa-calendar-plus"></i> {{ 'user_edit.admin_section.date_added' | trans }}
                                         </label>
                                         {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
                                     </div>
@@ -114,7 +114,7 @@
                                     <!-- Date Banned -->
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label font-weight-bold text-muted">
-                                            <i class="fas fa-ban"></i> Дата на ban
+                                            <i class="fas fa-ban"></i> {{ 'user_edit.admin_section.date_banned' | trans }}
                                         </label>
                                         {{ form_widget(form.date_banned, {'attr': {'class': 'form-control', 'readonly': true}}) }}
                                     </div>
@@ -122,7 +122,7 @@
                                     <!-- Date Last Update (readonly) -->
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label font-weight-bold text-muted">
-                                            <i class="fas fa-sync-alt"></i> Последна промяна
+                                            <i class="fas fa-sync-alt"></i> {{ 'user_edit.admin_section.date_updated' | trans }}
                                         </label>
                                         {{ form_widget(form.date_last_update, {'attr': {'class': 'form-control', 'readonly': true}}) }}
                                     </div>
@@ -131,7 +131,7 @@
 
                             <!-- Submit Button -->
                             <div class="text-center mt-4">
-                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'Запази промените'}) }}
+                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'user_edit.actions.save'|trans}) }}
                             </div>
 
                             {{ form_end(form, {'render_rest': false}) }}
@@ -141,7 +141,7 @@
                     <!-- Back Button -->
                     <div class="text-center">
                         <a href="{{ path('main') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Обратно към начало
+                            <i class="fas fa-arrow-left"></i> {{ 'user_edit.actions.go_back_home' | trans }}
                         </a>
                     </div>
                 </div>
@@ -154,5 +154,5 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/admin_profile_edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin_user_edit.css') }}">
 {% endblock %}

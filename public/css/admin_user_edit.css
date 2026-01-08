@@ -36,3 +36,13 @@ hr {
     border-top: 2px solid #d19f68;
     opacity: 0.3;
 }
+
+/* Card header title */
+.card-header h4 {
+    color: #d4a574;
+}
+
+/* Admin section title */
+.admin-section-title {
+    color: #d4a574;
+}

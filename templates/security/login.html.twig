@@ -33,16 +33,19 @@
                             </div>
 
                             {% if error %}
-                                <div class="alert alert-danger" role="alert">
-                                    <i class="fas fa-exclamation-circle"></i> {{ error.messageKey|trans(error.messageData, 'security') }}
-                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        showToast('{{ error.messageKey|trans(error.messageData, 'security')|escape('js') }}', 'error', 5000);
+                                    });
+                                </script>
                             {% endif %}
 
                             {% if app.user %}
-                                <div class="alert alert-info" role="alert">
-                                    <i class="fas fa-info-circle"></i> {{ 'login.already_logged_in' | trans }} {{ app.user.userIdentifier }}.
-                                    <a href="{{ path('main') }}">{{ 'login.to_homepage' | trans }}</a>
-                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        showToast('{{ 'login.already_logged_in' | trans }} {{ app.user.userIdentifier }}.', 'info', 5000);
+                                    });
+                                </script>
                             {% endif %}
 
                             <form method="post">

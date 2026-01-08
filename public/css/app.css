@@ -96,3 +96,48 @@
 /* ================================================
    Add more custom styles below
    ================================================ */
+
+/* Login Page - Remember Me Checkbox */
+.form-check-label {
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.madji-img-footer {
+    height: 30px;
+    width: auto;
+    vertical-align: middle;
+    transition: opacity 0.2s;
+}
+
+.madji-img-footer:hover {
+    opacity: 0.8;
+}
+
+/* Footer - Center alignment for logo and social icons */
+.footer-logo {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+.footer-social {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+/* Homepage - Service icons */
+.service-icon {
+    margin-bottom: 25px;
+}
+
+.service-icon img {
+    width: 70px;
+    height: 70px;
+}
+
+/* Homepage - Small text */
+.text-small {
+    font-size: 12px;
+}

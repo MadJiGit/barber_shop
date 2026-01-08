@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Достъпът е отказан - 403{% endblock %}
+{% block title %}{{ 'error403.title' | trans }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/error_pages.css') }}">
+{% endblock %}
 
 {% block body %}
 <!--? Breadcrumb Area Start -->
@@ -10,7 +15,7 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="hero-cap hero-cap2 text-center">
-                        <h2>Достъпът е отказан</h2>
+                        <h2>{{ 'error403.heading' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -25,27 +30,27 @@
             <div class="col-xl-8 col-lg-10">
                 <div class="text-center">
                     <div class="error-icon mb-4">
-                        <i class="fas fa-lock" style="font-size: 120px; color: #d4a373;"></i>
+                        <i class="fas fa-lock"></i>
                     </div>
-                    <h1 class="display-1 mb-4" style="color: #d4a373; font-weight: bold;">403</h1>
-                    <h2 class="mb-4">Достъпът е отказан</h2>
+                    <h1 class="display-1 mb-4">403</h1>
+                    <h2 class="mb-4">{{ 'error403.heading' | trans }}</h2>
                     <p class="lead mb-4">
-                        Нямате необходимите права за достъп до тази страница.
+                        {{ 'error403.description' | trans }}
                     </p>
                     <p class="text-muted mb-5">
-                        Ако смятате, че това е грешка, моля свържете се с администратор.
+                        {{ 'error403.advice' | trans }}
                     </p>
                     <div class="mt-5">
                         <a href="{{ path('main') }}" class="btn btn-primary btn-lg mr-3">
-                            <i class="fas fa-home"></i> Към началната страница
+                            <i class="fas fa-home"></i> {{ 'error403.button_home' | trans }}
                         </a>
                         {% if app.user %}
                             <a href="{{ path('profile_edit', {id: app.user.id}) }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-user"></i> Към профила
+                                <i class="fas fa-user"></i> {{ 'error403.button_profile' | trans }}
                             </a>
                         {% else %}
                             <a href="{{ path('app_login') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-sign-in-alt"></i> Вход
+                                <i class="fas fa-sign-in-alt"></i> {{ 'error403.button_login' | trans }}
                             </a>
                         {% endif %}
                     </div>

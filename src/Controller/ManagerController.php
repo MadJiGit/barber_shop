@@ -9,10 +9,8 @@ use App\Repository\UserRepository;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +32,7 @@ class ManagerController extends AbstractController
         AppointmentsRepository $appointmentsRepository,
         UserRepository $userRepository,
         BarberScheduleService $scheduleService,
-        AppointmentValidator $appointmentValidator
+        AppointmentValidator $appointmentValidator,
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
@@ -44,8 +42,9 @@ class ManagerController extends AbstractController
     }
 
     /**
-     * Manager Dashboard - Overview with key metrics
-     * @throws Exception
+     * Manager Dashboard - Overview with key metrics.
+     *
+     * @throws \Exception
      */
     #[Route('/dashboard', name: 'manager_dashboard')]
     public function dashboard(): Response
@@ -54,7 +53,7 @@ class ManagerController extends AbstractController
         $tomorrow = $today->modify('+1 day');
         $startOfWeek = $today->modify('monday this week');
         $endOfWeek = $today->modify('sunday this week')->modify('+1 day');
-        $startOfMonth = new DateTimeImmutable('first day of this month');
+        $startOfMonth = new \DateTimeImmutable('first day of this month');
         $endOfMonth = $startOfMonth->modify('+1 month');
 
         // Today's appointments (from 00:00:00 today to 00:00:00 tomorrow)
@@ -84,9 +83,9 @@ class ManagerController extends AbstractController
         // Calculate today's stats
         $todayStats = [
             'total' => count($todayAppointments),
-            'confirmed' => count(array_filter($todayAppointments, fn($a) => $a->getStatus() === 'confirmed')),
-            'completed' => count(array_filter($todayAppointments, fn($a) => $a->getStatus() === 'completed')),
-            'cancelled' => count(array_filter($todayAppointments, fn($a) => $a->getStatus() === 'cancelled')),
+            'confirmed' => count(array_filter($todayAppointments, fn ($a) => 'confirmed' === $a->getStatus())),
+            'completed' => count(array_filter($todayAppointments, fn ($a) => 'completed' === $a->getStatus())),
+            'cancelled' => count(array_filter($todayAppointments, fn ($a) => 'cancelled' === $a->getStatus())),
         ];
 
         return $this->render('manager/dashboard.html.twig', [
@@ -100,7 +99,7 @@ class ManagerController extends AbstractController
     }
 
     /**
-     * List all appointments with filters, sorting, and pagination
+     * List all appointments with filters, sorting, and pagination.
      */
     #[Route('/appointments', name: 'manager_appointments')]
     public function appointments(Request $request): Response
@@ -125,10 +124,10 @@ class ManagerController extends AbstractController
         $endDate = null;
         if ($filterDate) {
             try {
-                $startDate = new DateTimeImmutable($filterDate);
-//                $startDate = new DateTimeInterface($filterDate);
+                $startDate = new \DateTimeImmutable($filterDate);
+                //                $startDate = new DateTimeInterface($filterDate);
                 $endDate = $startDate->modify('+1 day');
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->addFlash('error', 'Невалидна дата.');
             }
         }
@@ -150,10 +149,11 @@ class ManagerController extends AbstractController
         // Filter by client name (if provided)
         if ($filterClientSearch) {
             $searchTerm = mb_strtolower($filterClientSearch);
-            $appointments = array_filter($appointments, function($appointment) use ($searchTerm) {
+            $appointments = array_filter($appointments, function ($appointment) use ($searchTerm) {
                 $client = $appointment->getClient();
-                $fullName = mb_strtolower($client->getFirstName() . ' ' . $client->getLastName());
+                $fullName = mb_strtolower($client->getFirstName().' '.$client->getLastName());
                 $email = mb_strtolower($client->getEmail());
+
                 return str_contains($fullName, $searchTerm) || str_contains($email, $searchTerm);
             });
         }
@@ -163,10 +163,10 @@ class ManagerController extends AbstractController
         if (!in_array($sortBy, $validSortFields)) {
             $sortBy = 'date';
         }
-        $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
+        $sortOrder = 'asc' === strtolower($sortOrder) ? 'asc' : 'desc';
 
-        usort($appointments, function($a, $b) use ($sortBy, $sortOrder) {
-            $valueA = match($sortBy) {
+        usort($appointments, function ($a, $b) use ($sortBy, $sortOrder) {
+            $valueA = match ($sortBy) {
                 'id' => $a->getId(),
                 'date' => $a->getDate(),
                 'date_added' => $a->getDateAdded(),
@@ -174,7 +174,7 @@ class ManagerController extends AbstractController
                 default => $a->getDate(),
             };
 
-            $valueB = match($sortBy) {
+            $valueB = match ($sortBy) {
                 'id' => $b->getId(),
                 'date' => $b->getDate(),
                 'date_added' => $b->getDateAdded(),
@@ -183,7 +183,8 @@ class ManagerController extends AbstractController
             };
 
             $comparison = $valueA <=> $valueB;
-            return $sortOrder === 'asc' ? $comparison : -$comparison;
+
+            return 'asc' === $sortOrder ? $comparison : -$comparison;
         });
 
         // Pagination
@@ -215,9 +216,8 @@ class ManagerController extends AbstractController
         ]);
     }
 
-
     /**
-     * Get all available procedures (API endpoint for AJAX)
+     * Get all available procedures (API endpoint for AJAX).
      */
     #[Route('/api/procedures', name: 'manager_api_procedures', methods: ['GET'])]
     public function getProcedures(): Response
@@ -225,7 +225,7 @@ class ManagerController extends AbstractController
         $procedures = $this->em->getRepository(Procedure::class)
             ->getAvailableProcedures();
 
-        $data = array_map(function($proc) {
+        $data = array_map(function ($proc) {
             return [
                 'id' => $proc->getId(),
                 'type' => $proc->getType(),
@@ -241,7 +241,7 @@ class ManagerController extends AbstractController
     }
 
     /**
-     * Get available time slots for a barber on a specific date (API endpoint)
+     * Get available time slots for a barber on a specific date (API endpoint).
      */
     #[Route('/api/barber/{barberId}/timeslots/{date}', name: 'manager_api_timeslots', methods: ['GET'])]
     public function getAvailableTimeSlots(int $barberId, string $date): Response
@@ -253,8 +253,8 @@ class ManagerController extends AbstractController
         }
 
         try {
-            $selectedDate = new DateTimeImmutable($date);
-        } catch (Exception $e) {
+            $selectedDate = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
             return $this->json(['error' => 'Невалидна дата.'], 400);
         }
 
@@ -291,7 +291,163 @@ class ManagerController extends AbstractController
             'workingHours' => [
                 'start' => $workingHours['start'],
                 'end' => $workingHours['end'],
-            ]
+            ],
         ]);
+    }
+
+    /**
+     * Barber schedules management page.
+     */
+    #[Route('/barber-schedules', name: 'manager_barber_schedules')]
+    public function barberSchedules(Request $request): Response
+    {
+        // Get all barbers
+        $barbers = $this->userRepository->getAllBarbers();
+
+        // Get selected barber from query parameter
+        $selectedBarberId = $request->query->get('barber_id');
+        $selectedBarber = null;
+        $calendar = [];
+        $year = (int) ($request->query->get('year') ?: date('Y'));
+        $month = (int) ($request->query->get('month') ?: date('n'));
+
+        if ($selectedBarberId) {
+            $selectedBarber = $this->userRepository->find($selectedBarberId);
+
+            if ($selectedBarber && $selectedBarber->isBarber()) {
+                // Get calendar for selected barber
+                $calendar = $this->scheduleService->getMonthCalendar($selectedBarber, $year, $month);
+            }
+        }
+
+        // Calculate prev/next month
+        $prevMonth = $month - 1;
+        $prevYear = $year;
+        if ($prevMonth < 1) {
+            $prevMonth = 12;
+            --$prevYear;
+        }
+
+        $nextMonth = $month + 1;
+        $nextYear = $year;
+        if ($nextMonth > 12) {
+            $nextMonth = 1;
+            ++$nextYear;
+        }
+
+        // Get month name in Bulgarian
+        $monthNames = [
+            1 => 'Януари', 2 => 'Февруари', 3 => 'Март', 4 => 'Април',
+            5 => 'Май', 6 => 'Юни', 7 => 'Юли', 8 => 'Август',
+            9 => 'Септември', 10 => 'Октомври', 11 => 'Ноември', 12 => 'Декември',
+        ];
+        $monthName = $monthNames[$month];
+
+        return $this->render('manager/barber_schedules.html.twig', [
+            'barbers' => $barbers,
+            'selectedBarber' => $selectedBarber,
+            'calendar' => $calendar,
+            'year' => $year,
+            'month' => $month,
+            'monthName' => $monthName,
+            'prevYear' => $prevYear,
+            'prevMonth' => $prevMonth,
+            'nextYear' => $nextYear,
+            'nextMonth' => $nextMonth,
+        ]);
+    }
+
+    /**
+     * Get day schedule for a barber (API endpoint for manager).
+     */
+    #[Route('/barber/{barberId}/schedule/day/{date}', name: 'manager_barber_schedule_day', methods: ['GET'])]
+    public function getBarberDaySchedule(int $barberId, string $date): Response
+    {
+        $barber = $this->userRepository->find($barberId);
+
+        if (!$barber || !$barber->isBarber()) {
+            return $this->json(['error' => 'Барбърът не е намерен'], 404);
+        }
+
+        try {
+            $dateObj = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Невалиден формат на датата'], 400);
+        }
+
+        $daySchedule = $this->scheduleService->getDaySchedule($barber, $dateObj);
+
+        $dayNames = [
+            0 => 'Неделя', 1 => 'Понеделник', 2 => 'Вторник', 3 => 'Сряда',
+            4 => 'Четвъртък', 5 => 'Петък', 6 => 'Събота',
+        ];
+
+        return $this->json([
+            'date' => $date,
+            'dayOfWeek' => $dayNames[(int) $dateObj->format('w')],
+            'slots' => $daySchedule,
+        ]);
+    }
+
+    /**
+     * Save barber schedule exception (manager can edit any barber's schedule).
+     */
+    #[Route('/barber/{barberId}/schedule/save', name: 'manager_barber_schedule_save', methods: ['POST'])]
+    public function saveBarberSchedule(int $barberId, Request $request): Response
+    {
+        $barber = $this->userRepository->find($barberId);
+
+        if (!$barber || !$barber->isBarber()) {
+            return $this->json(['error' => 'Барбърът не е намерен'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['date'])) {
+            return $this->json(['error' => 'Датата е задължителна'], 400);
+        }
+
+        try {
+            $date = new \DateTimeImmutable($data['date']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'Невалиден формат на датата'], 400);
+        }
+
+        $isAvailable = $data['is_available'] ?? true;
+        $startTime = $data['start_time'] ?? null;
+        $endTime = $data['end_time'] ?? null;
+        $excludedSlots = $data['excluded_slots'] ?? null;
+        $reason = $data['reason'] ?? null;
+
+        /** @var \App\Entity\User $manager */
+        $manager = $this->getUser();
+
+        try {
+            $exception = $this->scheduleService->saveException(
+                $barber,
+                $date,
+                $isAvailable,
+                $startTime,
+                $endTime,
+                $excludedSlots,
+                $reason,
+                $manager
+            );
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Графикът е запазен успешно.',
+                'exception' => [
+                    'id' => $exception->getId(),
+                    'date' => $exception->getDate()->format('Y-m-d'),
+                    'is_available' => $exception->getIsAvailable(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Грешка при запазване: '.$e->getMessage(),
+            ], 500);
+        }
     }
 }

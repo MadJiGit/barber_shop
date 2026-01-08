@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Моят профил - Barber Shop{% endblock %}
+{% block title %}{{ 'profile.title' | trans }}{% endblock %}
 
 {% block body %}
     <!--? Hero Start -->
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="hero-cap hero-cap2 pt-70 text-center">
-                            <h2>Моят профил</h2>
+                            <h2>{{ 'profile.hero_title' | trans }}</h2>
                         </div>
                     </div>
                 </div>
@@ -25,9 +25,9 @@
             <div class="row justify-content-center">
                 <div class="col-xl-10 col-lg-12">
                     <!-- User Info Header -->
-                    <div class="card shadow-sm border-0 mb-4">
+                    <div class="card user-profile-card shadow-sm border-0 mb-4">
                         <div class="card-header bg-white border-bottom py-3">
-                            <h4 class="mb-0 text-center" style="color: #d4a574;">
+                            <h4 class="mb-0 text-center">
                                 <i class="fas fa-user-circle"></i>
                                 {% if user.nickName %}
                                     {{ user.nickName }}
@@ -42,12 +42,12 @@
                     <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab">
-                                <i class="fas fa-user"></i> Моят профил
+                                <i class="fas fa-user"></i> {{ 'profile.tabs.profile' | trans }}
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab">
-                                <i class="fas fa-history"></i> История
+                                <i class="fas fa-history"></i> {{ 'profile.tabs.history' | trans }}
                             </a>
                         </li>
                     </ul>
@@ -67,7 +67,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-envelope text-muted mr-2"></i>Email
+                                                    <i class="fas fa-envelope text-muted mr-2"></i>{{ 'profile.form.email' | trans }}
                                                 </label>
                                                 {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'example@email.com'}}) }}
                                                 {{ form_errors(form.email) }}
@@ -78,7 +78,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-user text-muted mr-2"></i>Име
+                                                    <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.first_name' | trans }}
                                                 </label>
                                                 {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.first_name) }}
@@ -89,7 +89,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-user text-muted mr-2"></i>Фамилия
+                                                    <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.last_name' | trans }}
                                                 </label>
                                                 {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.last_name) }}
@@ -102,7 +102,7 @@
                                                 {{ form_label(form.nick_name) }}
                                                 {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.nick_name) }}
-                                                <small class="form-text text-muted">По желание. Ако е празно ще използваме вашето име.</small>
+                                                <small class="form-text text-muted">{{ 'profile.form.nickname_help' | trans }}</small>
                                             </div>
                                         </div>
 
@@ -110,7 +110,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-phone text-muted mr-2"></i>Телефон
+                                                    <i class="fas fa-phone text-muted mr-2"></i>{{ 'profile.form.phone' | trans }}
                                                 </label>
                                                 {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.phone) }}
@@ -121,7 +121,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="text-muted">
-                                                    <i class="fas fa-calendar-plus mr-2"></i>Член от
+                                                    <i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}
                                                 </label>
                                                 {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
                                             </div>
@@ -131,11 +131,11 @@
                                     <!-- Password Change Section -->
                                     <hr class="my-4">
                                     <h5 class="mb-3">
-                                        <i class="fas fa-key text-warning mr-2"></i>Промяна на парола
+                                        <i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}
                                     </h5>
                                     <div class="alert alert-info">
                                         <i class="fas fa-info-circle mr-2"></i>
-                                        <strong>Важно:</strong> При попълване на полетата за парола, ще получите имейл с линк за потвърждение. Паролата ще бъде сменена след потвърждение.
+                                        <strong>{{ 'profile.password.important' | trans }}:</strong> {{ 'profile.password.info' | trans }}
                                     </div>
 
                                     <div class="row">
@@ -143,7 +143,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-lock text-muted mr-2"></i>Текуща парола
+                                                    <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
                                                 </label>
                                                 {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.current_password) }}
@@ -154,11 +154,11 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-lock text-muted mr-2"></i>Нова парола
+                                                    <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
                                                 </label>
                                                 {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.new_password) }}
-                                                <small class="form-text text-muted">Минимум 6 символа</small>
+                                                <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
                                             </div>
                                         </div>
 
@@ -166,7 +166,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>
-                                                    <i class="fas fa-lock text-muted mr-2"></i>Повтори новата парола
+                                                    <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
                                                 </label>
                                                 {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.new_password_repeat) }}
@@ -177,9 +177,9 @@
                                     <!-- Action Buttons -->
                                     <div class="text-center mt-4">
                                         <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
-                                            <i class="fas fa-arrow-left"></i> Обратно към начало
+                                            <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
                                         </a>
-                                        {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'Запази промените'}) }}
+                                        {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
                                     </div>
 
                                     {{ form_end(form, {'render_rest': false}) }}
@@ -191,8 +191,8 @@
                         <div class="tab-pane fade" id="appointments" role="tabpanel">
                             <div class="card shadow-sm border-0">
                                 <div class="card-header bg-white border-bottom py-3">
-                                    <h5 class="mb-0" style="color: #d4a574;">
-                                        <i class="fas fa-calendar-check"></i> Записани часове
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-calendar-check"></i> {{ 'profile.tabs.appointments' | trans }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
@@ -205,7 +205,7 @@
                                                 <div class="row">
                                                     <!-- Date From -->
                                                     <div class="col-md-4">
-                                                        <label for="date_from">От дата:</label>
+                                                        <label for="date_from">{{ 'profile.appointments.filters.from_date' | trans }}:</label>
                                                         <input type="date"
                                                                class="form-control"
                                                                id="date_from"
@@ -215,7 +215,7 @@
 
                                                     <!-- Date To -->
                                                     <div class="col-md-4">
-                                                        <label for="date_to">До дата:</label>
+                                                        <label for="date_to">{{ 'profile.appointments.filters.to_date' | trans }}:</label>
                                                         <input type="date"
                                                                class="form-control"
                                                                id="date_to"
@@ -225,22 +225,22 @@
 
                                                     <!-- Status Filter -->
                                                     <div class="col-md-4">
-                                                        <label>Статус:</label>
+                                                        <label>{{ 'profile.appointments.filters.status' | trans }}:</label>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="statuses[]" value="pending" id="status_pending" {{ 'pending' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="status_pending">Чакащи</label>
+                                                            <label class="form-check-label" for="status_pending">{{ 'profile.appointments.status.pending' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="statuses[]" value="confirmed" id="status_confirmed" {{ 'confirmed' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="status_confirmed">Потвърдени</label>
+                                                            <label class="form-check-label" for="status_confirmed">{{ 'profile.appointments.status.confirmed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="statuses[]" value="completed" id="status_completed" {{ 'completed' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="status_completed">Завършени</label>
+                                                            <label class="form-check-label" for="status_completed">{{ 'profile.appointments.status.completed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="statuses[]" value="cancelled" id="status_cancelled" {{ 'cancelled' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="status_cancelled">Отменени</label>
+                                                            <label class="form-check-label" for="status_cancelled">{{ 'profile.appointments.status.cancelled' | trans }}</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -248,10 +248,10 @@
                                                 <div class="row mt-3">
                                                     <div class="col-md-12">
                                                         <button type="submit" class="btn btn-primary">
-                                                            <i class="fas fa-filter"></i> Филтрирай
+                                                            <i class="fas fa-filter"></i> {{ 'profile.appointments.actions.filter' | trans }}
                                                         </button>
                                                         <a href="{{ path('profile_edit', {id: user.id, tab: 'appointments'}) }}" class="btn btn-secondary ml-2">
-                                                            <i class="fas fa-undo"></i> Изчисти
+                                                            <i class="fas fa-undo"></i> {{ 'profile.appointments.actions.clear' | trans }}
                                                         </a>
                                                     </div>
                                                 </div>
@@ -263,7 +263,10 @@
                                     {% if clientAppointmentsPagination %}
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <p class="text-muted mb-0">
-                                                Показани {{ clientAppointments|length }} от {{ clientAppointmentsPagination.total }} записа
+                                                {{ 'profile.appointments.results' | trans({
+                                                    '%shown%': clientAppointments|length,
+                                                    '%total%': clientAppointmentsPagination.total
+                                                }) }}
                                             </p>
                                             <form method="GET" action="{{ path('profile_edit', {id: user.id}) }}" class="form-inline">
                                                 <input type="hidden" name="tab" value="appointments">
@@ -274,7 +277,7 @@
                                                 {% endfor %}
                                                 <input type="hidden" name="page" value="{{ clientAppointmentsPagination.page }}">
 
-                                                <label class="mr-2 mb-0">Показвай:</label>
+                                                <label class="mr-2 mb-0">{{ 'profile.appointments.per_page' | trans }}:</label>
                                                 <select name="limit" class="form-control form-control-sm" onchange="this.form.submit()">
                                                     <option value="10" {{ clientFilters.limit == 10 ? 'selected' : '' }}>10</option>
                                                     <option value="20" {{ clientFilters.limit == 20 ? 'selected' : '' }}>20</option>
@@ -287,15 +290,15 @@
                                     <!-- Appointments Table -->
                                     <div class="table-responsive">
                                         <table class="table table-hover">
-                                            <thead style="background-color: #f8f9fa;">
+                                            <thead>
                                                 <tr>
-                                                    <th>Дата</th>
-                                                    <th>Час</th>
-                                                    <th>Бръснар</th>
-                                                    <th>Услуга</th>
-                                                    <th>Статус</th>
-                                                    <th class="text-right">Цена</th>
-                                                    <th class="text-center">Действия</th>
+                                                    <th>{{ 'profile.appointments.table.date' | trans }}</th>
+                                                    <th>{{ 'profile.appointments.table.time' | trans }}</th>
+                                                    <th>{{ 'profile.appointments.table.barber' | trans }}</th>
+                                                    <th>{{ 'profile.appointments.table.service' | trans }}</th>
+                                                    <th>{{ 'profile.appointments.table.status' | trans }}</th>
+                                                    <th class="text-right">{{ 'profile.appointments.table.price' | trans }}</th>
+                                                    <th class="text-center">{{ 'profile.appointments.table.actions' | trans }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -303,7 +306,7 @@
                                                     <tr>
                                                         <td colspan="7" class="text-center py-4 text-muted">
                                                             <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                                                            <p class="mb-0">Няма записани часове за избрания период.</p>
+                                                            <p class="mb-0">{{ 'profile.appointments.empty' | trans }}</p>
                                                         </td>
                                                     </tr>
                                                 {% else %}
@@ -322,37 +325,35 @@
                                                             <td>{{ appointment.procedureType.type }}</td>
                                                             <td>
                                                                 {% if appointment.statusValue == 'confirmed' %}
-                                                                    <span class="badge badge-primary">Потвърден</span>
+                                                                    <span class="badge badge-primary">{{ 'profile.appointments.status.confirmed' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'completed' %}
-                                                                    <span class="badge badge-success">Изпълнен</span>
+                                                                    <span class="badge badge-success">{{ 'profile.appointments.status.completed_done' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'cancelled' %}
-                                                                    <span class="badge badge-danger">Отменен</span>
+                                                                    <span class="badge badge-danger">{{ 'profile.appointments.status.cancelled' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'no_show' %}
-                                                                    <span class="badge badge-warning">Недошъл</span>
+                                                                    <span class="badge badge-warning">{{ 'profile.appointments.status.no_show' | trans }}</span>
                                                                 {% else %}
                                                                     <span class="badge badge-secondary">{{ appointment.statusValue }}</span>
                                                                 {% endif %}
                                                             </td>
                                                             <td class="text-right">
                                                                 {% if appointment.barber.isBarberJunior %}
-                                                                    {{ appointment.procedureType.priceJunior }} лв
+                                                                    {{ appointment.procedureType.priceJunior }} {{ 'profile.appointments.currency' | trans }}
                                                                 {% else %}
-                                                                    {{ appointment.procedureType.priceMaster }} лв
+                                                                    {{ appointment.procedureType.priceMaster }} {{ 'profile.appointments.currency' | trans }}
                                                                 {% endif %}
                                                             </td>
-                                                            <td class="text-center" style="white-space: nowrap;">
+                                                            <td class="text-center">
                                                                 {% if isFuture and appointment.statusValue == 'confirmed' %}
                                                                     <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
                                                                        class="btn btn-warning btn-xs mr-1"
-                                                                       style="padding: 2px 6px; font-size: 12px;"
-                                                                       title="Промяна на час">
+                                                                       title="{{ 'profile.appointments.actions.edit' | trans }}">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
                                                                     <button type="button"
                                                                             class="btn btn-danger btn-xs"
-                                                                            style="padding: 2px 6px; font-size: 12px;"
-                                                                            onclick="cancelAppointment({{ appointment.id }}, '{{ csrf_token('cancel_appointment') }}', 'appointments')"
-                                                                            title="Отмяна на час">
+                                                                                 onclick="cancelAppointment({{ appointment.id }}, '{{ csrf_token('cancel_appointment') }}', 'appointments')"
+                                                                            title="{{ 'profile.appointments.actions.cancel' | trans }}">
                                                                         <i class="fas fa-times"></i>
                                                                     </button>
                                                                 {% else %}
@@ -394,8 +395,8 @@
                         <div class="tab-pane fade" id="history" role="tabpanel">
                             <div class="card shadow-sm border-0">
                                 <div class="card-header bg-white border-bottom py-3">
-                                    <h5 class="mb-0" style="color: #d4a574;">
-                                        <i class="fas fa-history"></i> История на посещения
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-history"></i> {{ 'profile.tabs.history_title' | trans }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
@@ -408,7 +409,7 @@
                                                 <div class="row">
                                                     <!-- Date From -->
                                                     <div class="col-md-4">
-                                                        <label for="client_date_from">От дата:</label>
+                                                        <label for="client_date_from">{{ 'profile.history.filters.from_date' | trans }}:</label>
                                                         <input type="date"
                                                                class="form-control"
                                                                id="client_date_from"
@@ -418,7 +419,7 @@
 
                                                     <!-- Date To -->
                                                     <div class="col-md-4">
-                                                        <label for="client_date_to">До дата:</label>
+                                                        <label for="client_date_to">{{ 'profile.history.filters.to_date' | trans }}:</label>
                                                         <input type="date"
                                                                class="form-control"
                                                                id="client_date_to"
@@ -428,22 +429,22 @@
 
                                                     <!-- Status Filter -->
                                                     <div class="col-md-4">
-                                                        <label>Статус:</label>
+                                                        <label>{{ 'profile.history.filters.status' | trans }}:</label>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="client_statuses[]" value="pending" id="client_status_pending" {{ 'pending' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="client_status_pending">Чакащи</label>
+                                                            <label class="form-check-label" for="client_status_pending">{{ 'profile.history.status.pending' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="client_statuses[]" value="confirmed" id="client_status_confirmed" {{ 'confirmed' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="client_status_confirmed">Потвърдени</label>
+                                                            <label class="form-check-label" for="client_status_confirmed">{{ 'profile.history.status.confirmed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="client_statuses[]" value="completed" id="client_status_completed" {{ 'completed' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="client_status_completed">Завършени</label>
+                                                            <label class="form-check-label" for="client_status_completed">{{ 'profile.history.status.completed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="client_statuses[]" value="cancelled" id="client_status_cancelled" {{ 'cancelled' in clientFilters.statuses ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="client_status_cancelled">Отменени</label>
+                                                            <label class="form-check-label" for="client_status_cancelled">{{ 'profile.history.status.cancelled' | trans }}</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -451,10 +452,10 @@
                                                 <div class="row mt-3">
                                                     <div class="col-md-12">
                                                         <button type="submit" class="btn btn-primary">
-                                                            <i class="fas fa-filter"></i> Филтрирай
+                                                            <i class="fas fa-filter"></i> {{ 'profile.history.actions.filter' | trans }}
                                                         </button>
                                                         <a href="{{ path('profile_edit', {id: user.id, tab: 'history'}) }}" class="btn btn-secondary ml-2">
-                                                            <i class="fas fa-undo"></i> Изчисти
+                                                            <i class="fas fa-undo"></i> {{ 'profile.history.actions.clear' | trans }}
                                                         </a>
                                                     </div>
                                                 </div>
@@ -466,7 +467,10 @@
                                     {% if clientAppointmentsPagination %}
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <p class="text-muted mb-0">
-                                                Показани {{ clientAppointments|length }} от {{ clientAppointmentsPagination.total }} записа
+                                                {{ 'profile.history.results' | trans({
+                                                    '%shown%': clientAppointments|length,
+                                                    '%total%': clientAppointmentsPagination.total
+                                                }) }}
                                             </p>
                                             <form method="GET" action="{{ path('profile_edit', {id: user.id}) }}" class="form-inline">
                                                 <input type="hidden" name="tab" value="history">
@@ -477,7 +481,7 @@
                                                 {% endfor %}
                                                 <input type="hidden" name="client_page" value="{{ clientAppointmentsPagination.page }}">
 
-                                                <label class="mr-2 mb-0">Показвай:</label>
+                                                <label class="mr-2 mb-0">{{ 'profile.history.per_page' | trans }}:</label>
                                                 <select name="client_limit" class="form-control form-control-sm" onchange="this.form.submit()">
                                                     <option value="10" {{ clientFilters.limit == 10 ? 'selected' : '' }}>10</option>
                                                     <option value="20" {{ clientFilters.limit == 20 ? 'selected' : '' }}>20</option>
@@ -490,15 +494,15 @@
                                     <!-- Appointments Table -->
                                     <div class="table-responsive">
                                         <table class="table table-hover">
-                                            <thead style="background-color: #f8f9fa;">
+                                            <thead>
                                                 <tr>
-                                                    <th>Дата</th>
-                                                    <th>Час</th>
-                                                    <th>Бръснар</th>
-                                                    <th>Услуга</th>
-                                                    <th>Статус</th>
-                                                    <th class="text-right">Цена</th>
-                                                    <th class="text-center">Действия</th>
+                                                    <th>{{ 'profile.history.table.date' | trans }}</th>
+                                                    <th>{{ 'profile.history.table.time' | trans }}</th>
+                                                    <th>{{ 'profile.history.table.barber' | trans }}</th>
+                                                    <th>{{ 'profile.history.table.service' | trans }}</th>
+                                                    <th>{{ 'profile.history.table.status' | trans }}</th>
+                                                    <th class="text-right">{{ 'profile.history.table.price' | trans }}</th>
+                                                    <th class="text-center">{{ 'profile.history.table.actions' | trans }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -506,7 +510,7 @@
                                                     <tr>
                                                         <td colspan="7" class="text-center py-4 text-muted">
                                                             <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                                                            <p class="mb-0">Няма записани часове за избрания период.</p>
+                                                            <p class="mb-0">{{ 'profile.history.empty' | trans }}</p>
                                                         </td>
                                                     </tr>
                                                 {% else %}
@@ -525,37 +529,35 @@
                                                             <td>{{ appointment.procedureType.type }}</td>
                                                             <td>
                                                                 {% if appointment.statusValue == 'confirmed' %}
-                                                                    <span class="badge badge-primary">Потвърден</span>
+                                                                    <span class="badge badge-primary">{{ 'profile.history.status.confirmed' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'completed' %}
-                                                                    <span class="badge badge-success">Изпълнен</span>
+                                                                    <span class="badge badge-success">{{ 'profile.history.status.completed_done' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'cancelled' %}
-                                                                    <span class="badge badge-danger">Отменен</span>
+                                                                    <span class="badge badge-danger">{{ 'profile.history.status.cancelled' | trans }}</span>
                                                                 {% elseif appointment.statusValue == 'no_show' %}
-                                                                    <span class="badge badge-warning">Недошъл</span>
+                                                                    <span class="badge badge-warning">{{ 'profile.history.status.no_show' | trans }}</span>
                                                                 {% else %}
                                                                     <span class="badge badge-secondary">{{ appointment.statusValue }}</span>
                                                                 {% endif %}
                                                             </td>
                                                             <td class="text-right">
                                                                 {% if appointment.barber.isBarberJunior %}
-                                                                    {{ appointment.procedureType.priceJunior }} лв
+                                                                    {{ appointment.procedureType.priceJunior }} {{ 'profile.history.currency' | trans }}
                                                                 {% else %}
-                                                                    {{ appointment.procedureType.priceMaster }} лв
+                                                                    {{ appointment.procedureType.priceMaster }} {{ 'profile.history.currency' | trans }}
                                                                 {% endif %}
                                                             </td>
-                                                            <td class="text-center" style="white-space: nowrap;">
+                                                            <td class="text-center">
                                                                 {% if isFuture and appointment.statusValue == 'confirmed' %}
                                                                     <a href="{{ path('appointment_reschedule', {id: appointment.id}) }}"
                                                                        class="btn btn-warning btn-xs mr-1"
-                                                                       style="padding: 2px 6px; font-size: 12px;"
-                                                                       title="Промяна на час">
+                                                                       title="{{ 'profile.history.actions.edit' | trans }}">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
                                                                     <button type="button"
                                                                             class="btn btn-danger btn-xs"
-                                                                            style="padding: 2px 6px; font-size: 12px;"
-                                                                            onclick="cancelAppointment({{ appointment.id }}, '{{ csrf_token('cancel_appointment') }}', 'history')"
-                                                                            title="Отмяна на час">
+                                                                                 onclick="cancelAppointment({{ appointment.id }}, '{{ csrf_token('cancel_appointment') }}', 'history')"
+                                                                            title="{{ 'profile.history.actions.cancel' | trans }}">
                                                                         <i class="fas fa-times"></i>
                                                                     </button>
                                                                 {% else %}
@@ -609,20 +611,4 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/client_profile.js') }}"></script>
-    <script>
-        // Activate tab based on URL parameter or default to profile
-        $(document).ready(function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const activeTab = urlParams.get('tab') || 'profile';
-
-            // Activate the tab
-            $('#' + activeTab + '-tab').tab('show');
-
-            // Update form hidden input when tab changes
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                const tabId = $(e.target).attr('href').substring(1);
-                $('input[name="tab"]').val(tabId);
-            });
-        });
-    </script>
 {% endblock %}

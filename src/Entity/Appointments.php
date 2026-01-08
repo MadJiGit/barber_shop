@@ -21,7 +21,7 @@ class Appointments
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::INTEGER)]
@@ -42,13 +42,13 @@ class Appointments
     #[ORM\Column(type: Types::STRING, length: 30, enumType: AppointmentStatus::class)]
     private AppointmentStatus $status = AppointmentStatus::PENDING;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
     private ?\DateTimeInterface $date_added = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_last_update = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $date_canceled = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -60,11 +60,11 @@ class Appointments
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, nullable: true)]
     private ?string $confirmation_token = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $confirmed_at = null;
 
     /**
-     * @throws \Exception
+     *
      */
     public function __construct()
     {
@@ -130,7 +130,7 @@ class Appointments
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function setDateAdded(?\DateTimeInterface $date_added = null): static
     {
@@ -148,7 +148,7 @@ class Appointments
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function setDateCanceled(?\DateTimeInterface $date_canceled = null): static
     {
@@ -166,7 +166,7 @@ class Appointments
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function setDateLastUpdate(?\DateTimeInterface $date_last_update = null): static
     {
@@ -196,7 +196,7 @@ class Appointments
     }
 
     /**
-     * @throws \Exception
+     *
      */
     public function setStatus(AppointmentStatus $status): static
     {
@@ -263,7 +263,7 @@ class Appointments
     }
 
     /**
-     * @throws \Exception
+     *
      */
     #[ORM\PreUpdate]
     public function preUpdate(): void

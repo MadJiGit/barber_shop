@@ -19,13 +19,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class DashboardController extends AbstractDashboardController
 {
-    /**
-     * @param AdminUrlGenerator $adminUrlGenerator
-     */
     public function __construct(
-        private AdminUrlGenerator $adminUrlGenerator
-    )
-    {
+        private AdminUrlGenerator $adminUrlGenerator,
+    ) {
     }
 
     #[Route('/admin', name: 'admin')]
@@ -35,12 +31,12 @@ class DashboardController extends AbstractDashboardController
 
         return $this->redirect($routeBuilder->setController(UserCrudController::class)->generateUrl());
 
-//        return $this->render('@EasyAdmin/welcome.html.twig');
-//        return $this->redirect($this->adminUrlGenerator
-//            ->setController(ProcedureCrudController::class)
-//            ->setAction('index')
-//            ->generateUrl()
-//        );
+        //        return $this->render('@EasyAdmin/welcome.html.twig');
+        //        return $this->redirect($this->adminUrlGenerator
+        //            ->setController(ProcedureCrudController::class)
+        //            ->setAction('index')
+        //            ->generateUrl()
+        //        );
     }
 
     public function configureDashboard(): Dashboard

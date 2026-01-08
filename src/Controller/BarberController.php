@@ -93,7 +93,7 @@ class BarberController extends AbstractController
         }
 
         try {
-            $dateObj = new DateTimeImmutable($date);
+            $dateObj = DateTimeHelper::createFromString($date);
         } catch (Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
         }
@@ -126,9 +126,18 @@ class BarberController extends AbstractController
         }
 
         try {
-            $date = new DateTimeImmutable($data['date']);
+            $date = DateTimeHelper::createFromString($data['date']);
         } catch (Exception $e) {
             return $this->json(['error' => 'Invalid date format'], 400);
+        }
+
+        // Prevent editing past dates
+        $today = DateTimeHelper::now()->setTime(0, 0, 0);
+        if ($date < $today) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Не можете да променяте графика за минали дни.',
+            ], 400);
         }
 
         $isAvailable = $data['is_available'] ?? true;
