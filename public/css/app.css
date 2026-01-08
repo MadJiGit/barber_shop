@@ -114,11 +114,28 @@
     opacity: 0.8;
 }
 
+/* Header Logo - Explicit sizing for Safari */
+.logo img {
+    width: auto !important;
+    height: 50px !important;
+    max-width: 200px !important;
+    max-height: 50px !important;
+    object-fit: contain;
+}
+
 /* Footer - Center alignment for logo and social icons */
 .footer-logo {
     text-align: center;
     display: block;
     width: 100%;
+}
+
+.footer-logo img {
+    width: auto !important;
+    height: 60px !important;
+    max-width: 200px !important;
+    max-height: 60px !important;
+    object-fit: contain;
 }
 
 .footer-social {
@@ -133,8 +150,11 @@
 }
 
 .service-icon img {
-    width: 70px;
-    height: 70px;
+    width: 70px !important;
+    height: 70px !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
+    object-fit: contain;
 }
 
 /* Homepage - Small text */

@@ -1,8 +1,11 @@
 .madji-img-footer {
-    height: 30px;
-    width: auto;
+    height: 30px !important;
+    width: auto !important;
+    max-height: 30px !important;
+    max-width: 100px !important;
     vertical-align: middle;
     transition: opacity 0.2s;
+    object-fit: contain;
 }
 
 .madji-img-footer:hover {
