@@ -15,9 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationController extends AbstractController
 {
+    private TranslatorInterface $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
     /**
      * @throws RandomException
      */
@@ -55,7 +62,7 @@ class RegistrationController extends AbstractController
             $plainRepeatPassword = $form->get('plainRepeatPassword')->getData();
 
             if ($plainPassword !== $plainRepeatPassword) {
-                $this->addFlash('error', 'Паролите не съвпадат.');
+                $this->addFlash('error', $this->translator->trans('registration.error.passwords_do_not_match', [], 'flash_messages'));
 
                 return $this->render('registration/register.html.twig', [
                     'registrationForm' => $form,
@@ -111,16 +118,14 @@ class RegistrationController extends AbstractController
         $user = $userRepository->findOneBy(['confirmation_token' => $token]);
 
         if (!$user) {
-            $this->addFlash('error', 'Невалиден или изтекъл линк за потвърждение.');
-
+            $this->addFlash('error', $this->translator->trans('registration.error.invalid_verification_link', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
         // Check if token has expired
         $now = DateTimeHelper::now();
         if ($user->getTokenExpiresAt() < $now) {
-            $this->addFlash('error', 'Линкът за потвърждение е изтекъл. Моля, регистрирайте се отново.');
-
+            $this->addFlash('error', $this->translator->trans('registration.error.verification_link_expired', [], 'flash_messages'));
             return $this->redirectToRoute('app_register');
         }
 
@@ -134,7 +139,7 @@ class RegistrationController extends AbstractController
         // Send welcome email
         $emailService->sendWelcomeEmail($user);
 
-        $this->addFlash('success', 'Вашият акаунт е потвърден успешно! Можете да влезете.');
+        $this->addFlash('success', $this->translator->trans('registration.success.account_verified', [], 'flash_messages'));
 
         return $this->redirectToRoute('app_login');
     }

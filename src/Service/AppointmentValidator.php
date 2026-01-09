@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Enum\AppointmentStatus;
 use App\Repository\AppointmentsRepository;
 use DateTimeImmutable;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Service for validating appointments and checking conflicts.
@@ -16,13 +17,16 @@ class AppointmentValidator
 {
     private AppointmentsRepository $appointmentsRepository;
     private BarberScheduleService $scheduleService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         AppointmentsRepository $appointmentsRepository,
         BarberScheduleService $scheduleService,
+        TranslatorInterface $translator
     ) {
         $this->appointmentsRepository = $appointmentsRepository;
         $this->scheduleService = $scheduleService;
+        $this->translator = $translator;
     }
 
     /**
@@ -171,28 +175,28 @@ class AppointmentValidator
 
         // Check if time is in the past
         if ($this->isInPast($startTime)) {
-            $errors[] = 'Не можете да запазите час в миналото.';
+            $errors[] = $this->translator->trans('validator.error.past_time', [], 'flash_messages');
         }
 
         // Check if barber is working at this time
         if (!$this->scheduleService->isBarberWorkingAt($barber, $startTime)) {
-            $errors[] = 'Избраният бръснар не работи в този час.';
+            $errors[] = $this->translator->trans('validator.error.barber_not_working', [], 'flash_messages');
         }
 
         // Check if appointment end time is within working hours
         $endTime = $startTime->modify("+{$duration} minutes");
         if (!$this->scheduleService->isBarberWorkingAt($barber, $endTime->modify('-1 minute'))) {
-            $errors[] = 'Процедурата няма да приключи преди края на работното време на бръснаря.';
+            $errors[] = $this->translator->trans('validator.error.procedure_exceeds_working_hours', [], 'flash_messages');
         }
 
         // Check barber availability (conflicts with other appointments)
         if (!$this->isBarberAvailable($barber, $startTime, $duration, $excludeAppointment)) {
-            $errors[] = 'Избраният бръснар е зает в този час.';
+            $errors[] = $this->translator->trans('validator.error.barber_busy', [], 'flash_messages');
         }
 
         // Check client availability
         if (!$this->isClientAvailable($client, $startTime, $duration, $excludeAppointment)) {
-            $errors[] = 'Вие вече имате запазен час по това време.';
+            $errors[] = $this->translator->trans('validator.error.client_already_booked', [], 'flash_messages');
         }
 
         return $errors;

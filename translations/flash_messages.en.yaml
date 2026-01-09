@@ -4,3 +4,97 @@ toast:
     error: 'Error'
     warning: 'Warning'
     info: 'Information'
+
+appointment:
+  error:
+    fill_contact_fields: 'Please fill in all contact fields.'
+    accept_gdpr: 'Please accept the terms of personal data processing.'
+    email_exists: 'A user with this email already exists. Please log in to your account.'
+    fill_all_fields: 'Please fill in all fields.'
+    invalid_service_or_barber: 'Invalid service or barber.'
+    service_unavailable: 'The selected service is currently unavailable.'
+    barber_cannot_perform: 'The selected barber does not perform this service.'
+    invalid_date_time: 'Invalid date or time.'
+    invalid_confirmation_link: 'Invalid or expired confirmation link.'
+    invalid_cancel_link: 'Invalid cancellation link.'
+    invalid_csrf: 'Invalid CSRF token.'
+    appointment_not_found: 'Appointment not found.'
+    no_permission_cancel: 'You do not have permission to cancel this appointment.'
+    cannot_cancel_past: 'You cannot cancel an appointment that has already passed.'
+    no_permission_reschedule: 'You do not have permission to reschedule this appointment.'
+    cannot_reschedule_past: 'You cannot reschedule an appointment that has already passed.'
+  success:
+    booked: 'Appointment successfully booked!'
+    guest_booked: 'Reservation made! Please check your email for confirmation.'
+    confirmed: 'Your reservation has been successfully confirmed!'
+    cancelled_by_guest: 'Your reservation has been cancelled.'
+    cancelled: 'Appointment successfully cancelled.'
+  warning:
+    already_cancelled: 'This appointment has already been cancelled.'
+    cannot_reschedule_cancelled: 'You cannot reschedule a cancelled appointment.'
+  info:
+    choose_new_slot: 'Please choose a new time for your visit.'
+
+profile:
+  error:
+    no_access: 'You do not have access to this profile.'
+    enter_current_password: 'Please enter your current password.'
+    enter_new_password_twice: 'Please enter the new password twice.'
+    passwords_do_not_match: 'The new passwords do not match.'
+    password_min_length: 'The new password must be at least 6 characters long.'
+    current_password_wrong: 'The current password is incorrect.'
+    error_occurred: 'An error occurred: %error%'
+    error_updating_profile: 'An error occurred while updating the profile: %error%'
+  success:
+    password_change_email_sent: 'We have sent you an email with a link to confirm the password change. The link is valid for 1 hour.'
+    profile_updated: 'Profile updated successfully!'
+
+security:
+  error:
+    invalid_reset_link: 'Invalid or expired reset link.'
+    reset_link_expired: 'The reset link has expired. Please request a new one.'
+    passwords_do_not_match: 'The passwords do not match.'
+    invalid_verification_link: 'Invalid or expired verification link.'
+    verification_link_expired: 'The verification link has expired (valid for 1 hour). Please request a new password change.'
+    session_expired: 'The session has expired. Please try again.'
+  success:
+    reset_email_sent: 'If this email address is registered, you will receive a password reset link.'
+    password_changed: 'Password changed successfully! You can now log in.'
+    password_changed_login: 'Password changed successfully! Please log in with your new password.'
+
+admin:
+  error:
+    error_occurred: 'Error: %error%'
+    procedure_not_found: 'Procedure not found.'
+  success:
+    procedure_added: 'Procedure added successfully.'
+    procedure_edited: 'Procedure edited successfully.'
+    procedure_deleted: 'Procedure deleted successfully.'
+
+barber:
+  error:
+    must_login: 'You must log in to your account.'
+    no_access: 'You do not have access to this section.'
+    invalid_csrf: 'Invalid CSRF token.'
+  success:
+    procedures_updated: 'Services updated successfully!'
+
+registration:
+  error:
+    passwords_do_not_match: 'The passwords do not match.'
+    invalid_verification_link: 'Invalid or expired verification link.'
+    verification_link_expired: 'The verification link has expired. Please register again.'
+  success:
+    account_verified: 'Your account has been verified successfully! You can now log in.'
+
+manager:
+  error:
+    invalid_date: 'Invalid date.'
+
+validator:
+  error:
+    past_time: 'You cannot book an appointment in the past.'
+    barber_not_working: 'The selected barber is not working at this time.'
+    procedure_exceeds_working_hours: 'The procedure will not finish before the end of the barber''s working hours.'
+    barber_busy: 'The selected barber is busy at this time.'
+    client_already_booked: 'You already have an appointment at this time.'

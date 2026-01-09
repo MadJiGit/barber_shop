@@ -13,18 +13,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AdminController extends AbstractController
 {
     private UserRepository $userRepository;
     private ProcedureRepository $procedureRepository;
     private EntityManagerInterface $em;
+    private TranslatorInterface $translator;
 
-    public function __construct(EntityManagerInterface $em, UserRepository $userRepository, ProcedureRepository $procedureRepository)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        UserRepository $userRepository,
+        ProcedureRepository $procedureRepository,
+        TranslatorInterface $translator
+    ) {
         $this->em = $em;
         $this->userRepository = $userRepository;
         $this->procedureRepository = $procedureRepository;
+        $this->translator = $translator;
     }
 
     #[Route('/legacy_admin_menu/{id}', name: 'legacy_admin_menu')]
@@ -214,7 +221,7 @@ class AdminController extends AbstractController
         try {
             $form->handleRequest($request);
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Грешка: '.$e->getMessage());
+            $this->addFlash('error', $this->translator->trans('admin.error.error_occurred', ['%error%' => $e->getMessage()], 'flash_messages'));
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -225,7 +232,7 @@ class AdminController extends AbstractController
             $this->em->flush();
             $this->em->clear();
 
-            $this->addFlash('success', 'Процедурата е добавена успешно.');
+            $this->addFlash('success', $this->translator->trans('admin.success.procedure_added', [], 'flash_messages'));
 
             return $this->redirectToRoute('legacy_admin_procedures');
         }
@@ -252,7 +259,7 @@ class AdminController extends AbstractController
         $procedure = $this->procedureRepository->findOneBy(['id' => $id]);
 
         if (!$procedure) {
-            $this->addFlash('error', 'Процедурата не е намерена.');
+            $this->addFlash('error', $this->translator->trans('admin.error.procedure_not_found', [], 'flash_messages'));
 
             return $this->redirectToRoute('legacy_admin_procedures');
         }
@@ -262,7 +269,7 @@ class AdminController extends AbstractController
         try {
             $form->handleRequest($request);
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Грешка: '.$e->getMessage());
+            $this->addFlash('error', $this->translator->trans('admin.error.error_occurred', ['%error%' => $e->getMessage()], 'flash_messages'));
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -271,7 +278,7 @@ class AdminController extends AbstractController
             $this->em->flush();
             $this->em->clear();
 
-            $this->addFlash('success', 'Процедурата е редактирана успешно.');
+            $this->addFlash('success', $this->translator->trans('admin.success.procedure_edited', [], 'flash_messages'));
 
             return $this->redirectToRoute('legacy_admin_procedures');
         }
@@ -301,9 +308,9 @@ class AdminController extends AbstractController
             $this->em->remove($procedure);
             $this->em->flush();
             $this->em->clear();
-            $this->addFlash('success', 'Процедурата е изтрита успешно.');
+            $this->addFlash('success', $this->translator->trans('admin.success.procedure_deleted', [], 'flash_messages'));
         } else {
-            $this->addFlash('error', 'Процедурата не е намерена.');
+            $this->addFlash('error', $this->translator->trans('admin.error.procedure_not_found', [], 'flash_messages'));
         }
 
         return $this->redirectToRoute('legacy_admin_procedures');

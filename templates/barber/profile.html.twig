@@ -495,7 +495,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-user text-muted mr-2"></i>Име
+                                            <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.first_name' | trans }}
                                         </label>
                                         {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.first_name) }}
@@ -506,7 +506,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-user text-muted mr-2"></i>Фамилия
+                                            <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.last_name' | trans }}
                                         </label>
                                         {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.last_name) }}
@@ -519,7 +519,7 @@
                                         {{ form_label(form.nick_name) }}
                                         {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.nick_name) }}
-                                        <small class="form-text text-muted">По желание. Ако е празно ще използваме вашето име.</small>
+                                        <small class="form-text text-muted">{{ 'profile.form.nickname_help' | trans }}</small>
                                     </div>
                                 </div>
 
@@ -527,7 +527,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-phone text-muted mr-2"></i>Телефон
+                                            <i class="fas fa-phone text-muted mr-2"></i>{{ 'profile.form.phone' | trans }}
                                         </label>
                                         {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.phone) }}
@@ -538,7 +538,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="text-muted">
-                                            <i class="fas fa-calendar-plus mr-2"></i>Член от
+                                            <i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}
                                         </label>
                                         {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
                                     </div>
@@ -548,11 +548,11 @@
                             <!-- Password Change Section -->
                             <hr class="my-4">
                             <h5 class="mb-3">
-                                <i class="fas fa-key text-warning mr-2"></i>Промяна на парола
+                                <i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}
                             </h5>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                <strong>Важно:</strong> При попълване на полетата за парола, ще получите имейл с линк за потвърждение. Паролата ще бъде сменена след потвърждение.
+                                <strong>{{ 'profile.password.important' | trans }}:</strong> {{ 'profile.password.info' | trans }}
                             </div>
 
                             <div class="row">
@@ -560,7 +560,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>Текуща парола
+                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
                                         </label>
                                         {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.current_password) }}
@@ -571,11 +571,11 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>Нова парола
+                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
                                         </label>
                                         {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.new_password) }}
-                                        <small class="form-text text-muted">Минимум 6 символа</small>
+                                        <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
                                     </div>
                                 </div>
 
@@ -583,7 +583,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>Повтори новата парола
+                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
                                         </label>
                                         {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                         {{ form_errors(form.new_password_repeat) }}
@@ -594,9 +594,9 @@
                             <!-- Action Buttons -->
                             <div class="text-center mt-4">
                                 <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
-                                    <i class="fas fa-arrow-left"></i> Обратно към начало
+                                    <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
                                 </a>
-                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'Запази промените'}) }}
+                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': ('profile.actions.save' | trans)}) }}
                             </div>
 
                             {{ form_end(form, {'render_rest': false}) }}

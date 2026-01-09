@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProfileController extends AbstractController
 {
@@ -27,6 +28,7 @@ class ProfileController extends AbstractController
     private Security $security;
     private UserPasswordHasherInterface $passwordHasher;
     private EmailService $emailService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         UserRepository $userRepository,
@@ -36,6 +38,7 @@ class ProfileController extends AbstractController
         Security $security,
         UserPasswordHasherInterface $passwordHasher,
         EmailService $emailService,
+        TranslatorInterface $translator,
     ) {
         $this->userRepository = $userRepository;
         $this->em = $em;
@@ -44,6 +47,7 @@ class ProfileController extends AbstractController
         $this->security = $security;
         $this->passwordHasher = $passwordHasher;
         $this->emailService = $emailService;
+        $this->translator = $translator;
     }
 
     /**
@@ -69,8 +73,7 @@ class ProfileController extends AbstractController
 
         // Security check - only owner or admin can edit
         if (!$authUser || ($authUser->getId() !== $user->getId() && !$isAuthUserAdmin)) {
-            $this->addFlash('error', 'Нямате достъп до този профил.');
-
+            $this->addFlash('error', $this->translator->trans('profile.error.no_access', [], 'flash_messages'));
             return $this->redirectToRoute('main');
         }
 
@@ -92,28 +95,28 @@ class ProfileController extends AbstractController
             if ($passwordChangeRequested) {
                 // Validate password change fields
                 if (empty($currentPassword)) {
-                    $this->addFlash('error', 'Моля, въведете текущата си парола.');
+                    $this->addFlash('error', $this->translator->trans('profile.error.enter_current_password', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
                     return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if (empty($newPassword) || empty($newPasswordRepeat)) {
-                    $this->addFlash('error', 'Моля, въведете новата парола два пъти.');
+                    $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
                     return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if ($newPassword !== $newPasswordRepeat) {
-                    $this->addFlash('error', 'Новите пароли не съвпадат.');
+                    $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
                     return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
                 }
 
                 if (strlen($newPassword) < 6) {
-                    $this->addFlash('error', 'Новата парола трябва да е минимум 6 символа.');
+                    $this->addFlash('error', $this->translator->trans('profile.error.password_min_length', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
                     return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
@@ -121,7 +124,7 @@ class ProfileController extends AbstractController
 
                 // Verify current password
                 if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
-                    $this->addFlash('error', 'Текущата парола е грешна.');
+                    $this->addFlash('error', $this->translator->trans('profile.error.current_password_wrong', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
                     return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
@@ -146,16 +149,14 @@ class ProfileController extends AbstractController
                 try {
                     $this->em->flush();
                 } catch (\Exception $e) {
-                    $this->addFlash('error', 'Възникна грешка: '.$e->getMessage());
+                    $this->addFlash('error', $this->translator->trans('profile.error.error_occurred', ['%error%' => $e->getMessage()], 'flash_messages'));
 
                     return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
                 }
 
                 // Send confirmation email
                 $this->emailService->sendPasswordChangeConfirmation($user, $changeToken, $newPasswordHashed);
-
-                $this->addFlash('success', 'Изпратихме ви имейл с линк за потвърждение на смяната на паролата. Линкът е валиден 1 час.');
-
+                $this->addFlash('success', $this->translator->trans('profile.success.password_change_email_sent', [], 'flash_messages'));
                 $tab = $request->query->get('tab', 'profile');
 
                 return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
@@ -181,12 +182,12 @@ class ProfileController extends AbstractController
             try {
                 $this->em->flush();
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Възникна грешка при обновяване на профила: '.$e->getMessage());
+                $this->addFlash('error', $this->translator->trans('profile.error.error_updating_profile', [], 'flash_messages'));
 
                 return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
             }
 
-            $this->addFlash('success', 'Профилът е обновен успешно!');
+            $this->addFlash('success', $this->translator->trans('profile.success.profile_updated', [], 'flash_messages'));
 
             // Preserve the active tab (from query string)
             $tab = $request->query->get('tab', 'profile');

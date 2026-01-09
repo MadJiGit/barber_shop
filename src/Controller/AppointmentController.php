@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Centralized Appointment Controller
@@ -38,6 +39,7 @@ class AppointmentController extends AbstractController
     private BarberScheduleService $scheduleService;
     private EmailService $emailService;
     private AppointmentService $appointmentService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -49,6 +51,7 @@ class AppointmentController extends AbstractController
         BarberScheduleService $scheduleService,
         EmailService $emailService,
         AppointmentService $appointmentService,
+        TranslatorInterface $translator,
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
@@ -59,6 +62,7 @@ class AppointmentController extends AbstractController
         $this->scheduleService = $scheduleService;
         $this->emailService = $emailService;
         $this->appointmentService = $appointmentService;
+        $this->translator = $translator;
     }
 
     // ========================================
@@ -116,13 +120,13 @@ class AppointmentController extends AbstractController
 
                 // Validate guest fields
                 if (!$guestEmail || !$guestFirstName || !$guestLastName || !$guestPhone) {
-                    $this->addFlash('error', 'Моля, попълнете всички полета за контакт.');
+                    $this->addFlash('error', $this->translator->trans('appointment.error.fill_contact_fields', [], 'flash_messages'));
 
                     return $this->redirectToRoute('appointment_book');
                 }
 
                 if (!$gdprConsent) {
-                    $this->addFlash('error', 'Моля, приемете условията за обработка на лични данни.');
+                    $this->addFlash('error', $this->translator->trans('appointment.error.accept_gdpr', [], 'flash_messages'));
 
                     return $this->redirectToRoute('appointment_book');
                 }
@@ -132,7 +136,7 @@ class AppointmentController extends AbstractController
                 if ($existingUser) {
                     if ($existingUser->getIsActive()) {
                         // Active user exists - they should log in
-                        $this->addFlash('error', 'Потребител с този имейл вече съществува. Моля, влезте в профила си.');
+                        $this->addFlash('error', $this->translator->trans('appointment.error.email_exists', [], 'flash_messages'));
 
                         return $this->redirectToRoute('app_login');
                     }
@@ -160,7 +164,7 @@ class AppointmentController extends AbstractController
 
             // Validate required fields
             if (!$procedureId || !$barberId || !$appointmentStart || !$pickedHours) {
-                $this->addFlash('error', 'Моля, попълнете всички полета.');
+                $this->addFlash('error', $this->translator->trans('appointment.error.fill_all_fields', [], 'flash_messages'));
 
                 return $this->redirectToRoute('appointment_book', $redirectParams);
             }
@@ -170,14 +174,14 @@ class AppointmentController extends AbstractController
 
             // Validate entities exist
             if (!$procedure || !$barber) {
-                $this->addFlash('error', 'Невалидна услуга или бръснар.');
+                $this->addFlash('error', $this->translator->trans('appointment.error.invalid_service_or_barber', [], 'flash_messages'));
 
                 return $this->redirectToRoute('appointment_book', $redirectParams);
             }
 
             // Validate procedure is available
             if (!$procedure->getAvailable()) {
-                $this->addFlash('error', 'Избраната услуга не е налична в момента.');
+                $this->addFlash('error', $this->translator->trans('appointment.error.service_unavailable', [], 'flash_messages'));
 
                 return $this->redirectToRoute('appointment_book', $redirectParams);
             }
@@ -185,7 +189,7 @@ class AppointmentController extends AbstractController
             // Validate barber can perform this procedure
             $canPerform = $this->barberProcedureRepository->canBarberPerformProcedure($barber, $procedure);
             if (!$canPerform) {
-                $this->addFlash('error', 'Избраният бръснар не извършва тази услуга.');
+                $this->addFlash('error', $this->translator->trans('appointment.error.barber_cannot_perform', [], 'flash_messages'));
 
                 return $this->redirectToRoute('appointment_book', $redirectParams);
             }
@@ -194,7 +198,7 @@ class AppointmentController extends AbstractController
             try {
                 $dateAppointment = new \DateTimeImmutable($appointmentStart.' '.$pickedHours);
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Невалидна дата или час.');
+                $this->addFlash('error', $this->translator->trans('appointment.error.invalid_date_time', [], 'flash_messages'));
 
                 return $this->redirectToRoute('appointment_book', $redirectParams);
             }
@@ -231,7 +235,7 @@ class AppointmentController extends AbstractController
                 // Send confirmation email
                 $this->emailService->sendAppointmentConfirmation($appointment);
 
-                $this->addFlash('success', 'Успешно запазихте час!');
+                $this->addFlash('success', $this->translator->trans('appointment.success.booked', [], 'flash_messages'));
             } else {
                 // Guest user - needs confirmation
                 $appointment = $this->appointmentService->createGuestAppointment(
@@ -245,7 +249,7 @@ class AppointmentController extends AbstractController
                 // Send confirmation email with token
                 $this->appointmentService->sendGuestConfirmationEmail($appointment);
 
-                $this->addFlash('success', 'Резервацията е направена! Моля, проверете имейла си за потвърждение.');
+                $this->addFlash('success', $this->translator->trans('appointment.success.guest_booked', [], 'flash_messages'));
             }
 
             return $this->redirectToRoute('appointment_book', $redirectParams);
@@ -299,11 +303,11 @@ class AppointmentController extends AbstractController
         $appointment = $this->appointmentService->confirmAppointment($token);
 
         if (!$appointment) {
-            $this->addFlash('error', 'Невалиден или изтекъл линк за потвърждение.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.invalid_confirmation_link', [], 'flash_messages'));
             return $this->redirectToRoute('main');
         }
 
-        $this->addFlash('success', 'Вашата резервация е потвърдена успешно!');
+        $this->addFlash('success', $this->translator->trans('appointment.success.confirmed', [], 'flash_messages'));
         return $this->redirectToRoute('main');
     }
 
@@ -316,11 +320,11 @@ class AppointmentController extends AbstractController
         $appointment = $this->appointmentService->cancelAppointmentByToken($token, 'Отказана от клиента');
 
         if (!$appointment) {
-            $this->addFlash('error', 'Невалиден линк за отказване.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.invalid_cancel_link', [], 'flash_messages'));
             return $this->redirectToRoute('main');
         }
 
-        $this->addFlash('success', 'Вашата резервация е отказана.');
+        $this->addFlash('success', $this->translator->trans('appointment.success.cancelled_by_guest', [], 'flash_messages'));
         return $this->redirectToRoute('main');
     }
 
@@ -336,7 +340,7 @@ class AppointmentController extends AbstractController
         // Verify CSRF token
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('cancel_appointment', $token)) {
-            $this->addFlash('error', 'Невалиден CSRF токен.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.invalid_csrf', [], 'flash_messages'));
 
             return $this->redirectToRoute('main');
         }
@@ -345,7 +349,7 @@ class AppointmentController extends AbstractController
         $appointment = $this->em->getRepository(Appointments::class)->find($id);
 
         if (!$appointment) {
-            $this->addFlash('error', 'Часът не е намерен.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.appointment_not_found', [], 'flash_messages'));
 
             return $this->redirectToRoute('main');
         }
@@ -353,7 +357,7 @@ class AppointmentController extends AbstractController
         // Verify user owns this appointment
         $authUser = parent::getUser();
         if (!$authUser || $appointment->getClient()->getId() !== $authUser->getId()) {
-            $this->addFlash('error', 'Нямате право да отменяте този час.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.no_permission_cancel', [], 'flash_messages'));
 
             return $this->redirectToRoute('main');
         }
@@ -361,7 +365,7 @@ class AppointmentController extends AbstractController
         // Check if appointment is in the future
         $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
-            $this->addFlash('error', 'Не можете да отменяте час, който вече е минал.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.cannot_cancel_past', [], 'flash_messages'));
             $tab = $request->request->get('tab', 'profile');
 
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
@@ -369,7 +373,7 @@ class AppointmentController extends AbstractController
 
         // Check if already cancelled
         if ('cancelled' === $appointment->getStatus()) {
-            $this->addFlash('warning', 'Този час вече е отменен.');
+            $this->addFlash('warning', $this->translator->trans('appointment.warning.already_cancelled', [], 'flash_messages'));
             $tab = $request->request->get('tab', 'profile');
 
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
@@ -386,7 +390,7 @@ class AppointmentController extends AbstractController
         // Send cancellation email notification
         $this->emailService->sendAppointmentCancellation($appointment, 'client');
 
-        $this->addFlash('success', 'Часът е успешно отменен.');
+        $this->addFlash('success', $this->translator->trans('appointment.success.cancelled', [], 'flash_messages'));
 
         $tab = $request->request->get('tab', 'profile');
 
@@ -405,7 +409,7 @@ class AppointmentController extends AbstractController
         $appointment = $this->em->getRepository(Appointments::class)->find($id);
 
         if (!$appointment) {
-            $this->addFlash('error', 'Часът не е намерен.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.appointment_not_found', [], 'flash_messages'));
 
             return $this->redirectToRoute('main');
         }
@@ -413,7 +417,7 @@ class AppointmentController extends AbstractController
         // Verify user owns this appointment
         $authUser = parent::getUser();
         if (!$authUser || $appointment->getClient()->getId() !== $authUser->getId()) {
-            $this->addFlash('error', 'Нямате право да променяте този час.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.no_permission_reschedule', [], 'flash_messages'));
 
             return $this->redirectToRoute('main');
         }
@@ -421,14 +425,14 @@ class AppointmentController extends AbstractController
         // Check if appointment is in the future
         $now = DateTimeHelper::now();
         if ($appointment->getDate() <= $now) {
-            $this->addFlash('error', 'Не можете да променяте час, който вече е минал.');
+            $this->addFlash('error', $this->translator->trans('appointment.error.cannot_reschedule_past', [], 'flash_messages'));
 
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
         }
 
         // Check if already cancelled
         if ('cancelled' === $appointment->getStatus()) {
-            $this->addFlash('warning', 'Не можете да променяте отменен час.');
+            $this->addFlash('warning', $this->translator->trans('appointment.warning.cannot_reschedule_cancelled', [], 'flash_messages'));
 
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
         }
@@ -444,7 +448,7 @@ class AppointmentController extends AbstractController
         $this->emailService->sendAppointmentCancellation($appointment, 'client');
 
         // Redirect to booking page
-        $this->addFlash('info', 'Изберете нов час за вашето посещение.');
+        $this->addFlash('info', $this->translator->trans('appointment.info.choose_new_slot', [], 'flash_messages'));
 
         return $this->redirectToRoute('appointment_book', ['id' => $authUser->getId()]);
     }

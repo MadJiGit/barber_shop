@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/manager')]
 #[IsGranted('ROLE_MANAGER')]
@@ -26,6 +27,7 @@ class ManagerController extends AbstractController
     private UserRepository $userRepository;
     private BarberScheduleService $scheduleService;
     private AppointmentValidator $appointmentValidator;
+    private TranslatorInterface $translator;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -33,12 +35,14 @@ class ManagerController extends AbstractController
         UserRepository $userRepository,
         BarberScheduleService $scheduleService,
         AppointmentValidator $appointmentValidator,
+        TranslatorInterface $translator
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
         $this->userRepository = $userRepository;
         $this->scheduleService = $scheduleService;
         $this->appointmentValidator = $appointmentValidator;
+        $this->translator = $translator;
     }
 
     /**
@@ -128,7 +132,8 @@ class ManagerController extends AbstractController
                 //                $startDate = new DateTimeInterface($filterDate);
                 $endDate = $startDate->modify('+1 day');
             } catch (\Exception $e) {
-                $this->addFlash('error', 'Невалидна дата.');
+                $this->addFlash('error', $this->translator->trans('manager.error.invalid_date', [], 'flash_messages'));
+
             }
         }
 

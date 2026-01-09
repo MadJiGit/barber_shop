@@ -70,6 +70,15 @@ homepage:
             text: 'Excellent service! The barbers are highly skilled and the atmosphere is very professional. I''ve been a regular customer for over a year now.'
             name: 'John Smith'
             role: 'Regular Client'
+    team:
+        subtitle: 'Our Team'
+        title: 'Meet Our Experts'
+        member1:
+            name: 'Johnny Bravo'
+            role: 'Master Barber'
+        member2:
+            name: 'Tony Montana'
+            role: 'Barber'
 
 
 # base_iframe.html.twig

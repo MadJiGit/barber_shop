@@ -15,9 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
+    private TranslatorInterface $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -70,7 +77,7 @@ class SecurityController extends AbstractController
                 $emailService->sendPasswordResetEmail($user, $resetToken);
             }
 
-            $this->addFlash('success', 'Ако този имейл адрес е регистриран, ще получите линк за възстановяване на паролата.');
+            $this->addFlash('success', $this->translator->trans('security.success.reset_email_sent', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
@@ -92,14 +99,14 @@ class SecurityController extends AbstractController
         $user = $userRepository->findOneBy(['confirmation_token' => $token]);
 
         if (!$user) {
-            $this->addFlash('error', 'Невалиден или изтекъл линк за възстановяване.');
+            $this->addFlash('error', $this->translator->trans('security.error.invalid_reset_link', [], 'flash_messages'));
             return $this->redirectToRoute('app_forgot_password');
         }
 
         // Check if token has expired
         $now = DateTimeHelper::now();
         if ($user->getTokenExpiresAt() < $now) {
-            $this->addFlash('error', 'Линкът за възстановяване е изтекъл. Моля, поискайте нов.');
+            $this->addFlash('error', $this->translator->trans('security.error.reset_link_expired', [], 'flash_messages'));
             return $this->redirectToRoute('app_forgot_password');
         }
 
@@ -111,7 +118,7 @@ class SecurityController extends AbstractController
             $plainRepeatPassword = $form->get('plainRepeatPassword')->getData();
 
             if ($plainPassword !== $plainRepeatPassword) {
-                $this->addFlash('error', 'Паролите не съвпадат.');
+                $this->addFlash('error', $this->translator->trans('security.error.passwords_do_not_match', [], 'flash_messages'));
                 return $this->render('security/reset_password.html.twig', [
                     'resetPasswordForm' => $form,
                 ]);
@@ -124,7 +131,7 @@ class SecurityController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Паролата е променена успешно! Можете да влезете.');
+            $this->addFlash('success', $this->translator->trans('security.success.password_changed', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
@@ -150,14 +157,14 @@ class SecurityController extends AbstractController
         $user = $userRepository->findOneBy(['confirmation_token' => $token]);
 
         if (!$user) {
-            $this->addFlash('error', 'Невалиден или изтекъл линк за потвърждение.');
+            $this->addFlash('error', $this->translator->trans('security.error.invalid_verification_link', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
         // Check if token has expired
         $now = DateTimeHelper::now();
         if ($user->getTokenExpiresAt() < $now) {
-            $this->addFlash('error', 'Линкът за потвърждение е изтекъл (валиден 1 час). Моля, поискайте нова смяна на парола.');
+            $this->addFlash('error', $this->translator->trans('security.error.verification_link_expired', [], 'flash_messages'));
 
             // Clear expired token
             $user->setConfirmationToken(null);
@@ -171,7 +178,7 @@ class SecurityController extends AbstractController
         $newPasswordHashed = $request->getSession()->get('pending_password_change_' . $user->getId());
 
         if (!$newPasswordHashed) {
-            $this->addFlash('error', 'Сесията е изтекла. Моля, опитайте отново.');
+            $this->addFlash('error', $this->translator->trans('security.error.session_expired', [], 'flash_messages'));
             return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
         }
 
@@ -193,7 +200,7 @@ class SecurityController extends AbstractController
             $security->logout(false);
         }
 
-        $this->addFlash('success', 'Паролата е променена успешно! Моля, влезте с новата си парола.');
+        $this->addFlash('success', $this->translator->trans('security.success.password_changed_login', [], 'flash_messages'));
         return $this->redirectToRoute('app_login');
     }
 }

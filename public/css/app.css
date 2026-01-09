@@ -161,3 +161,72 @@
 .text-small {
     font-size: 12px;
 }
+
+/* Team Section */
+.team-area {
+    background-color: #f8f9fa;
+}
+
+.team-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.team-img {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    position: relative;
+}
+
+.team-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover .team-img img {
+    transform: scale(1.05);
+}
+
+.team-caption {
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.team-caption h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.team-caption span {
+    font-size: 16px;
+    color: #d4a574;
+    font-weight: 500;
+}
+
+/* Responsive for team section */
+@media (max-width: 768px) {
+    .team-img {
+        height: 300px;
+    }
+
+    .team-caption h3 {
+        font-size: 20px;
+    }
+
+    .team-caption span {
+        font-size: 14px;
+    }
+}

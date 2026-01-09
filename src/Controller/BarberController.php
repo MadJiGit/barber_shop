@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/barber')]
 class BarberController extends AbstractController
@@ -22,15 +23,18 @@ class BarberController extends AbstractController
     private EntityManagerInterface $em;
     private AppointmentsRepository $appointmentsRepository;
     private BarberScheduleService $scheduleService;
+    private TranslatorInterface $translator;
 
     public function __construct(
         EntityManagerInterface $em,
         AppointmentsRepository $appointmentsRepository,
-        BarberScheduleService $scheduleService
+        BarberScheduleService $scheduleService,
+        TranslatorInterface $translator
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
         $this->scheduleService = $scheduleService;
+        $this->translator = $translator;
     }
 
     /**
@@ -42,13 +46,13 @@ class BarberController extends AbstractController
         $authUser = parent::getUser();
 
         if (!$authUser) {
-            $this->addFlash('error', 'Трябва да влезете в профила си.');
+            $this->addFlash('error', $this->translator->trans('barber.error.must_login', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
         // Check if user is barber
         if (!$authUser->isBarber()) {
-            $this->addFlash('error', 'Нямате достъп до този раздел.');
+            $this->addFlash('error', $this->translator->trans('barber.error.no_access', [], 'flash_messages'));
             return $this->redirectToRoute('main');
         }
 
@@ -184,14 +188,14 @@ class BarberController extends AbstractController
         $authUser = parent::getUser();
 
         if (!$authUser || !$authUser->isBarber()) {
-            $this->addFlash('error', 'Нямате достъп до този раздел.');
+            $this->addFlash('error', $this->translator->trans('barber.error.no_access', [], 'flash_messages'));
             return $this->redirectToRoute('main');
         }
 
         // Verify CSRF token
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('barber_procedures', $token)) {
-            $this->addFlash('error', 'Невалиден CSRF токен.');
+            $this->addFlash('error', $this->translator->trans('barber.error.invalid_csrf', [], 'flash_messages'));
             $tab = $request->request->get('tab', 'calendar');
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
         }
@@ -246,7 +250,7 @@ class BarberController extends AbstractController
 
         $this->em->flush();
 
-        $this->addFlash('success', 'Услугите са актуализирани успешно!');
+        $this->addFlash('success', $this->translator->trans('barber.success.procedures_updated', [], 'flash_messages'));
         $tab = $request->request->get('tab', 'procedures');
         return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId(), 'tab' => $tab]);
     }

@@ -4,3 +4,97 @@ toast:
     error: 'Грешка'
     warning: 'Предупреждение'
     info: 'Информация'
+
+appointment:
+  error:
+    fill_contact_fields: 'Моля, попълнете всички полета за контакт.'
+    accept_gdpr: 'Моля, приемете условията за обработка на лични данни.'
+    email_exists: 'Потребител с този имейл вече съществува. Моля, влезте в профила си.'
+    fill_all_fields: 'Моля, попълнете всички полета.'
+    invalid_service_or_barber: 'Невалидна услуга или бръснар.'
+    service_unavailable: 'Избраната услуга не е налична в момента.'
+    barber_cannot_perform: 'Избраният бръснар не извършва тази услуга.'
+    invalid_date_time: 'Невалидна дата или час.'
+    invalid_confirmation_link: 'Невалиден или изтекъл линк за потвърждение.'
+    invalid_cancel_link: 'Невалиден линк за отказване.'
+    invalid_csrf: 'Невалиден CSRF токен.'
+    appointment_not_found: 'Часът не е намерен.'
+    no_permission_cancel: 'Нямате право да отменяте този час.'
+    cannot_cancel_past: 'Не можете да отменяте час, който вече е минал.'
+    no_permission_reschedule: 'Нямате право да променяте този час.'
+    cannot_reschedule_past: 'Не можете да променяте час, който вече е минал.'
+  success:
+    booked: 'Успешно запазихте час!'
+    guest_booked: 'Резервацията е направена! Моля, проверете имейла си за потвърждение.'
+    confirmed: 'Вашата резервация е потвърдена успешно!'
+    cancelled_by_guest: 'Вашата резервация е отказана.'
+    cancelled: 'Часът е успешно отменен.'
+  warning:
+    already_cancelled: 'Този час вече е отменен.'
+    cannot_reschedule_cancelled: 'Не можете да променяте отменен час.'
+  info:
+    choose_new_slot: 'Изберете нов час за вашето посещение.'
+
+profile:
+  error:
+    no_access: 'Нямате достъп до този профил.'
+    enter_current_password: 'Моля, въведете текущата си парола.'
+    enter_new_password_twice: 'Моля, въведете новата парола два пъти.'
+    passwords_do_not_match: 'Новите пароли не съвпадат.'
+    password_min_length: 'Новата парола трябва да е минимум 6 символа.'
+    current_password_wrong: 'Текущата парола е грешна.'
+    error_occurred: 'Възникна грешка: %error%'
+    error_updating_profile: 'Възникна грешка при обновяване на профила: %error%'
+  success:
+    password_change_email_sent: 'Изпратихме ви имейл с линк за потвърждение на смяната на паролата. Линкът е валиден 1 час.'
+    profile_updated: 'Профилът е обновен успешно!'
+
+security:
+  error:
+    invalid_reset_link: 'Невалиден или изтекъл линк за възстановяване.'
+    reset_link_expired: 'Линкът за възстановяване е изтекъл. Моля, поискайте нов.'
+    passwords_do_not_match: 'Паролите не съвпадат.'
+    invalid_verification_link: 'Невалиден или изтекъл линк за потвърждение.'
+    verification_link_expired: 'Линкът за потвърждение е изтекъл (валиден 1 час). Моля, поискайте нова смяна на парола.'
+    session_expired: 'Сесията е изтекла. Моля, опитайте отново.'
+  success:
+    reset_email_sent: 'Ако този имейл адрес е регистриран, ще получите линк за възстановяване на паролата.'
+    password_changed: 'Паролата е променена успешно! Можете да влезете.'
+    password_changed_login: 'Паролата е променена успешно! Моля, влезте с новата си парола.'
+
+admin:
+  error:
+    error_occurred: 'Грешка: %error%'
+    procedure_not_found: 'Процедурата не е намерена.'
+  success:
+    procedure_added: 'Процедурата е добавена успешно.'
+    procedure_edited: 'Процедурата е редактирана успешно.'
+    procedure_deleted: 'Процедурата е изтрита успешно.'
+
+barber:
+  error:
+    must_login: 'Трябва да влезете в профила си.'
+    no_access: 'Нямате достъп до този раздел.'
+    invalid_csrf: 'Невалиден CSRF токен.'
+  success:
+    procedures_updated: 'Услугите са актуализирани успешно!'
+
+registration:
+  error:
+    passwords_do_not_match: 'Паролите не съвпадат.'
+    invalid_verification_link: 'Невалиден или изтекъл линк за потвърждение.'
+    verification_link_expired: 'Линкът за потвърждение е изтекъл. Моля, регистрирайте се отново.'
+  success:
+    account_verified: 'Вашият акаунт е потвърден успешно! Можете да влезете.'
+
+manager:
+  error:
+    invalid_date: 'Невалидна дата.'
+
+validator:
+  error:
+    past_time: 'Не можете да запазите час в миналото.'
+    barber_not_working: 'Избраният бръснар не работи в този час.'
+    procedure_exceeds_working_hours: 'Процедурата няма да приключи преди края на работното време на бръснаря.'
+    barber_busy: 'Избраният бръснар е зает в този час.'
+    client_already_booked: 'Вие вече имате запазен час по това време.'
