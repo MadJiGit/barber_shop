@@ -32,6 +32,44 @@ homepage:
         track_description: 'Искате ли да следите вашите резервации?'
         track_button: 'Създайте акаунт'
         book_now_button: 'ЗАПАЗИ СЕГА!'
+    pricing:
+        subtitle: 'Ценови планове'
+        title: 'Нашите достъпни цени'
+        book_now: 'Запази час'
+        basic:
+            name: 'Базов пакет'
+            price: 'EUR 13.00'
+            duration: '/ Подстригване'
+            feature1: 'Професионално подстригване'
+            feature2: 'Измиване на коса'
+            feature3: 'Основно стилизиране'
+            feature4: '30-40 минути'
+        premium:
+            name: 'Премиум пакет'
+            price: 'EUR 20.00'
+            duration: '/ Услуга'
+            feature1: 'Премиум подстригване и стилизиране'
+            feature2: 'Третиране на косата'
+            feature3: 'Оформяне на брада'
+            feature4: 'Гореща кърпа'
+            feature5: '45-55 минути'
+        deluxe:
+            name: 'Делукс пакет'
+            price: 'EUR 40.00'
+            duration: '/ Пълна услуга'
+            feature1: 'Премиум подстригване и боядисване'
+            feature2: 'Дълбоко третиране на косата'
+            feature3: 'Скулптиране на брада'
+            feature4: 'Бръснене с гореща кърпа'
+            feature5: 'Масаж на глава'
+            feature6: '90+ минути'
+    testimonials:
+        subtitle: 'Отзиви'
+        title: 'Какво казват нашите клиенти'
+        client1:
+            text: 'Отлично обслужване! Барберите са високо квалифицирани и атмосферата е много професионална. Редовен съм клиент повече от година.'
+            name: 'Иван Петров'
+            role: 'Редовен клиент'
 
 
 # base_iframe.html.twig
@@ -364,7 +402,7 @@ guest_confirm:
     duration: "Продължителност"
     price: "Цена"
     minutes: "мин."
-    currency: "лв."
+    currency: "€"
     button_confirm: "✓ Потвърдете резервацията"
     cancel_text: "Ако искате да <strong>отмените</strong> резервацията, кликнете"
     cancel_here: "тук"
@@ -402,7 +440,7 @@ reminder:
     duration: "Продължителност"
     price: "Цена"
     minutes: "мин."
-    currency: "лв."
+    currency: "€"
     preparation_title: "Подготовка"
     preparation_text: "Моля, пристигнете 5 минути по-рано. Ако имате нужда от допълнителни услуги, можете да ги обсъдите директно с бръснаря."
     cancel_header: "Трябва да отмените"
@@ -428,7 +466,7 @@ confirm:
     duration: "Продължителност"
     price: "Цена"
     minutes: "мин."
-    currency: "лв."
+    currency: "€"
     important: "ℹ️ Важно"
     important_text: "Моля, бъдете на време. Ако имате нужда да отмените или промените часа си, можете да го направите от вашия профил или да се свържете с нас."
     view_appointments: "Вижте вашите часове"
@@ -526,7 +564,7 @@ profile:
             completed_done: "Изпълнен"
             cancelled: "Отменен"
             no_show: "Недошъл"
-        currency: "лв"
+        currency: "€"
     history:
         filters:
             from_date: "От дата"
@@ -555,7 +593,7 @@ profile:
             completed_done: "Изпълнен"
             cancelled: "Отменен"
             no_show: "Недошъл"
-        currency: "лв"
+        currency: "€"
 
 
 # appointment.html.twig
@@ -660,7 +698,7 @@ barber:
         price: "Цена"
         duration: "Време"
         minutes: "мин"
-        currency: "лв"
+        currency: "€"
         actions:
             save: "Запази промените"
     history:
@@ -679,7 +717,7 @@ barber:
             completed: "Изпълнен"
             cancelled: "Отменен"
             no_show: "Недошъл"
-        currency: "лв"
+        currency: "€"
     schedule:
         loading: "Зареждане..."
         working_day: "Работя този ден"

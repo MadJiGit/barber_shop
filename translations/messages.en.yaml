@@ -32,6 +32,44 @@ homepage:
         track_description: 'Want to track your appointments?'
         track_button: 'Create an account'
         book_now_button: 'BOOK NOW!'
+    pricing:
+        subtitle: 'Pricing Plans'
+        title: 'Our Affordable Pricing'
+        book_now: 'Book Now'
+        basic:
+            name: 'Basic Package'
+            price: 'EUR 13.00'
+            duration: '/ Haircut'
+            feature1: 'Professional Haircut'
+            feature2: 'Hair Wash'
+            feature3: 'Basic Styling'
+            feature4: '30-40 minutes'
+        premium:
+            name: 'Premium Package'
+            price: 'EUR 20.00'
+            duration: '/ Service'
+            feature1: 'Premium Haircut & Styling'
+            feature2: 'Hair Treatment'
+            feature3: 'Beard Styling'
+            feature4: 'Hot Towel Service'
+            feature5: '45-55 minutes'
+        deluxe:
+            name: 'Deluxe Package'
+            price: 'EUR 40.00'
+            duration: '/ Full Service'
+            feature1: 'Premium Haircut & Coloring'
+            feature2: 'Deep Hair Treatment'
+            feature3: 'Beard Sculpting'
+            feature4: 'Hot Towel Shave'
+            feature5: 'Head Massage'
+            feature6: '90+ minutes'
+    testimonials:
+        subtitle: 'Testimonials'
+        title: 'What Our Clients Say'
+        client1:
+            text: 'Excellent service! The barbers are highly skilled and the atmosphere is very professional. I''ve been a regular customer for over a year now.'
+            name: 'John Smith'
+            role: 'Regular Client'
 
 
 # base_iframe.html.twig
@@ -365,7 +403,7 @@ guest_confirm:
     duration: "Duration"
     price: "Price"
     minutes: "min"
-    currency: "BGN"
+    currency: "EUR"
     button_confirm: "✓ Confirm Appointment"
     cancel_text: "If you wish to <strong>cancel</strong> the appointment, click"
     cancel_here: "here"
@@ -403,7 +441,7 @@ reminder:
     duration: "Duration"
     price: "Price"
     minutes: "min"
-    currency: "BGN"
+    currency: "EUR"
     preparation_title: "Preparation"
     preparation_text: "Please arrive 5 minutes earlier. If you need additional services, you can discuss them directly with the barber."
     cancel_header: "Need to cancel"
@@ -429,7 +467,7 @@ confirm:
     duration: "Duration"
     price: "Price"
     minutes: "min."
-    currency: "BGN"
+    currency: "EUR"
     important: "Important"
     important_text: "Please be on time. If you need to cancel or change your appointment, you can do so from your profile or by contacting us."
     view_appointments: "View Your Appointments"
@@ -527,7 +565,7 @@ profile:
             completed_done: "Completed"
             cancelled: "Cancelled"
             no_show: "No-show"
-        currency: "BGN"
+        currency: "EUR"
     history:
         filters:
             from_date: "From date"
@@ -556,7 +594,7 @@ profile:
             completed_done: "Completed"
             cancelled: "Cancelled"
             no_show: "No-show"
-        currency: "BGN"
+        currency: "EUR"
 
 # appointment.html.twig
 
@@ -660,7 +698,7 @@ barber:
         price: "Price"
         duration: "Duration"
         minutes: "min"
-        currency: "BGN"
+        currency: "EUR"
         actions:
             save: "Save changes"
     history:
@@ -679,7 +717,7 @@ barber:
             completed: "Completed"
             cancelled: "Cancelled"
             no_show: "No-show"
-        currency: "BGN"
+        currency: "EUR"
     schedule:
         loading: "Loading..."
         working_day: "Working this day"

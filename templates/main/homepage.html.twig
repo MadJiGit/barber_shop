@@ -188,8 +188,8 @@
             <div class="row justify-content-center">
                 <div class="col-xl-7 col-lg-8">
                     <div class="section-tittle text-center mb-55">
-                        <span>Pricing Plans</span>
-                        <h2>Our Affordable Pricing</h2>
+                        <span>{{ 'homepage.pricing.subtitle' | trans }}</span>
+                        <h2>{{ 'homepage.pricing.title' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -197,21 +197,21 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="properties pb-30">
                         <div class="properties-caption">
-                            <h3>Basic Package</h3>
+                            <h3>{{ 'homepage.pricing.basic.name' | trans }}</h3>
                             <div class="price">
-                                <span class="amount">$25</span>
-                                <span class="duration">/ Haircut</span>
+                                <span class="amount">{{ 'homepage.pricing.basic.price' | trans }}</span>
+                                <span class="duration">{{ 'homepage.pricing.basic.duration' | trans }}</span>
                             </div>
                             <ul class="pricing-features">
-                                <li>Professional Haircut</li>
-                                <li>Hair Wash</li>
-                                <li>Basic Styling</li>
-                                <li>30-40 minutes</li>
+                                <li>{{ 'homepage.pricing.basic.feature1' | trans }}</li>
+                                <li>{{ 'homepage.pricing.basic.feature2' | trans }}</li>
+                                <li>{{ 'homepage.pricing.basic.feature3' | trans }}</li>
+                                <li>{{ 'homepage.pricing.basic.feature4' | trans }}</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% else %}
-                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% endif %}
                         </div>
                     </div>
@@ -219,22 +219,22 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="properties pb-30">
                         <div class="properties-caption">
-                            <h3>Premium Package</h3>
+                            <h3>{{ 'homepage.pricing.premium.name' | trans }}</h3>
                             <div class="price">
-                                <span class="amount">$40</span>
-                                <span class="duration">/ Service</span>
+                                <span class="amount">{{ 'homepage.pricing.premium.price' | trans }}</span>
+                                <span class="duration">{{ 'homepage.pricing.premium.duration' | trans }}</span>
                             </div>
                             <ul class="pricing-features">
-                                <li>Premium Haircut & Styling</li>
-                                <li>Hair Treatment</li>
-                                <li>Beard Styling</li>
-                                <li>Hot Towel Service</li>
-                                <li>45-55 minutes</li>
+                                <li>{{ 'homepage.pricing.premium.feature1' | trans }}</li>
+                                <li>{{ 'homepage.pricing.premium.feature2' | trans }}</li>
+                                <li>{{ 'homepage.pricing.premium.feature3' | trans }}</li>
+                                <li>{{ 'homepage.pricing.premium.feature4' | trans }}</li>
+                                <li>{{ 'homepage.pricing.premium.feature5' | trans }}</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% else %}
-                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% endif %}
                         </div>
                     </div>
@@ -242,23 +242,23 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="properties pb-30">
                         <div class="properties-caption">
-                            <h3>Deluxe Package</h3>
+                            <h3>{{ 'homepage.pricing.deluxe.name' | trans }}</h3>
                             <div class="price">
-                                <span class="amount">$60</span>
-                                <span class="duration">/ Full Service</span>
+                                <span class="amount">{{ 'homepage.pricing.deluxe.price' | trans }}</span>
+                                <span class="duration">{{ 'homepage.pricing.deluxe.duration' | trans }}</span>
                             </div>
                             <ul class="pricing-features">
-                                <li>Premium Haircut & Coloring</li>
-                                <li>Deep Hair Treatment</li>
-                                <li>Beard Sculpting</li>
-                                <li>Hot Towel Shave</li>
-                                <li>Head Massage</li>
-                                <li>90+ minutes</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature1' | trans }}</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature2' | trans }}</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature3' | trans }}</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature4' | trans }}</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature5' | trans }}</li>
+                                <li>{{ 'homepage.pricing.deluxe.feature6' | trans }}</li>
                             </ul>
                             {% if app.user %}
-                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book', {id: app.user.id}) }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% else %}
-                                <a href="{{ path('appointment_book') }}" class="border-btn">Book Now</a>
+                                <a href="{{ path('appointment_book') }}" class="border-btn">{{ 'homepage.pricing.book_now' | trans }}</a>
                             {% endif %}
                         </div>
                     </div>
@@ -268,14 +268,20 @@
     </section>
     <!-- Pricing Area End -->
 
+    <!--? Our Team Area Start -->
+
+    // TODO : Add team section with pics
+
+    <!-- Our Team Area End -->
+
     <!--? Testimonials Area Start -->
     <div class="testimonial-area fix">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-xl-7 col-lg-8">
                     <div class="section-tittle text-center mb-80">
-                        <span>Testimonials</span>
-                        <h2>What Our Clients Say</h2>
+                        <span>{{ 'homepage.testimonials.subtitle' | trans }}</span>
+                        <h2>{{ 'homepage.testimonials.title' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -286,12 +292,12 @@
                         <div class="single-testimonial text-center">
                             <div class="testimonial-caption">
                                 <div class="testimonial-top-cap">
-                                    <p>"Excellent service! The barbers are highly skilled and the atmosphere is very professional. I've been a regular customer for over a year now."</p>
+                                    <p>"{{ 'homepage.testimonials.client1.text' | trans }}"</p>
                                 </div>
                                 <div class="testimonial-founder d-flex align-items-center justify-content-center">
                                     <div class="founder-text">
-                                        <span>John Smith</span>
-                                        <p>Regular Client</p>
+                                        <span>{{ 'homepage.testimonials.client1.name' | trans }}</span>
+                                        <p>{{ 'homepage.testimonials.client1.role' | trans }}</p>
                                     </div>
                                 </div>
                             </div>
