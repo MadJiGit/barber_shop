@@ -269,7 +269,7 @@ class AppointmentController extends AbstractController
                 'id' => $barber->getId(),
                 'firstName' => $barber->getFirstName(),
                 'lastName' => $barber->getLastName(),
-                'barberTitleBg' => $barber->getBarberTitleBg(),
+                'barberRole' => $barber->getBarberRole(),
                 'isBarberJunior' => $barber->isBarberJunior(),
             ];
 

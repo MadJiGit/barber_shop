@@ -145,7 +145,7 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
                                                 </label>
-                                                {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.current_placeholder'|trans}}) }}
                                                 {{ form_errors(form.current_password) }}
                                             </div>
                                         </div>
@@ -156,7 +156,7 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
                                                 </label>
-                                                {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.new_placeholder'|trans}}) }}
                                                 {{ form_errors(form.new_password) }}
                                                 <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
                                             </div>
@@ -168,7 +168,7 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
                                                 </label>
-                                                {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.repeat_placeholder'|trans}}) }}
                                                 {{ form_errors(form.new_password_repeat) }}
                                             </div>
                                         </div>
@@ -176,7 +176,7 @@
 
                                     <!-- Action Buttons -->
                                     <div class="text-center mt-4">
-                                        <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
+                                        <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg px-5 mr-2" id="backButton">
                                             <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
                                         </a>
                                         {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
@@ -320,7 +320,7 @@
                                                             <td>{{ appointment.date|date('d.m.Y') }}</td>
                                                             <td>{{ appointment.date|date('H:i') }}</td>
                                                             <td>
-                                                                {{ appointment.barber.barberTitleBg }} {{ appointment.barber.firstName }}
+                                                                {{ ('roles.' ~ appointment.barber.barberRole) | trans }} {{ appointment.barber.firstName }}
                                                             </td>
                                                             <td>{{ appointment.procedureType.type }}</td>
                                                             <td>
@@ -524,7 +524,7 @@
                                                             <td>{{ appointment.date|date('d.m.Y') }}</td>
                                                             <td>{{ appointment.date|date('H:i') }}</td>
                                                             <td>
-                                                                {{ appointment.barber.barberTitleBg }} {{ appointment.barber.firstName }}
+                                                                {{ ('roles.' ~ appointment.barber.barberRole) | trans }} {{ appointment.barber.firstName }}
                                                             </td>
                                                             <td>{{ appointment.procedureType.type }}</td>
                                                             <td>

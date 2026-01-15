@@ -252,6 +252,7 @@ appointments:
     subtitle: "Преглед и редакция на всички резервации"
     nav_dashboard: "Табло"
     nav_all: "Всички резервации"
+    schedule: "Графици на бръснари"
     filters:
         title: "Филтри"
         date: "Дата"
@@ -542,6 +543,9 @@ profile:
         new: "Нова парола"
         repeat: "Повтори новата парола"
         hint: "Минимум 6 символа"
+        current_placeholder: "Само ако искате да смените паролата"
+        new_placeholder: "Минимум 6 символа"
+        repeat_placeholder: "Повторете новата парола"
     actions:
         back: "Обратно към начало"
         save: "Запази промените"
@@ -777,11 +781,17 @@ admin:
     users:
         actions:
             edit: "Редакция"
+
+# Roles (used throughout the application)
+
 roles:
     role_user: "Потребител"
     role_admin: "Администратор"
     role_editor: "Редактор"
     role_super_admin: "Супер администратор"
+    ROLE_BARBER_SENIOR: "Старши Бръснар"
+    ROLE_BARBER: "Бръснар"
+    ROLE_BARBER_JUNIOR: "Младши Бръснар"
 
 # admin/user_edit.html.twig
 
@@ -847,6 +857,93 @@ manager_dashboard:
         dashboard: "Табло"
         all_appointments: "Всички резервации"
         barber_schedules: "Графици на бръснари"
+    stats:
+        today: "Днес"
+        confirmed: "Потвърдени"
+        completed: "Завършени"
+        this_week: "Тази седмица"
+        this_month: "Този месец"
+        total_appointments: "Общо резервации"
+        barbers: "Барбъри"
+        active_barbers: "Активни служители"
+    today:
+        title: "Днешни резервации"
+        empty: "Няма резервации за днес."
+    table:
+        time: "Час"
+        client: "Клиент"
+        barber: "Барбър"
+        service: "Услуга"
+        duration: "Продължителност"
+        status: "Статус"
+    status:
+        confirmed: "Потвърден"
+        completed: "Завършен"
+        cancelled: "Отменен"
+    actions:
+        view_all: "Виж всички резервации"
+    minutes: "мин"
+
+# manager/barber_schedules.html.twig
+
+barber_schedules:
+    title: "Графици на бръснари"
+    subtitle: "Управление на работните графици на всички бръснари"
+
+    nav:
+        dashboard: "Табло"
+        all_appointments: "Всички резервации"
+        barber_schedules: "Графици на бръснари"
+
+    select:
+        label: "Изберете бръснар:"
+        placeholder: "Изберете бръснар"
+
+    calendar:
+        prev: "Предишен"
+        next: "Следващ"
+
+    legend:
+        available: "Свободен"
+        partial: "Частично зает"
+        full: "Пълен"
+        unavailable: "Не работи"
+
+    weekdays:
+        monday: "Понеделник"
+        tuesday: "Вторник"
+        wednesday: "Сряда"
+        thursday: "Четвъртък"
+        friday: "Петък"
+        saturday: "Събота"
+        sunday: "Неделя"
+
+    day:
+        day_off: "Почивка"
+
+    alert:
+        select_barber: "Моля, изберете бръснар от падащото меню, за да видите неговия график."
+
+    modal:
+        loading: "Зареждане..."
+        working_day: "Работя този ден"
+        start: "Начало:"
+        end: "Край:"
+        slots: "Часове:"
+        reason: "Причина (по желание):"
+        reason_placeholder: "напр. Лична причина, Отпуск, и т.н."
+        non_working_default: "Този ден не е работен по подразбиране."
+        slot_locked: "Зает"
+        slot_excluded: "(изключен от бръснар)"
+        cancel: "Откаж"
+        save: "Запази"
+
+    toast:
+        select_barber_first: "Моля, първо изберете бръснар"
+        loading_error: "Грешка при зареждане на графика"
+        save_success: "Графикът е запазен успешно!"
+        save_error: "Грешка при запазване на графика"
+        unknown_error: "Неизвестна грешка"
     stats:
         today: "Днес"
         confirmed: "Потвърдени"

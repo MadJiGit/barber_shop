@@ -45,6 +45,12 @@
     margin-bottom: 0;
 }
 
+/* Sync nice-select height with form-control */
+.nice-select.form-control {
+    height: calc(2.25rem + 2px);
+    line-height: calc(2.25rem);
+}
+
 /* Stats cards */
 .card.bg-primary,
 .card.bg-success,

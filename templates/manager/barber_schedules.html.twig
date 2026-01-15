@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Графици на бръснари{% endblock %}
+{#{% block title %}Графици на бръснари{% endblock %}#}
+{% block title %}{{ 'manager_dashboard.nav.barber_schedules' | trans }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -15,7 +16,8 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="hero-cap hero-cap2 pt-70 text-center">
-                        <h2>Графици на бръснари</h2>
+{#                        <h2>Графици на бръснари</h2>#}
+                        <h2>{{ 'manager_dashboard.nav.barber_schedules' | trans }}</h2>
                     </div>
                 </div>
             </div>
@@ -27,8 +29,8 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h1><i class="fas fa-user-clock"></i> Графици на бръснари</h1>
-            <p class="text-muted">Управление на работните графици на всички бръснари</p>
+            <h1><i class="fas fa-clock"></i> {{ 'barber_schedules.title' | trans }}</h1>
+            <p class="text-muted">{{ 'barber_schedules.subtitle' | trans }}</p>
         </div>
     </div>
 
@@ -37,13 +39,13 @@
         <div class="col-md-12">
             <div class="btn-group" role="group">
                 <a href="{{ path('manager_dashboard') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-home"></i> Табло
+                    <i class="fas fa-home"></i> {{ 'barber_schedules.nav.dashboard' | trans }}
                 </a>
                 <a href="{{ path('manager_appointments') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-calendar-alt"></i> Всички резервации
+                    <i class="fas fa-calendar-alt"></i> {{ 'barber_schedules.nav.all_appointments' | trans }}
                 </a>
                 <a href="{{ path('manager_barber_schedules') }}" class="btn btn-primary active">
-                    <i class="fas fa-user-clock"></i> Графици на бръснари
+                    <i class="fas fa-clock"></i> {{ 'barber_schedules.nav.barber_schedules' | trans }}
                 </a>
             </div>
         </div>
@@ -52,12 +54,14 @@
     {# Barber Selection #}
     <div class="row mb-4">
         <div class="col-md-6">
-            <label for="barberSelect" class="form-label"><strong>Изберете бръснар:</strong></label>
+            <label for="barberSelect" class="form-label">
+{#                <strong>{{ 'barber_schedules.select.label' | trans }}</strong>#}
+            </label>
             <select id="barberSelect" class="form-control" onchange="selectBarber(this.value)">
-                <option value="">-- Изберете бръснар --</option>
+                <option value="">{{ 'barber_schedules.select.placeholder' | trans }}</option>
                 {% for barber in barbers %}
                     <option value="{{ barber.id }}" {% if selectedBarber and selectedBarber.id == barber.id %}selected{% endif %}>
-                        {{ barber.firstName }} {{ barber.lastName }} ({{ barber.getBarberTitleBg() }})
+                        {{ barber.firstName }} {{ barber.lastName }} ({{ ('roles.' ~ barber.getBarberRole()) | trans }})
                     </option>
                 {% endfor %}
             </select>
@@ -79,14 +83,14 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: prevYear, month: prevMonth}) }}"
                            class="btn btn-outline-secondary">
-                            <i class="fas fa-chevron-left"></i> Предишен
+                            <i class="fas fa-chevron-left"></i> {{ 'barber_schedules.calendar.prev' | trans }}
                         </a>
                         <h2 class="mb-0">
                             <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
                         </h2>
                         <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: nextYear, month: nextMonth}) }}"
                            class="btn btn-outline-secondary">
-                            Следващ <i class="fas fa-chevron-right"></i>
+                            {{ 'barber_schedules.calendar.next' | trans }} <i class="fas fa-chevron-right"></i>
                         </a>
                     </div>
                 </div>
@@ -97,16 +101,16 @@
                 <div class="col-12">
                     <div class="calendar-legend d-flex justify-content-center gap-3">
                         <span class="legend-item">
-                            <span class="legend-box legend-available"></span> Свободен
+                            <span class="legend-box legend-available"></span> {{ 'barber_schedules.legend.available' | trans }}
                         </span>
                         <span class="legend-item">
-                            <span class="legend-box legend-partial"></span> Частично зает
+                            <span class="legend-box legend-partial"></span> {{ 'barber_schedules.legend.partial' | trans }}
                         </span>
                         <span class="legend-item">
-                            <span class="legend-box legend-full"></span> Пълен
+                            <span class="legend-box legend-full"></span> {{ 'barber_schedules.legend.full' | trans }}
                         </span>
                         <span class="legend-item">
-                            <span class="legend-box legend-unavailable"></span> Не работи
+                            <span class="legend-box legend-unavailable"></span> {{ 'barber_schedules.legend.unavailable' | trans }}
                         </span>
                     </div>
                 </div>
@@ -118,13 +122,13 @@
                     <div class="calendar-grid">
                         <!-- Weekday headers -->
                         <div class="calendar-header">
-                            <div class="calendar-day-name">Понеделник</div>
-                            <div class="calendar-day-name">Вторник</div>
-                            <div class="calendar-day-name">Сряда</div>
-                            <div class="calendar-day-name">Четвъртък</div>
-                            <div class="calendar-day-name">Петък</div>
-                            <div class="calendar-day-name">Събота</div>
-                            <div class="calendar-day-name">Неделя</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.monday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.tuesday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.wednesday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.thursday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.friday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.saturday' | trans }}</div>
+                            <div class="calendar-day-name">{{ 'barber_schedules.weekdays.sunday' | trans }}</div>
                         </div>
 
                         <!-- Calendar days -->
@@ -157,7 +161,7 @@
                                         </div>
                                     {% else %}
                                         <div class="day-info">
-                                            <small>Почивка</small>
+                                            <small>{{ 'barber_schedules.day.day_off' | trans }}</small>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -171,7 +175,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Моля, изберете бръснар от падащото меню, за да видите неговия график.
+                    <i class="fas fa-info-circle"></i> {{ 'barber_schedules.alert.select_barber' | trans }}
                 </div>
             </div>
         </div>
@@ -194,7 +198,7 @@
                 <!-- Loading indicator -->
                 <div id="modalLoading" class="text-center py-4">
                     <i class="fas fa-spinner fa-spin fa-3x"></i>
-                    <p class="mt-3">Зареждане...</p>
+                    <p class="mt-3">{{ 'barber_schedules.modal.loading' | trans }}</p>
                 </div>
 
                 <!-- Content -->
@@ -202,41 +206,41 @@
                     <div class="form-check mb-3">
                         <input type="checkbox" class="form-check-input" id="workingCheckbox" checked>
                         <label class="form-check-label" for="workingCheckbox">
-                            <strong>Работя този ден</strong>
+                            <strong>{{ 'barber_schedules.modal.working_day' | trans }}</strong>
                         </label>
                     </div>
 
                     <div id="workingHoursSection">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label>Начало:</label>
+                                <label>{{ 'barber_schedules.modal.start' | trans }}</label>
                                 <input type="time" class="form-control" id="startTime" value="09:00">
                             </div>
                             <div class="col-md-6">
-                                <label>Край:</label>
+                                <label>{{ 'barber_schedules.modal.end' | trans }}</label>
                                 <input type="time" class="form-control" id="endTime" value="18:00">
                             </div>
                         </div>
 
-                        <h6>Часове:</h6>
+                        <h6>{{ 'barber_schedules.modal.slots' | trans }}</h6>
                         <div id="timeSlotsContainer" class="time-slots-grid">
                             <!-- Time slots will be populated by JavaScript -->
                         </div>
 
                         <div class="mt-3">
-                            <label>Причина (по желание):</label>
+                            <label>{{ 'barber_schedules.modal.reason' | trans }}</label>
                             <input type="text" class="form-control" id="scheduleReason"
-                                   placeholder="напр. Лична причина, Отпуск, и т.н.">
+                                   placeholder="{{ 'barber_schedules.modal.reason_placeholder' | trans }}">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times"></i> Откаж
+                    <i class="fas fa-times"></i> {{ 'barber_schedules.modal.cancel' | trans }}
                 </button>
                 <button type="button" class="btn btn-primary" onclick="saveSchedule()">
-                    <i class="fas fa-save"></i> Запази
+                    <i class="fas fa-save"></i> {{ 'barber_schedules.modal.save' | trans }}
                 </button>
             </div>
         </div>
@@ -247,6 +251,18 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        // Translations for JavaScript
+        const translations = {
+            selectBarberFirst: "{{ 'barber_schedules.toast.select_barber_first' | trans }}",
+            loadingError: "{{ 'barber_schedules.toast.loading_error' | trans }}",
+            nonWorkingDefault: "{{ 'barber_schedules.modal.non_working_default' | trans }}",
+            slotLocked: "{{ 'barber_schedules.modal.slot_locked' | trans }}",
+            slotExcluded: "{{ 'barber_schedules.modal.slot_excluded' | trans }}",
+            saveSuccess: "{{ 'barber_schedules.toast.save_success' | trans }}",
+            unknownError: "{{ 'barber_schedules.toast.unknown_error' | trans }}",
+            saveError: "{{ 'barber_schedules.toast.save_error' | trans }}"
+        };
+
         // Store selected barber ID for AJAX calls
         let selectedBarberId = {{ selectedBarber ? selectedBarber.id : 'null' }};
 
@@ -265,7 +281,7 @@
          */
         function openDayModal(date) {
             if (!selectedBarberId) {
-                Toast.error('Моля, първо изберете бръснар');
+                Toast.error(translations.selectBarberFirst);
                 return;
             }
 
@@ -297,7 +313,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading schedule:', error);
-                    Toast.error('Грешка при зареждане на графика');
+                    Toast.error(translations.loadingError);
                     modal.modal('hide');
                 });
         }
@@ -310,7 +326,7 @@
             container.empty();
 
             if (slots.length === 0) {
-                container.html('<p class="text-muted">Този ден не е работен по подразбиране.</p>');
+                container.html(`<p class="text-muted">${translations.nonWorkingDefault}</p>`);
                 $('#workingCheckbox').prop('checked', false);
                 $('#workingHoursSection').hide();
                 return;
@@ -329,7 +345,7 @@
                         <input type="checkbox" disabled checked>
                         <label>
                             ${slot.time}
-                            <span class="client-name">🔒 ${slot.client || 'Зает'}</span>
+                            <span class="client-name">🔒 ${slot.client || translations.slotLocked}</span>
                         </label>
                     `);
                 } else {
@@ -337,7 +353,7 @@
                     const checked = slot.available ? 'checked' : '';
                     const label = slot.available
                         ? `${slot.time}`
-                        : `${slot.time} <span class="text-danger">(изключен от бръснар)</span>`;
+                        : `${slot.time} <span class="text-danger">${translations.slotExcluded}</span>`;
                     div.html(`
                         <input type="checkbox" ${checked} data-time="${slot.time}">
                         <label>${label}</label>
@@ -364,7 +380,7 @@
          */
         function saveSchedule() {
             if (!selectedBarberId) {
-                Toast.error('Моля, първо изберете бръснар');
+                Toast.error(translations.selectBarberFirst);
                 return;
             }
 
@@ -400,18 +416,18 @@
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    Toast.success('Графикът е запазен успешно!');
+                    Toast.success(translations.saveSuccess);
                     $('#dayScheduleModal').modal('hide');
                     // Reload page to show updated calendar (preserve barber_id)
                     const currentUrl = new URL(window.location.href);
                     window.location.href = currentUrl.href;
                 } else {
-                    Toast.error(result.error || 'Неизвестна грешка');
+                    Toast.error(result.error || translations.unknownError);
                 }
             })
             .catch(error => {
                 console.error('Error saving schedule:', error);
-                Toast.error('Грешка при запазване на графика');
+                Toast.error(translations.saveError);
             });
         }
     </script>

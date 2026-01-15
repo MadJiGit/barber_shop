@@ -18,6 +18,30 @@ let today = '';
 // Bulgarian day names
 const dayNamesBg = ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'];
 
+// Role translations
+const roleTranslations = {
+    'bg': {
+        'ROLE_BARBER_SENIOR': 'Старши Бръснар',
+        'ROLE_BARBER': 'Бръснар',
+        'ROLE_BARBER_JUNIOR': 'Младши Бръснар'
+    },
+    'en': {
+        'ROLE_BARBER_SENIOR': 'Senior Barber',
+        'ROLE_BARBER': 'Barber',
+        'ROLE_BARBER_JUNIOR': 'Junior Barber'
+    }
+};
+
+// Get current locale (from document or default to 'bg')
+const currentLocale = document.documentElement.lang || 'bg';
+
+/**
+ * Translate role key to localized string
+ */
+function translateRole(roleKey) {
+    return roleTranslations[currentLocale]?.[roleKey] || roleKey;
+}
+
 /**
  * Convert date from yyyy-mm-dd to dd-MM-yyyy for display
  */
@@ -315,7 +339,7 @@ function renderBarbers() {
         const header = document.createElement('h3');
         header.className = 'barber-name';
         header.innerHTML = `
-            ${barber.barberTitleBg} ${barber.firstName} ${barber.lastName}
+            ${translateRole(barber.barberRole)} ${barber.firstName} ${barber.lastName}
             <small class="text-muted">(${workingHours.start} - ${workingHours.end})</small>
         `;
         barberSection.appendChild(header);

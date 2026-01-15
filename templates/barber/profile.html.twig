@@ -418,7 +418,7 @@
                                                                 <td>{{ appointment.date|date('d.m.Y') }}</td>
                                                                 <td>{{ appointment.date|date('H:i') }}</td>
                                                                 <td>
-                                                                    {{ appointment.barber.barberTitleBg }} {{ appointment.barber.firstName }}
+                                                                    {{ ('roles.' ~ appointment.barber.barberRole) | trans }} {{ appointment.barber.firstName }}
                                                                 </td>
                                                                 <td>{{ appointment.procedureType.type }}</td>
                                                                 <td>
@@ -596,7 +596,8 @@
                                 <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
                                     <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
                                 </a>
-                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': ('profile.actions.save' | trans)}) }}
+{#                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': ('profile.actions.save' | trans)}) }}#}
+                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-outline-secondary btn-lg mr-2'}, 'label': ('profile.actions.save' | trans)}) }}
                             </div>
 
                             {{ form_end(form, {'render_rest': false}) }}

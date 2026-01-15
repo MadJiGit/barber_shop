@@ -16,7 +16,6 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="hero-cap hero-cap2 text-center">
-{#                        <h2>Възникна грешка</h2>#}
                         <h2>{{ 'error_page.status_text' | trans }}</h2>
                     </div>
                 </div>
@@ -35,24 +34,19 @@
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <h1 class="display-1 mb-4">{{ status_code ?? '500' }}</h1>
-{#                    <h2 class="mb-4">{{ status_text ?? 'Възникна грешка' }}</h2>#}
                     <h2 class="mb-4">{{ status_text ?? ('error_page.status_text' | trans) }}</h2>
                     <p class="lead mb-4">
-{#                        Съжаляваме, но възникна неочаквана грешка.#}
                         {{ 'error_page.description' | trans }}
                     </p>
                     <p class="text-muted mb-5">
-{#                        Моля, опитайте отново по-късно или се свържете с нас, ако проблемът продължава.#}
                         {{ 'error_page.advise' | trans }}
                     </p>
                     <div class="mt-5">
                         <a href="{{ path('main') }}" class="btn btn-primary btn-lg mr-3">
-{#                            <i class="fas fa-home"></i> Към началната страница#}
                             <i class="fas fa-home"></i> {{ 'error_page.button_start' | trans }}
                         </a>
                         {% if app.user %}
                             <a href="{{ path('profile_edit', {id: app.user.id}) }}" class="btn btn-outline-secondary btn-lg">
-{#                                <i class="fas fa-user"></i> Към профила#}
                                 <i class="fas fa-user"></i> {{ 'error_page.button_profile' | trans }}
                             </a>
                         {% endif %}

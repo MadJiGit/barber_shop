@@ -252,6 +252,7 @@ appointments:
     subtitle: "Review and edit all appointments"
     nav_dashboard: "Dashboard"
     nav_all: "All Appointments"
+    schedule: "Barber appointments"
 
     filters:
         title: "Filters"
@@ -543,6 +544,9 @@ profile:
         new: "New password"
         repeat: "Repeat new password"
         hint: "Minimum 6 characters"
+        current_placeholder: "Only if you want to change password"
+        new_placeholder: "Minimum 6 characters"
+        repeat_placeholder: "Repeat the new password"
     actions:
         back: "Back to home"
         save: "Save changes"
@@ -683,24 +687,24 @@ barber:
             sun: "Sun"
         day_off: "Day off"
     appointments:
-        title: "Записани часове"
+        title: "Booked appointments"
         filters:
-            from_date: "От дата"
-            to_date: "До дата"
-            status: "Статус"
+            from_date: "From date"
+            to_date: "To date"
+            status: "Status"
         status:
-            pending: "Чакащи"
-            confirmed: "Потвърдени"
-            completed: "Завършени"
-            cancelled: "Отменени"
+            pending: "Pending"
+            confirmed: "Confirmed"
+            completed: "Completed"
+            cancelled: "Cancelled"
         search:
-            label: "Търси клиент"
-            placeholder: "Име, имейл, телефон..."
+            label: "Search client"
+            placeholder: "Name, email, telephone..."
         actions:
-            filter: "Филтрирай"
-            clear: "Изчисти"
-        results: "Показани %shown% от %total% записа"
-        per_page: "Показвай"
+            filter: "Filter"
+            clear: "Clear"
+        results: "Showing %shown% of %total% records"
+        per_page: "Show"
     procedures:
         title: "Services I provide"
         description: "Select the services you can perform. Clients will see only you when they choose this service."
@@ -777,11 +781,17 @@ admin:
     users:
         actions:
             edit: "Edit"
+
+# Roles (used throughout the application)
+
 roles:
     role_user: "User"
     role_admin: "Admin"
     role_editor: "Editor"
     role_super_admin: "Super admin"
+    ROLE_BARBER_SENIOR: "Senior Barber"
+    ROLE_BARBER: "Barber"
+    ROLE_BARBER_JUNIOR: "Junior Barber"
 
 # admin/user_edit.html.twig
 
@@ -847,6 +857,93 @@ manager_dashboard:
         dashboard: "Dashboard"
         all_appointments: "All appointments"
         barber_schedules: "Barber Schedules"
+    stats:
+        today: "Today"
+        confirmed: "Confirmed"
+        completed: "Completed"
+        this_week: "This week"
+        this_month: "This month"
+        total_appointments: "Total appointments"
+        barbers: "Barbers"
+        active_barbers: "Active staff"
+    today:
+        title: "Today's appointments"
+        empty: "No appointments for today."
+    table:
+        time: "Time"
+        client: "Client"
+        barber: "Barber"
+        service: "Service"
+        duration: "Duration"
+        status: "Status"
+    status:
+        confirmed: "Confirmed"
+        completed: "Completed"
+        cancelled: "Cancelled"
+    actions:
+        view_all: "View all appointments"
+    minutes: "min"
+
+# manager/barber_schedules.html.twig
+
+barber_schedules:
+    title: "Barber Schedules"
+    subtitle: "Manage working schedules for all barbers"
+
+    nav:
+        dashboard: "Dashboard"
+        all_appointments: "All Appointments"
+        barber_schedules: "Barber Schedules"
+
+    select:
+        label: "Select barber:"
+        placeholder: "Select barber"
+
+    calendar:
+        prev: "Previous"
+        next: "Next"
+
+    legend:
+        available: "Available"
+        partial: "Partially booked"
+        full: "Fully booked"
+        unavailable: "Not working"
+
+    weekdays:
+        monday: "Monday"
+        tuesday: "Tuesday"
+        wednesday: "Wednesday"
+        thursday: "Thursday"
+        friday: "Friday"
+        saturday: "Saturday"
+        sunday: "Sunday"
+
+    day:
+        day_off: "Day off"
+
+    alert:
+        select_barber: "Please select a barber from the dropdown menu to view their schedule."
+
+    modal:
+        loading: "Loading..."
+        working_day: "Working this day"
+        start: "Start:"
+        end: "End:"
+        slots: "Time slots:"
+        reason: "Reason (optional):"
+        reason_placeholder: "e.g. Personal reason, Vacation, etc."
+        non_working_default: "This day is not working by default."
+        slot_locked: "Booked"
+        slot_excluded: "(excluded by barber)"
+        cancel: "Cancel"
+        save: "Save"
+
+    toast:
+        select_barber_first: "Please select a barber first"
+        loading_error: "Error loading schedule"
+        save_success: "Schedule saved successfully!"
+        save_error: "Error saving schedule"
+        unknown_error: "Unknown error"
     stats:
         today: "Today"
         confirmed: "Confirmed"

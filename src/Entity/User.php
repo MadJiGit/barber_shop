@@ -127,6 +127,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return in_array('ROLE_RECEPTIONIST', $this->getRoles());
     }
 
+    /**
+     * Get barber role constant for translation.
+     * Returns the most specific barber role (SENIOR > JUNIOR > BARBER).
+     * Returns null if user is not a barber.
+     *
+     * @return string|null Role constant (e.g., 'ROLE_BARBER_SENIOR')
+     */
+    public function getBarberRole(): ?string
+    {
+        if ($this->isBarberSenior()) {
+            return 'ROLE_BARBER_SENIOR';
+        }
+        if ($this->isBarberJunior()) {
+            return 'ROLE_BARBER_JUNIOR';
+        }
+        if ($this->isBarber()) {
+            return 'ROLE_BARBER';
+        }
+        return null;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -363,6 +384,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * Get barber title in Bulgarian based on role.
+     *
+     * @deprecated Use getBarberRole() with translation system instead.
+     *             Example: {{ ('roles.' ~ user.getBarberRole()) | trans }}
      */
     public function getBarberTitleBg(): string
     {
