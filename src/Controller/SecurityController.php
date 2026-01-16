@@ -171,7 +171,7 @@ class SecurityController extends AbstractController
             $user->setTokenExpiresAt(null);
             $entityManager->flush();
 
-            return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_login');
         }
 
         // Get hashed password from session
@@ -179,7 +179,7 @@ class SecurityController extends AbstractController
 
         if (!$newPasswordHashed) {
             $this->addFlash('error', $this->translator->trans('security.error.session_expired', [], 'flash_messages'));
-            return $this->redirectToRoute('profile_edit', ['id' => $user->getId()]);
+            return $this->redirectToRoute('app_login');
         }
 
         // Update password

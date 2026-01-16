@@ -42,6 +42,7 @@ class UserFormType extends AbstractType
                     'multiple' => true,
                     'expanded' => true,
                     'required' => false,
+                    'mapped' => false,
                 ])
             ->add('password', HiddenType::class, ['mapped' => false])
             ->add('first_name', TextType::class,
