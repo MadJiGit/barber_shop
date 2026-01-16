@@ -68,13 +68,16 @@
                                     <label for="inputPassword" class="form-label">
                                         <i class="fas fa-lock"></i> {{ 'login.password_label' | trans }}
                                     </label>
-                                    <input type="password"
-                                           name="password"
-                                           id="inputPassword"
-                                           class="form-control form-control-lg"
-                                           placeholder="••••••••"
-                                           autocomplete="current-password"
-                                           required>
+                                    <div class="password-field-wrapper">
+                                        <input type="password"
+                                               name="password"
+                                               id="inputPassword"
+                                               class="form-control form-control-lg password-field"
+                                               placeholder="••••••••"
+                                               autocomplete="current-password"
+                                               required>
+                                        <i class="fas fa-eye password-toggle-icon" data-target-id="inputPassword"></i>
+                                    </div>
                                 </div>
 
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
@@ -121,4 +124,32 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize password toggle
+            const toggleIcon = document.querySelector('.password-toggle-icon');
+            if (toggleIcon) {
+                toggleIcon.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target-id');
+                    const passwordField = document.getElementById(targetId);
+
+                    if (passwordField) {
+                        if (passwordField.type === 'password') {
+                            passwordField.type = 'text';
+                            this.classList.remove('fa-eye');
+                            this.classList.add('fa-eye-slash');
+                        } else {
+                            passwordField.type = 'password';
+                            this.classList.remove('fa-eye-slash');
+                            this.classList.add('fa-eye');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}

@@ -84,6 +84,21 @@ class ProfileController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
+        // DEBUG: Log form submission
+        error_log('=== PROFILE FORM DEBUG ===');
+        error_log('Form submitted: ' . ($form->isSubmitted() ? 'YES' : 'NO'));
+
+        if ($form->isSubmitted()) {
+            error_log('Form valid: ' . ($form->isValid() ? 'YES' : 'NO'));
+
+            if (!$form->isValid()) {
+                error_log('FORM ERRORS:');
+                foreach ($form->getErrors(true) as $error) {
+                    error_log('  - ' . $error->getMessage());
+                }
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             // Check if user wants to change password
             $currentPassword = $form->get('current_password')->getData();
@@ -92,9 +107,16 @@ class ProfileController extends AbstractController
 
             $passwordChangeRequested = !empty($currentPassword) || !empty($newPassword) || !empty($newPasswordRepeat);
 
+            // DEBUG: Log password fields
+            error_log('Password change requested: ' . ($passwordChangeRequested ? 'YES' : 'NO'));
+            error_log('Current password filled: ' . (!empty($currentPassword) ? 'YES' : 'NO'));
+            error_log('New password filled: ' . (!empty($newPassword) ? 'YES' : 'NO'));
+            error_log('Repeat password filled: ' . (!empty($newPasswordRepeat) ? 'YES' : 'NO'));
+
             if ($passwordChangeRequested) {
                 // Validate password change fields
                 if (empty($currentPassword)) {
+                    error_log('ERROR: Current password is empty');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_current_password', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -102,6 +124,7 @@ class ProfileController extends AbstractController
                 }
 
                 if (empty($newPassword) || empty($newPasswordRepeat)) {
+                    error_log('ERROR: New password or repeat is empty');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -109,6 +132,7 @@ class ProfileController extends AbstractController
                 }
 
                 if ($newPassword !== $newPasswordRepeat) {
+                    error_log('ERROR: Passwords do not match');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -116,6 +140,7 @@ class ProfileController extends AbstractController
                 }
 
                 if (strlen($newPassword) < 6) {
+                    error_log('ERROR: Password too short');
                     $this->addFlash('error', $this->translator->trans('profile.error.password_min_length', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -124,6 +149,7 @@ class ProfileController extends AbstractController
 
                 // Verify current password
                 if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    error_log('ERROR: Current password is wrong');
                     $this->addFlash('error', $this->translator->trans('profile.error.current_password_wrong', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -155,10 +181,14 @@ class ProfileController extends AbstractController
                 }
 
                 // Send confirmation email
+                error_log('SUCCESS: Password validation passed, sending confirmation email');
+                error_log('Token: ' . $changeToken);
+                error_log('Token expires at: ' . $expiresAt->format('Y-m-d H:i:s'));
                 $this->emailService->sendPasswordChangeConfirmation($user, $changeToken, $newPasswordHashed);
                 $this->addFlash('success', $this->translator->trans('profile.success.password_change_email_sent', [], 'flash_messages'));
                 $tab = $request->query->get('tab', 'profile');
 
+                error_log('Redirecting to profile with success message');
                 return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
             }
 

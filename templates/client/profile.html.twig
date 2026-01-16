@@ -62,6 +62,14 @@
                                     {{ form_row(form._token) }}
                                     <input type="hidden" name="tab" value="profile">
 
+                                    {# Display form-level errors #}
+                                    {% if form.vars.errors|length > 0 %}
+                                        <div class="alert alert-danger">
+                                            <strong>Грешка:</strong>
+                                            {{ form_errors(form) }}
+                                        </div>
+                                    {% endif %}
+
                                     <div class="row">
                                         <!-- Email -->
                                         <div class="col-md-12">
@@ -145,7 +153,10 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
                                                 </label>
-                                                {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.current_placeholder'|trans}}) }}
+                                                <div class="password-field-wrapper">
+                                                    {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.current_placeholder'|trans}}) }}
+                                                    <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                                </div>
                                                 {{ form_errors(form.current_password) }}
                                             </div>
                                         </div>
@@ -156,7 +167,10 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
                                                 </label>
-                                                {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.new_placeholder'|trans}}) }}
+                                                <div class="password-field-wrapper">
+                                                    {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.new_placeholder'|trans}}) }}
+                                                    <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+                                                </div>
                                                 {{ form_errors(form.new_password) }}
                                                 <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
                                             </div>
@@ -168,7 +182,10 @@
                                                 <label>
                                                     <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
                                                 </label>
-                                                {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.password.repeat_placeholder'|trans}}) }}
+                                                <div class="password-field-wrapper">
+                                                    {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.repeat_placeholder'|trans}}) }}
+                                                    <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
+                                                </div>
                                                 {{ form_errors(form.new_password_repeat) }}
                                             </div>
                                         </div>

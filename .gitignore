@@ -38,3 +38,9 @@ barbers_postgres.sql
 
 
 template_reference/
+
+input_data.json
+input_lylin.json
+input_mladost.json
+output_data.json
+run.py

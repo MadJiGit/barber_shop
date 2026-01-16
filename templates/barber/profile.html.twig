@@ -562,7 +562,10 @@
                                         <label>
                                             <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
                                         </label>
-                                        {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="password-field-wrapper">
+                                            {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
+                                            <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                        </div>
                                         {{ form_errors(form.current_password) }}
                                     </div>
                                 </div>
@@ -573,7 +576,10 @@
                                         <label>
                                             <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
                                         </label>
-                                        {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="password-field-wrapper">
+                                            {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
+                                            <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+                                        </div>
                                         {{ form_errors(form.new_password) }}
                                         <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
                                     </div>
@@ -585,7 +591,10 @@
                                         <label>
                                             <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
                                         </label>
-                                        {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="password-field-wrapper">
+                                            {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
+                                            <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
+                                        </div>
                                         {{ form_errors(form.new_password_repeat) }}
                                     </div>
                                 </div>

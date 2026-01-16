@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add tab parameter to form submissions
     addTabParameterToForms();
+
+    // Initialize password toggle functionality
+    initializePasswordToggle();
 });
 
 /**
@@ -148,4 +151,34 @@ function cancelAppointment(appointmentId, csrfToken, currentTab = 'appointments'
         document.body.appendChild(form);
         form.submit();
     }
+}
+
+/**
+ * Initialize password toggle visibility
+ */
+function initializePasswordToggle() {
+    const toggleIcons = document.querySelectorAll('.password-toggle-icon');
+
+    toggleIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+            // Find the password input field within the same wrapper
+            const wrapper = this.closest('.password-field-wrapper');
+            if (!wrapper) return;
+
+            const passwordField = wrapper.querySelector('input[type="password"], input[type="text"]');
+
+            if (passwordField) {
+                // Toggle between password and text
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                }
+            }
+        });
+    });
 }

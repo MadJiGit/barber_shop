@@ -189,6 +189,26 @@
     color: #dc3545;
 }
 
+/* Password field toggle visibility */
+.password-field-wrapper {
+    position: relative;
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.password-toggle-icon:hover {
+    color: #d19f68;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .login-form-wrapper,
