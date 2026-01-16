@@ -15,8 +15,11 @@ let appointmentsData = [];
 let barbersData = [];
 let today = '';
 
-// Bulgarian day names
-const dayNamesBg = ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'];
+// Day names by locale
+const dayNames = {
+    'bg': ['Неделя', 'Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък', 'Събота'],
+    'en': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+};
 
 // Role translations
 const roleTranslations = {
@@ -67,7 +70,8 @@ function formatDateForAPI(dateStr) {
 function updateDayOfWeek() {
     const dayOfWeekElement = document.getElementById('day_of_week');
     if (dayOfWeekElement) {
-        dayOfWeekElement.textContent = dayNamesBg[currentDate.getDay()];
+        const localizedDays = dayNames[currentLocale] || dayNames['bg'];
+        dayOfWeekElement.textContent = localizedDays[currentDate.getDay()];
     }
 }
 

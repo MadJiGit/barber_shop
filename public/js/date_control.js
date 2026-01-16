@@ -45,11 +45,9 @@ $(document).ready(function(){
         // let today =  todayObject.getFullYear() + '-' + (todayObject.getMonth()+1)  + '-' + todayObject.getDate();
         let today = concatFullDate(new Date());
         if(newDate < today){
-            console.log('new date cannot be less than today');
             return;
         }
         if(newDate > max_date){
-            console.log('new date cannot be bigger than max day');
             return;
         }
 

@@ -344,7 +344,7 @@ class ProfileController extends AbstractController
             $prevMonthDate = (clone $currentDate)->modify('-1 month');
             $nextMonthDate = (clone $currentDate)->modify('+1 month');
 
-            $calendarMonthName = $this->getMonthNameBg($calendarMonth);
+            $calendarMonthName = $this->getMonthName($calendarMonth);
             $prevYear = (int) $prevMonthDate->format('Y');
             $prevMonth = (int) $prevMonthDate->format('m');
             $nextYear = (int) $nextMonthDate->format('Y');
@@ -379,16 +379,10 @@ class ProfileController extends AbstractController
     }
 
     /**
-     * Helper: Get Bulgarian month name.
+     * Helper: Get localized month name.
      */
-    private function getMonthNameBg(int $month): string
+    private function getMonthName(int $month): string
     {
-        $months = [
-            1 => 'Януари', 2 => 'Февруари', 3 => 'Март', 4 => 'Април',
-            5 => 'Май', 6 => 'Юни', 7 => 'Юли', 8 => 'Август',
-            9 => 'Септември', 10 => 'Октомври', 11 => 'Ноември', 12 => 'Декември',
-        ];
-
-        return $months[$month] ?? '';
+        return $this->translator->trans("months.$month");
     }
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="{{ app.request.locale }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -82,9 +82,11 @@
                                                     <li><a href="{{ path('app_login') }}">{{ 'base.nav.login' | trans }}</a></li>
                                                     <li><a href="{{ path('app_register') }}">{{ 'base.nav.register' | trans }}</a></li>
                                                 {% endif %}
-                                                <li><a href="{{ path('app_locale', {'_locale': 'bg'}) }}" class="{{ app.request.locale == 'bg' ? 'active' : '' }}">{{ 'base.nav.BG' | trans }}</a></li>
-                                                |
-                                                <li><a href="{{ path('app_locale', {'_locale': 'en'}) }}" class="{{ app.request.locale == 'en' ? 'active' : '' }}">{{ 'base.nav.EN' | trans }}</a></li>
+                                                {% if app.request.locale == 'en' %}
+                                                    <li><a href="{{ path('app_locale', {'_locale': 'bg'}) }}">{{ 'base.nav.BG' | trans }}</a></li>
+                                                {% else %}
+                                                    <li><a href="{{ path('app_locale', {'_locale': 'en'}) }}">{{ 'base.nav.EN' | trans }}</a></li>
+                                                {% endif %}
                                             </ul>
                                         </nav>
                                     </div>

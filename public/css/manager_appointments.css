@@ -51,6 +51,11 @@
     line-height: calc(2.25rem);
 }
 
+/* Hide original select when nice-select is applied */
+select.perpage-select {
+    display: none;
+}
+
 /* Stats cards */
 .card.bg-primary,
 .card.bg-success,

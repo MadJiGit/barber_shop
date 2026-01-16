@@ -224,7 +224,7 @@
       });
 
 /* 6. Nice Selectorp  */
-  var nice_Select = $('select');
+  var nice_Select = $('select:not(.no-nice-select)');
     if(nice_Select.length){
       nice_Select.niceSelect();
     }

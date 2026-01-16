@@ -340,13 +340,8 @@ class ManagerController extends AbstractController
             ++$nextYear;
         }
 
-        // Get month name in Bulgarian
-        $monthNames = [
-            1 => 'Януари', 2 => 'Февруари', 3 => 'Март', 4 => 'Април',
-            5 => 'Май', 6 => 'Юни', 7 => 'Юли', 8 => 'Август',
-            9 => 'Септември', 10 => 'Октомври', 11 => 'Ноември', 12 => 'Декември',
-        ];
-        $monthName = $monthNames[$month];
+        // Get localized month name
+        $monthName = $this->translator->trans("months.$month");
 
         return $this->render('manager/barber_schedules.html.twig', [
             'barbers' => $barbers,
@@ -382,14 +377,11 @@ class ManagerController extends AbstractController
 
         $daySchedule = $this->scheduleService->getDaySchedule($barber, $dateObj);
 
-        $dayNames = [
-            0 => 'Неделя', 1 => 'Понеделник', 2 => 'Вторник', 3 => 'Сряда',
-            4 => 'Четвъртък', 5 => 'Петък', 6 => 'Събота',
-        ];
+        $dayOfWeek = (int) $dateObj->format('w');
 
         return $this->json([
             'date' => $date,
-            'dayOfWeek' => $dayNames[(int) $dateObj->format('w')],
+            'dayOfWeek' => $this->translator->trans("days.$dayOfWeek"),
             'slots' => $daySchedule,
         ]);
     }

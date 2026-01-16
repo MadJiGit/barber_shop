@@ -71,13 +71,13 @@
                             <div class="btn-group-vertical btn-group-sm" role="group">
                                 <button type="button"
                                         class="btn btn-success btn-action"
-                                        onclick="completeAppointment({{ appointment.id }})"
+                                        onclick="completeAppointment({{ appointment.id }}, '{{ csrf_token('complete_appointment') }}')"
                                         title="{{ 'appointment_table.complete_title' | trans }}">
                                     <i class="fas fa-check"></i>
                                 </button>
                                 <button type="button"
                                         class="btn btn-danger btn-action"
-                                        onclick="cancelBarberAppointment({{ appointment.id }})"
+                                        onclick="cancelBarberAppointment({{ appointment.id }}, '{{ csrf_token('barber_cancel_appointment') }}')"
                                         title="{{ 'appointment_table.cancel_appointment' | trans }}">
                                     <i class="fas fa-times"></i>
                                 </button>

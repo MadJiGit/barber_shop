@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Appointments;
 use App\Entity\Procedure;
 use App\Entity\User;
+use App\Enum\AppointmentStatus;
 use App\Form\AppointmentFormType;
 use App\Repository\AppointmentsRepository;
 use App\Repository\BarberProcedureRepository;
@@ -372,7 +373,7 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already cancelled
-        if ('cancelled' === $appointment->getStatus()) {
+        if (AppointmentStatus::CANCELLED === $appointment->getStatus()) {
             $this->addFlash('warning', $this->translator->trans('appointment.warning.already_cancelled', [], 'flash_messages'));
             $tab = $request->request->get('tab', 'profile');
 
@@ -380,7 +381,7 @@ class AppointmentController extends AbstractController
         }
 
         // Cancel appointment - this automatically releases the slot
-        $appointment->setStatus('cancelled');
+        $appointment->setStatus(AppointmentStatus::CANCELLED);
         $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен от клиент');
 
@@ -431,14 +432,14 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already cancelled
-        if ('cancelled' === $appointment->getStatus()) {
+        if (AppointmentStatus::CANCELLED === $appointment->getStatus()) {
             $this->addFlash('warning', $this->translator->trans('appointment.warning.cannot_reschedule_cancelled', [], 'flash_messages'));
 
             return $this->redirectToRoute('profile_edit', ['id' => $authUser->getId()]);
         }
 
         // Cancel old appointment first
-        $appointment->setStatus('cancelled');
+        $appointment->setStatus(AppointmentStatus::CANCELLED);
         $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен за промяна на час');
         $this->em->persist($appointment);
@@ -464,8 +465,14 @@ class AppointmentController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/complete', name: 'appointment_complete', methods: ['POST'])]
-    public function complete(int $id): Response
+    public function complete(Request $request, int $id): Response
     {
+        // Verify CSRF token
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('complete_appointment', $token)) {
+            return $this->json(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+        }
+
         $authUser = parent::getUser();
 
         if (!$authUser || !$authUser->isBarber()) {
@@ -485,16 +492,16 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already completed or cancelled
-        if ('completed' === $appointment->getStatus()) {
+        if (AppointmentStatus::COMPLETED === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отбележен като завършен.'], 400);
         }
 
-        if ('cancelled' === $appointment->getStatus()) {
+        if (AppointmentStatus::CANCELLED === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Не можете да завършите отменен час.'], 400);
         }
 
         // Mark as completed
-        $appointment->setStatus('completed');
+        $appointment->setStatus(AppointmentStatus::COMPLETED);
         $appointment->setDateLastUpdate(DateTimeHelper::now());
 
         $this->em->persist($appointment);
@@ -513,8 +520,14 @@ class AppointmentController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/{id}/barber-cancel', name: 'appointment_barber_cancel', methods: ['POST'])]
-    public function barberCancel(int $id): Response
+    public function barberCancel(Request $request, int $id): Response
     {
+        // Verify CSRF token
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('barber_cancel_appointment', $token)) {
+            return $this->json(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+        }
+
         $authUser = parent::getUser();
 
         if (!$authUser || !$authUser->isBarber()) {
@@ -534,7 +547,7 @@ class AppointmentController extends AbstractController
         }
 
         // Check if already cancelled
-        if ('cancelled' === $appointment->getStatus()) {
+        if (AppointmentStatus::CANCELLED === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отменен.'], 400);
         }
 
@@ -545,7 +558,7 @@ class AppointmentController extends AbstractController
         }
 
         // Cancel appointment - this automatically releases the slot
-        $appointment->setStatus('cancelled');
+        $appointment->setStatus(AppointmentStatus::CANCELLED);
         $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason('Отменен от бръснар');
         $appointment->setDateLastUpdate(DateTimeHelper::now());
@@ -660,7 +673,44 @@ class AppointmentController extends AbstractController
             ? $procedure->getDurationMaster()
             : $procedure->getDurationJunior();
 
-        // Validate new appointment (exclude old appointment from conflict check)
+        // Check if there are actual changes
+        $oldDate = $oldAppointment->getDate()->format('Y-m-d');
+        $oldTime = $oldAppointment->getDate()->format('H:i');
+        $newStatus = AppointmentStatus::tryFrom($data['status'] ?? 'confirmed') ?? AppointmentStatus::CONFIRMED;
+        $newNotes = $data['notes'] ?? '';
+
+        $hasDateTimeChange = $oldDate !== $data['date'] || $oldTime !== $data['time'];
+        $hasBarberChange = $oldAppointment->getBarber()->getId() !== $barber->getId();
+        $hasProcedureChange = $oldAppointment->getProcedureType()->getId() !== $procedure->getId();
+        $hasStatusChange = $oldAppointment->getStatus() !== $newStatus;
+        $hasNotesChange = ($oldAppointment->getNotes() ?? '') !== $newNotes;
+
+        $hasCriticalChanges = $hasDateTimeChange || $hasBarberChange || $hasProcedureChange;
+
+        // If no changes at all, return success without doing anything
+        if (!$hasCriticalChanges && !$hasStatusChange && !$hasNotesChange) {
+            return $this->json([
+                'success' => true,
+                'message' => 'Няма промени за записване.',
+            ]);
+        }
+
+        // If only status/notes changed (no critical changes), update in place
+        if (!$hasCriticalChanges) {
+            $oldAppointment->setStatus($newStatus);
+            if ($hasNotesChange) {
+                $oldAppointment->setNotes($newNotes);
+            }
+            $oldAppointment->setDateLastUpdate(DateTimeHelper::now());
+            $this->em->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Часът е обновен успешно!',
+            ]);
+        }
+
+        // Critical changes - validate and use audit trail (cancel + create)
         $errors = $this->appointmentValidator->validateAppointment(
             client: $oldAppointment->getClient(),
             barber: $barber,
@@ -675,7 +725,7 @@ class AppointmentController extends AbstractController
 
         // AUDIT TRAIL: Cancel old appointment and create new one
         // Step 1: Cancel the old appointment
-        $oldAppointment->setStatus('cancelled');
+        $oldAppointment->setStatus(AppointmentStatus::CANCELLED);
         $oldAppointment->setDateCanceled(DateTimeHelper::now());
         $oldAppointment->setCancellationReason('Презаписан час от мениджър');
         $oldAppointment->setDateLastUpdate(DateTimeHelper::now());
@@ -688,8 +738,8 @@ class AppointmentController extends AbstractController
         $newAppointment->setProcedureType($procedure);
         $newAppointment->setDate($newDateTime);
         $newAppointment->setDuration($duration);
-        $newAppointment->setStatus($data['status'] ?? 'confirmed');
-        $newAppointment->setNotes($data['notes'] ?? 'Презаписан от час #'.$oldAppointment->getId());
+        $newAppointment->setStatus($newStatus);
+        $newAppointment->setNotes($newNotes ?: 'Презаписан от час #'.$oldAppointment->getId());
         $newAppointment->setDateAdded(DateTimeHelper::now());
         $newAppointment->setDateLastUpdate(DateTimeHelper::now());
 
@@ -733,10 +783,10 @@ class AppointmentController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Липсва статус.'], 400);
         }
 
-        $newStatus = $data['status'];
+        $newStatus = AppointmentStatus::tryFrom($data['status']);
 
         // Only allow completed or no_show for past appointments
-        if (!in_array($newStatus, ['completed', 'no_show', 'cancelled'])) {
+        if (!$newStatus || !in_array($newStatus, [AppointmentStatus::COMPLETED, AppointmentStatus::NO_SHOW, AppointmentStatus::CANCELLED])) {
             return $this->json([
                 'success' => false,
                 'error' => 'Невалиден статус. Разрешени са само: completed, no_show, cancelled.',
@@ -755,15 +805,9 @@ class AppointmentController extends AbstractController
         $this->em->persist($appointment);
         $this->em->flush();
 
-        $statusLabels = [
-            'completed' => 'завършен',
-            'no_show' => 'пропуснат',
-            'cancelled' => 'отменен',
-        ];
-
         return $this->json([
             'success' => true,
-            'message' => 'Статусът е променен на "'.($statusLabels[$newStatus] ?? $newStatus).'".',
+            'message' => 'Статусът е променен на "'.$newStatus->getLabelBg().'".',
         ]);
     }
 
@@ -782,14 +826,14 @@ class AppointmentController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Часът не е намерен.'], 404);
         }
 
-        if ('cancelled' === $appointment->getStatus()) {
+        if (AppointmentStatus::CANCELLED === $appointment->getStatus()) {
             return $this->json(['success' => false, 'error' => 'Този час вече е отменен.'], 400);
         }
 
         $data = json_decode($request->getContent(), true);
         $reason = $data['reason'] ?? 'Отменен от мениджър';
 
-        $appointment->setStatus('cancelled');
+        $appointment->setStatus(AppointmentStatus::CANCELLED);
         $appointment->setDateCanceled(DateTimeHelper::now());
         $appointment->setCancellationReason($reason);
         $appointment->setDateLastUpdate(DateTimeHelper::now());

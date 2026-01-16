@@ -6,6 +6,9 @@
 // Load all procedures on page load
 let allProcedures = [];
 
+// Store original values for change detection
+let originalValues = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Load procedures
     loadProcedures();
@@ -84,12 +87,28 @@ function openEditModal(appointmentId) {
             dateInput.value = data.date;
             timeInput.value = data.time;
 
-            // Store original date/time for comparison
+            // Store original values for change detection
+            originalValues = {
+                barber_id: data.barber.id.toString(),
+                date: data.date,
+                time: data.time,
+                procedure_id: data.procedure.id.toString(),
+                status: data.status,
+                notes: data.notes || ''
+            };
+
+            // Store original date/time for comparison (legacy)
             dateInput.dataset.originalDate = data.date;
             timeInput.dataset.originalTime = data.time;
 
             document.getElementById('edit_status').value = data.status;
             document.getElementById('edit_notes').value = data.notes || '';
+
+            // Disable save button initially (no changes yet)
+            updateSaveButtonState();
+
+            // Add change listeners to all form fields
+            attachChangeListeners();
 
             // Check if appointment is in the past
             const appointmentDateTime = new Date(`${data.date} ${data.time}`);
@@ -118,6 +137,58 @@ function openEditModal(appointmentId) {
             Toast.error('Грешка при зареждане на данните');
         })
         .finally(() => Loading.hide());
+}
+
+/**
+ * Attach change listeners to form fields
+ */
+function attachChangeListeners() {
+    const fields = ['edit_barber', 'edit_date', 'edit_time', 'edit_procedure', 'edit_status', 'edit_notes'];
+
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            // Remove old listeners by cloning
+            const newField = field.cloneNode(true);
+            field.parentNode.replaceChild(newField, field);
+
+            // Add new listener
+            newField.addEventListener('change', updateSaveButtonState);
+            newField.addEventListener('input', updateSaveButtonState);
+        }
+    });
+}
+
+/**
+ * Check if form has changes and update Save button state
+ */
+function updateSaveButtonState() {
+    const saveBtn = document.getElementById('saveAppointmentBtn');
+    if (!saveBtn) return;
+
+    const currentValues = {
+        barber_id: document.getElementById('edit_barber').value,
+        date: document.getElementById('edit_date').value,
+        time: document.getElementById('edit_time').value,
+        procedure_id: document.getElementById('edit_procedure').value,
+        status: document.getElementById('edit_status').value,
+        notes: document.getElementById('edit_notes').value
+    };
+
+    // Check if any value changed
+    const hasChanges = Object.keys(originalValues).some(key => {
+        return originalValues[key] !== currentValues[key];
+    });
+
+    saveBtn.disabled = !hasChanges;
+
+    if (hasChanges) {
+        saveBtn.classList.remove('btn-secondary');
+        saveBtn.classList.add('btn-primary');
+    } else {
+        saveBtn.classList.remove('btn-primary');
+        saveBtn.classList.add('btn-secondary');
+    }
 }
 
 /**
@@ -192,6 +263,9 @@ function loadProceduresForBarber(barberId, selectedProcedureId = null) {
                 }
                 select.appendChild(option);
             });
+
+            // Update save button state after procedures loaded
+            updateSaveButtonState();
         })
         .catch(error => {
             console.error('Error loading procedures:', error);
@@ -279,36 +353,91 @@ function saveAppointment() {
  * Cancel appointment
  */
 function cancelAppointment(appointmentId) {
-    const reason = prompt('Причина за отмяна (незадължително):');
-    if (reason === null) {
-        return; // User cancelled
-    }
+    const currentLocale = document.documentElement.lang || 'bg';
 
-    if (!confirm('Сигурни ли сте, че искате да отмените този час?')) {
-        return;
-    }
-
-    fetch(`/appointment/${appointmentId}/manager-cancel`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+    const strings = {
+        'bg': {
+            title: 'Отмяна на час',
+            inputLabel: 'Причина за отмяна (незадължително):',
+            inputPlaceholder: 'Въведете причина...',
+            confirmText: 'Да, отмени',
+            cancelText: 'Отказ',
+            confirmTitle: 'Потвърдете отмяната',
+            confirmMessage: 'Сигурни ли сте, че искате да отмените този час?',
+            successMessage: 'Часът е отменен успешно!',
+            errorMessage: 'Грешка при отменяне на час',
+            unknownError: 'Неизвестна грешка'
         },
-        body: JSON.stringify({
-            reason: reason || 'Отменен от мениджър'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Toast.success('Часът е отменен успешно!');
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            Toast.error(data.error || 'Неизвестна грешка');
+        'en': {
+            title: 'Cancel Appointment',
+            inputLabel: 'Cancellation reason (optional):',
+            inputPlaceholder: 'Enter reason...',
+            confirmText: 'Yes, cancel',
+            cancelText: 'Cancel',
+            confirmTitle: 'Confirm Cancellation',
+            confirmMessage: 'Are you sure you want to cancel this appointment?',
+            successMessage: 'Appointment cancelled successfully!',
+            errorMessage: 'Error cancelling appointment',
+            unknownError: 'Unknown error'
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Toast.error('Грешка при отменяне на час');
+    };
+
+    const s = strings[currentLocale] || strings['bg'];
+
+    // First dialog - ask for reason
+    Swal.fire({
+        title: s.title,
+        input: 'text',
+        inputLabel: s.inputLabel,
+        inputPlaceholder: s.inputPlaceholder,
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: s.confirmText,
+        cancelButtonText: s.cancelText,
+        background: '#1a1a1a',
+        color: '#ffffff'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const reason = result.value || (currentLocale === 'bg' ? 'Отменен от мениджър' : 'Cancelled by manager');
+
+            // Second dialog - confirm
+            Swal.fire({
+                title: s.confirmTitle,
+                text: s.confirmMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: s.confirmText,
+                cancelButtonText: s.cancelText,
+                background: '#1a1a1a',
+                color: '#ffffff'
+            }).then((confirmResult) => {
+                if (confirmResult.isConfirmed) {
+                    fetch(`/appointment/${appointmentId}/manager-cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ reason: reason })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Toast.success(s.successMessage);
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            Toast.error(data.error || s.unknownError);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Toast.error(s.errorMessage);
+                    });
+                }
+            });
+        }
     });
 }
 

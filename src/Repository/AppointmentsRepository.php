@@ -10,7 +10,6 @@ use App\Service\DateTimeHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * @extends ServiceEntityRepository<Appointments>
@@ -38,7 +37,6 @@ class AppointmentsRepository extends ServiceEntityRepository
     /**
      * @return Appointments[] Returns an array of Appointments objects
      */
-    #[Route('/repo_test/{id}', name: 'repo_test')]
     public function findAllAppointmentsOfClientWithId($id): array
     {
         $date = date('Y-m-d');

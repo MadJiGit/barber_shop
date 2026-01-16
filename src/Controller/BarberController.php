@@ -7,8 +7,6 @@ use App\Entity\Procedure;
 use App\Repository\AppointmentsRepository;
 use App\Service\BarberScheduleService;
 use App\Service\DateTimeHelper;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,7 +56,7 @@ class BarberController extends AbstractController
 
         // Default to current month if not specified
         if (!$year || !$month) {
-            $now = new DateTime('now');
+            $now = DateTimeHelper::now();
             $year = (int)$now->format('Y');
             $month = (int)$now->format('m');
         }
@@ -67,16 +65,16 @@ class BarberController extends AbstractController
         $calendar = $this->scheduleService->getMonthCalendar($authUser, $year, $month);
 
         // Calculate previous and next month
-        $currentDate = new DateTime("$year-$month-01");
-        $prevMonth = (clone $currentDate)->modify('-1 month');
-        $nextMonth = (clone $currentDate)->modify('+1 month');
+        $currentDate = DateTimeHelper::createFromString("$year-$month-01");
+        $prevMonth = $currentDate->modify('-1 month');
+        $nextMonth = $currentDate->modify('+1 month');
 
         return $this->render('barber/calendar.html.twig', [
             'user' => $authUser,
             'calendar' => $calendar,
             'year' => $year,
             'month' => $month,
-            'monthName' => $this->getMonthNameBg($month),
+            'monthName' => $this->getMonthName($month),
             'prevYear' => (int)$prevMonth->format('Y'),
             'prevMonth' => (int)$prevMonth->format('m'),
             'nextYear' => (int)$nextMonth->format('Y'),
@@ -106,7 +104,7 @@ class BarberController extends AbstractController
 
         return $this->json([
             'date' => $date,
-            'dayOfWeek' => $this->getDayNameBg((int)$dateObj->format('w')),
+            'dayOfWeek' => $this->getDayName((int)$dateObj->format('w')),
             'slots' => $daySchedule,
         ]);
     }
@@ -256,29 +254,18 @@ class BarberController extends AbstractController
     }
 
     /**
-     * Helper: Get Bulgarian month name
+     * Helper: Get localized month name
      */
-    private function getMonthNameBg(int $month): string
+    private function getMonthName(int $month): string
     {
-        $months = [
-            1 => 'Януари', 2 => 'Февруари', 3 => 'Март', 4 => 'Април',
-            5 => 'Май', 6 => 'Юни', 7 => 'Юли', 8 => 'Август',
-            9 => 'Септември', 10 => 'Октомври', 11 => 'Ноември', 12 => 'Декември',
-        ];
-
-        return $months[$month] ?? '';
+        return $this->translator->trans("months.$month");
     }
 
     /**
-     * Helper: Get Bulgarian day name
+     * Helper: Get localized day name
      */
-    private function getDayNameBg(int $dayOfWeek): string
+    private function getDayName(int $dayOfWeek): string
     {
-        $days = [
-            0 => 'Неделя', 1 => 'Понеделник', 2 => 'Вторник', 3 => 'Сряда',
-            4 => 'Четвъртък', 5 => 'Петък', 6 => 'Събота',
-        ];
-
-        return $days[$dayOfWeek] ?? '';
+        return $this->translator->trans("days.$dayOfWeek");
     }
 }

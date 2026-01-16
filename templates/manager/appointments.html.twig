@@ -186,7 +186,7 @@
                     <h5><i class="fas fa-list"></i> {{ 'appointments.table.title' | trans }}</h5>
                     <div>
                         <label class="mb-0 mr-2">{{ 'appointments.table.show' | trans }}:</label>
-                        <select class="form-control form-control-sm d-inline-block" onchange="changePerPage(this.value)">
+                        <select class="form-control form-control-sm d-inline-block perpage-select" onchange="changePerPage(this.value)">
                             <option value="10" {{ perPage == 10 ? 'selected' : '' }}>10</option>
                             <option value="20" {{ perPage == 20 ? 'selected' : '' }}>20</option>
                             <option value="50" {{ perPage == 50 ? 'selected' : '' }}>50</option>
