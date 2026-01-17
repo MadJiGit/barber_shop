@@ -59,8 +59,9 @@
                             <div class="card shadow-sm border-0">
                                 <div class="card-body p-4">
                                     {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                                    {{ form_widget(form._token) }}
-                                    <!-- DEBUG: CSRF Token = {{ form._token.vars.value }} -->
+
+                                    {# Ръчен CSRF токен за работа с render_rest: false #}
+                                    <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
                                     <input type="hidden" name="tab" value="profile">
 
                                     {# Display form-level errors #}
@@ -132,7 +133,9 @@
                                                 <label class="text-muted">
                                                     <i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}
                                                 </label>
-                                                {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
+                                                {# Поправка за грешката DateTimeImmutable #}
+                                                <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
+                                                {% do form.date_added.setRendered %}
                                             </div>
                                         </div>
                                     </div>
@@ -199,6 +202,11 @@
                                         </a>
                                         {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
                                     </div>
+
+                                    {# Скриваме roles и системни дати #}
+                                    {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
+                                    {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
+                                    {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
 
                                     {{ form_end(form, {'render_rest': false}) }}
                                 </div>
