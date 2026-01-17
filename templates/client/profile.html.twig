@@ -59,7 +59,7 @@
                             <div class="card shadow-sm border-0">
                                 <div class="card-body p-4">
                                     {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                                    {{ form_row(form._token) }}
+                                    {{ form_widget(form._token) }}
                                     <input type="hidden" name="tab" value="profile">
 
                                     {# Display form-level errors #}
