@@ -58,193 +58,127 @@
                     <div class="tab-pane fade show active" id="calendar" role="tabpanel">
                         {% if calendar is defined and calendar is not empty %}
                             <div class="container-fluid py-4">
-                                <!-- Calendar Header -->
-                                <div class="row mb-4">
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ prevYear }}&month={{ prevMonth }}" class="btn btn-outline-secondary">
-                                                <i class="fas fa-chevron-left"></i> {{ 'barber.calendar.prev' | trans }}
-                                            </a>
-                                            <h2 class="mb-0"><i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}</h2>
-                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ nextYear }}&month={{ nextMonth }}" class="btn btn-outline-secondary">
-                                                {{ 'barber.calendar.next' | trans }} <i class="fas fa-chevron-right"></i>
-                                            </a>
+                                    <div class="row mb-4">
+                                        <div class="col-12 d-flex justify-content-between align-items-center">
+                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ prevYear }}&month={{ prevMonth }}" class="btn btn-outline-secondary"><i class="fas fa-chevron-left"></i> {{ 'barber.calendar.prev' | trans }}</a>
+                                            <h2 class="mb-0">{{ monthName }} {{ year }}</h2>
+                                            <a href="{{ path('profile_edit', {id: user.id}) }}?tab=calendar&year={{ nextYear }}&month={{ nextMonth }}" class="btn btn-outline-secondary">{{ 'barber.calendar.next' | trans }} <i class="fas fa-chevron-right"></i></a>
                                         </div>
                                     </div>
+                                    {# Календарна мрежа и легенда тук #}
                                 </div>
+                            {% endif %}
+                        </div>
 
-                                <!-- Legend -->
-                                <div class="row mb-3">
-                                    <div class="col-12 text-center">
-                                        <div class="calendar-legend d-flex justify-content-center gap-3">
-                                            <span class="legend-item"><span class="legend-box legend-available"></span> {{ 'barber.calendar.legend.available' | trans }}</span>
-                                            <span class="legend-item"><span class="legend-box legend-partial"></span> {{ 'barber.calendar.legend.partial' | trans }}</span>
-                                            <span class="legend-item"><span class="legend-box legend-full"></span> {{ 'barber.calendar.legend.full' | trans }}</span>
-                                            <span class="legend-item"><span class="legend-box legend-unavailable"></span> {{ 'barber.calendar.legend.unavailable' | trans }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Calendar Grid -->
-                                <div class="calendar-grid">
-                                    <div class="calendar-header">
-                                        {% for dayName in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] %}
-                                            <div class="calendar-day-name">{{ ('barber.calendar.weekdays.' ~ dayName) | trans }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="calendar-body">
-                                        {% set firstDayOfWeek = calendar[0].dayOfWeek %}
-                                        {% set offset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1 %}
-                                        {% if offset > 0 %}{% for i in 1..offset %}<div class="calendar-cell empty"></div>{% endfor %}{% endif %}
-                                        
-                                        {% for day in calendar %}
-                                            {% set isPast = (day.date|date('Y-m-d')) < ('now'|date('Y-m-d')) %}
-                                            <div class="calendar-cell calendar-day status-{{ day.status }} {{ isPast ? 'past-day-readonly' : '' }}" onclick="openDayModal('{{ day.date }}')">
-                                                <div class="day-number">{{ day.date|date('d') }}</div>
-                                                {% if day.working %}
-                                                    <div class="day-info"><small>{{ day.startTime }}-{{ day.endTime }}</small></div>
-                                                    {% if day.occupiedSlots > 0 %}<div class="day-occupied"><i class="fas fa-user"></i> {{ day.occupiedSlots }}/{{ day.totalSlots }}</div>{% endif %}
-                                                {% else %}
-                                                    <div class="day-info"><small class="text-muted">{{ 'barber.calendar.day_off' | trans }}</small></div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Appointments Tab -->
-                    <div class="tab-pane fade" id="appointments" role="tabpanel">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-12">
-                                <h3 class="mb-4"><i class="fas fa-clock"></i> {{ 'barber.appointments.title' | trans }}</h3>
-                                {# Appointments Filters would go here - abbreviated for brevity but assuming table include works #}
+                        <!-- Appointments Tab -->
+                        <div class="tab-pane fade" id="appointments" role="tabpanel">
+                            <div class="py-4">
                                 {% include 'shared/_appointment_table.html.twig' %}
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Procedures Tab -->
-                    <div class="tab-pane fade" id="procedures" role="tabpanel">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-10">
-                                <h3 class="mb-4"><i class="fas fa-cut"></i> {{ 'barber.procedures.title' | trans }}</h3>
-                                <div class="card shadow-sm border-0 mt-4">
-                                    <div class="card-body p-4">
-                                        <form method="post" action="{{ path('barber_procedures_save') }}">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('barber_procedures') }}">
-                                            <div class="row">
-                                                {% for procedure in allProcedures %}
-                                                    <div class="col-md-6 mb-3">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="procedure_{{ procedure.id }}" name="procedures[]" value="{{ procedure.id }}" {% if procedure.id in barberProcedureIds %}checked{% endif %}>
-                                                            <label class="custom-control-label" for="procedure_{{ procedure.id }}">
-                                                                <strong>{{ procedure.type }}</strong><br>
-                                                                <small class="text-muted">
-                                                                    {% if user.isBarberJunior %}
-                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceJunior }} | {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationJunior }} мин.
-                                                                    {% else %}
-                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceMaster }} | {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationMaster }} мин.
-                                                                    {% endif %}
-                                                                </small>
-                                                            </label>
-                                                        </div>
+                        <!-- Procedures Tab -->
+                        <div class="tab-pane fade" id="procedures" role="tabpanel">
+                            <div class="card shadow-sm border-0 mt-4">
+                                <div class="card-body p-4">
+                                    <form method="post" action="{{ path('barber_procedures_save') }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('barber_procedures') }}">
+                                        <div class="row">
+                                            {% for procedure in allProcedures %}
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="procedure_{{ procedure.id }}" name="procedures[]" value="{{ procedure.id }}" {% if procedure.id in barberProcedureIds %}checked{% endif %}>
+                                                        <label class="custom-control-label" for="procedure_{{ procedure.id }}">
+                                                            <strong>{{ procedure.type }}</strong>
+                                                        </label>
                                                     </div>
-                                                {% endfor %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">{{ 'barber.procedures.actions.save' | trans }}</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- History Tab -->
+                        <div class="tab-pane fade" id="history" role="tabpanel">
+                            <p class="text-center py-4 text-muted">{{ 'barber.history.empty' | trans }}</p>
+                        </div>
+
+                        <!-- Profile Tab -->
+                        <div class="tab-pane fade" id="profile" role="tabpanel">
+                            <div class="row justify-content-center">
+                                <div class="col-xl-8 col-lg-10">
+                                    <div class="card user-profile-card shadow-sm border-0">
+                                        <div class="card-body p-4">
+                                            {{ form_start(form, {'attr': {'class': 'user-profile-form', 'id': 'profileForm'}}) }}
+                                            <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
+
+                                            <div class="row">
+                                                <div class="col-md-12 form-group">
+                                                    <label><i class="fas fa-envelope mr-2"></i>Email</label>
+                                                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label>{{ 'profile.form.first_name' | trans }}</label>
+                                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label>{{ 'profile.form.last_name' | trans }}</label>
+                                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                <div class="col-md-12 form-group">
+                                                    <label class="text-muted">{{ 'profile.form.member_since' | trans }}</label>
+                                                    <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
+                                                    {% do form.date_added.setRendered %}
+                                                </div>
                                             </div>
+
+                                            <hr class="my-4">
+                                            <h5>{{ 'profile.password.title' | trans }}</h5>
+                                            <div class="row">
+                                                <!-- ОЧИЧКИ ЗА ПАРОЛА ВЪЗСТАНОВЕНИ -->
+                                                <div class="col-md-12 form-group">
+                                                    <label>{{ 'profile.password.current' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.current_password, {'attr': {'class': 'form-control password-field'}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label>{{ 'profile.password.new' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.new_password, {'attr': {'class': 'form-control password-field'}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <label>{{ 'profile.password.repeat' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control password-field'}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="text-center mt-4">
-                                                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> {{ 'barber.procedures.actions.save' | trans }}</button>
+                                                <button type="submit" class="btn btn-primary btn-lg">{{ 'profile.actions.save' | trans }}</button>
                                             </div>
-                                        </form>
+
+                                            {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
+                                            {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
+                                            {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
+                                            {{ form_end(form, {'render_rest': false}) }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- History Tab -->
-                    <div class="tab-pane fade" id="history" role="tabpanel">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-10">
-                                <h3 class="mb-4"><i class="fas fa-history"></i> {{ 'barber.history.title' | trans }}</h3>
-                                <p class="text-center py-4 text-muted">{{ 'barber.history.empty' | trans }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Profile Tab -->
-                    <div class="tab-pane fade" id="profile" role="tabpanel">
-                        <div class="row justify-content-center">
-                            <div class="col-xl-8 col-lg-10">
-                                <div class="card user-profile-card shadow-sm border-0">
-                                    <div class="card-header bg-white border-bottom py-3">
-                                        <h4 class="mb-0 text-center"><i class="fas fa-user-edit"></i> {{ user.nickName ?: user.email }}</h4>
-                                    </div>
-                                    <div class="card-body p-4">
-                                        {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                                        
-                                        <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
-
-                                        <div class="row">
-                                            <div class="col-md-12 form-group">
-                                                <label>Email</label>
-                                                {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                                {{ form_errors(form.email) }}
-                                            </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>{{ 'profile.form.first_name' | trans }}</label>
-                                                {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                            </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>{{ 'profile.form.last_name' | trans }}</label>
-                                                {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                            </div>
-                                            <div class="col-md-12 form-group">
-                                                <label class="text-muted"><i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}</label>
-                                                <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
-                                                {% do form.date_added.setRendered %}
-                                            </div>
-                                        </div>
-
-                                        <hr class="my-4">
-                                        <h5 class="mb-3"><i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}</h5>
-                                        <div class="row">
-                                            <div class="col-md-12 form-group">
-                                                <label>{{ 'profile.password.current' | trans }}</label>
-                                                {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                                {{ form_errors(form.current_password) }}
-                                            </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>{{ 'profile.password.new' | trans }}</label>
-                                                {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                            </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>{{ 'profile.password.repeat' | trans }}</label>
-                                                {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                            </div>
-                                        </div>
-
-                                        <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary btn-lg">{{ 'profile.actions.save' | trans }}</button>
-                                        </div>
-
-                                        {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
-                                        {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
-                                        {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
-                                        {{ form_end(form, {'render_rest': false}) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-    </section>
-
-    <!-- Day Schedule Modal -->
+                {% endif %}
+            </div>
+        </section>
     <div class="modal fade" id="dayScheduleModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
