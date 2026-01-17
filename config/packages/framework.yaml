@@ -7,7 +7,8 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session:
         handler_id: null
-        save_path: '%kernel.project_dir%/var/sessions'
+        cookie_secure: auto
+        cookie_samesite: lax
 
     #esi: true
     #fragments: true

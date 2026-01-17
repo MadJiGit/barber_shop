@@ -86,7 +86,16 @@ class ProfileController extends AbstractController
 
         // DEBUG: Log form submission
         error_log('=== PROFILE FORM DEBUG ===');
+        error_log('Request method: ' . $request->getMethod());
         error_log('Form submitted: ' . ($form->isSubmitted() ? 'YES' : 'NO'));
+
+        // Log CSRF token info
+        $postData = $request->request->all();
+        error_log('POST data keys: ' . json_encode(array_keys($postData)));
+
+        $submittedToken = $request->request->get('user_form')['_token'] ?? 'NOT FOUND';
+        error_log('Submitted CSRF token (full): ' . $submittedToken);
+        error_log('CSRF token length: ' . strlen($submittedToken));
 
         if ($form->isSubmitted()) {
             error_log('Form valid: ' . ($form->isValid() ? 'YES' : 'NO'));
