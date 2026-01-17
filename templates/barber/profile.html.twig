@@ -459,10 +459,8 @@
 
                     <!-- Profile Tab -->
                     <div class="tab-pane fade" id="profile" role="tabpanel">
-            {% endif %}
-
-            <div class="row justify-content-center">
-                <div class="col-xl-8 col-lg-10">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-8 col-lg-10">
                     <!-- User Info Card -->
                     <div class="card user-profile-card shadow-sm border-0">
                         <div class="card-header bg-white border-bottom py-3">
@@ -477,6 +475,7 @@
                         </div>
                         <div class="card-body p-4">
                             {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
+                            {{ form_widget(form._token) }}
 
                             <div class="row">
                                 <!-- Email -->
@@ -612,8 +611,8 @@
                         </div>
                     </div>
 
-                </div>
-            </div>
+                        </div>
+                    </div>
 
             {% if user.isBarber %}
                     </div>
