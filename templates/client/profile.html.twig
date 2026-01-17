@@ -59,7 +59,7 @@
                             <div class="card shadow-sm border-0">
                                 <div class="card-body p-4">
                                     {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                                    {{ form_widget(form._token) }}
+                                    <!-- DEBUG: CSRF Token = {{ form._token.vars.value }} -->
                                     <input type="hidden" name="tab" value="profile">
 
                                     {# Display form-level errors #}
@@ -199,6 +199,9 @@
                                         {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
                                     </div>
 
+                                    <div style="display: none;">
+                                        {{ form_rest(form) }}
+                                    </div>
                                     {{ form_end(form, {'render_rest': false}) }}
                                 </div>
                             </div>

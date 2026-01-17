@@ -88,6 +88,18 @@ class ProfileController extends AbstractController
         error_log('=== PROFILE FORM DEBUG ===');
         error_log('Request method: ' . $request->getMethod());
         error_log('Form submitted: ' . ($form->isSubmitted() ? 'YES' : 'NO'));
+        error_log('APP_ENV: ' . ($_ENV['APP_ENV'] ?? 'NOT SET'));
+
+        // Log expected CSRF token from form
+        $csrfTokenId = $form->getConfig()->getOption('csrf_token_id') ?? 'user_form';
+        error_log('CSRF token ID: ' . $csrfTokenId);
+        error_log('Form name: ' . $form->getName());
+
+        // Generate what the CSRF token SHOULD be
+        $csrfTokenManager = $this->container->get('security.csrf.token_manager');
+        $expectedToken = $csrfTokenManager->getToken($csrfTokenId)->getValue();
+        error_log('Expected CSRF token (generated): ' . $expectedToken);
+        error_log('Expected token length: ' . strlen($expectedToken));
 
         // Log CSRF token info
         $postData = $request->request->all();
@@ -99,8 +111,9 @@ class ProfileController extends AbstractController
             error_log('user_form is array: YES');
             error_log('user_form keys: ' . json_encode(array_keys($userFormData)));
             $submittedToken = $userFormData['_token'] ?? 'NOT FOUND';
-            error_log('Submitted CSRF token (full): ' . $submittedToken);
-            error_log('CSRF token length: ' . strlen($submittedToken));
+            error_log('Submitted CSRF token (received): ' . $submittedToken);
+            error_log('Submitted token length: ' . strlen($submittedToken));
+            error_log('Tokens match: ' . ($submittedToken === $expectedToken ? 'YES' : 'NO'));
         } else {
             error_log('user_form is array: NO');
             error_log('user_form type: ' . gettype($userFormData));
