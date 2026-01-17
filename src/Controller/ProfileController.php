@@ -93,9 +93,19 @@ class ProfileController extends AbstractController
         $postData = $request->request->all();
         error_log('POST data keys: ' . json_encode(array_keys($postData)));
 
-        $submittedToken = $request->request->get('user_form')['_token'] ?? 'NOT FOUND';
-        error_log('Submitted CSRF token (full): ' . $submittedToken);
-        error_log('CSRF token length: ' . strlen($submittedToken));
+        // Safely access nested form data
+        $userFormData = $postData['user_form'] ?? null;
+        if ($userFormData && is_array($userFormData)) {
+            error_log('user_form is array: YES');
+            error_log('user_form keys: ' . json_encode(array_keys($userFormData)));
+            $submittedToken = $userFormData['_token'] ?? 'NOT FOUND';
+            error_log('Submitted CSRF token (full): ' . $submittedToken);
+            error_log('CSRF token length: ' . strlen($submittedToken));
+        } else {
+            error_log('user_form is array: NO');
+            error_log('user_form type: ' . gettype($userFormData));
+            error_log('user_form value: ' . json_encode($userFormData));
+        }
 
         if ($form->isSubmitted()) {
             error_log('Form valid: ' . ($form->isValid() ? 'YES' : 'NO'));
