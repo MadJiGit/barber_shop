@@ -442,12 +442,13 @@ guest_confirm:
     cancel_text: "If you wish to <strong>cancel</strong> the appointment, click"
     cancel_here: "here"
     tip: "Tip"
-    tip_desc: "If you'd like to track your appointments and get access to more features, you can <a href=\"{{ url('app_register') }}\" style=\"color: #0c5460; font-weight: bold;\">create a free account</a>."
+    tip_desc: "If you'd like to track your appointments and get access to more features, you can create a free account "
+    tip_here: ": here!"
     see_you: "We're looking forward to seeing you!"
     regards: "Regards,"
     team: "The Barber Shop Team"
     validity: "This confirmation link is valid for 24 hours."
-
+    question: "For questions: "
 
 # base.html.twig
 
@@ -560,6 +561,7 @@ profile:
         nickname_help: "Optional. If left empty, we will use your name."
         phone: "Phone"
         member_since: "Member since"
+        error: "Error"
     password:
         title: "Change password"
         important: "Important"

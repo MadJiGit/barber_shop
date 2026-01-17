@@ -66,6 +66,7 @@
     <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 25px 0;">
         <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
             <strong>💡 {{ 'guest_confirm.tip' | trans }}:</strong> {{ 'guest_confirm.tip_desc' | trans|raw }}
+            <a href="{{ url('app_register') }}" style="color: #0c5460; font-weight: bold; text-decoration: underline;"><strong> {{ 'guest_confirm.tip_here' | trans }}:</strong></a>
         </p>
     </div>
 
@@ -79,7 +80,8 @@
     </p>
 
     <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-        📧 За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>
+{#        За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>#}
+        📧 {{ 'guest_confirm.question' | trans }} <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>
         <span style="font-size: 11px; color: #bbb;">{{ 'guest_confirm.validity' | trans }}</span>
     </p>
 {% endblock %}

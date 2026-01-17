@@ -54,11 +54,10 @@
 
                 <!-- Tab Content for Barber -->
                 <div class="tab-content" id="barberTabsContent">
-                    <!-- Calendar Tab (Default for barbers) -->
+                    <!-- Calendar Tab -->
                     <div class="tab-pane fade" id="calendar" role="tabpanel">
                         {% if calendar is not empty %}
                             <div class="container-fluid py-4">
-                                <!-- Calendar Header -->
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -77,31 +76,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Legend -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <div class="calendar-legend d-flex justify-content-center gap-3">
-                                            <span class="legend-item">
-                                                <span class="legend-box legend-available"></span> {{ 'barber.calendar.legend.available' | trans }}
-                                            </span>
-                                            <span class="legend-item">
-                                                <span class="legend-box legend-partial"></span> {{ 'barber.calendar.legend.partial' | trans }}
-                                            </span>
-                                            <span class="legend-item">
-                                                <span class="legend-box legend-full"></span> {{ 'barber.calendar.legend.full' | trans }}
-                                            </span>
-                                            <span class="legend-item">
-                                                <span class="legend-box legend-unavailable"></span> {{ 'barber.calendar.legend.unavailable' | trans }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Calendar Grid -->
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="calendar-grid">
-                                            <!-- Weekday headers -->
                                             <div class="calendar-header">
                                                 <div class="calendar-day-name">{{ 'barber.calendar.weekdays.mon' | trans }}</div>
                                                 <div class="calendar-day-name">{{ 'barber.calendar.weekdays.tue' | trans }}</div>
@@ -112,19 +89,16 @@
                                                 <div class="calendar-day-name">{{ 'barber.calendar.weekdays.sun' | trans }}</div>
                                             </div>
 
-                                            <!-- Calendar days -->
                                             <div class="calendar-body">
                                                 {% set firstDayOfWeek = calendar[0].dayOfWeek %}
                                                 {% set offset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1 %}
 
-                                                {# Empty cells before first day #}
                                                 {% if offset > 0 %}
                                                     {% for i in 1..offset %}
                                                         <div class="calendar-cell empty"></div>
                                                     {% endfor %}
                                                 {% endif %}
 
-                                                {# Actual calendar days #}
                                                 {% for day in calendar %}
                                                     {% set dateObj = day.date|date('Y-m-d') %}
                                                     {% set dayNum = day.date|date('d') %}
@@ -133,8 +107,6 @@
 
                                                     <div class="calendar-cell calendar-day status-{{ day.status }} {{ isPast ? 'past-day-readonly' : '' }}"
                                                          data-date="{{ day.date }}"
-                                                         data-working="{{ day.working ? 'true' : 'false' }}"
-                                                         data-past="{{ isPast ? 'true' : 'false' }}"
                                                          onclick="openDayModal('{{ day.date }}')">
                                                         <div class="day-number">{{ dayNum|number_format(0, '', '') }}</div>
 
@@ -142,11 +114,6 @@
                                                             <div class="day-info">
                                                                 <small>{{ day.startTime }} - {{ day.endTime }}</small>
                                                             </div>
-                                                            {% if day.occupiedSlots > 0 %}
-                                                                <div class="day-occupied">
-                                                                    <i class="fas fa-user"></i> {{ day.occupiedSlots }}/{{ day.totalSlots }}
-                                                                </div>
-                                                            {% endif %}
                                                         {% else %}
                                                             <div class="day-info">
                                                                 <small class="text-muted">{{ 'barber.calendar.day_off' | trans }}</small>
@@ -161,468 +128,132 @@
                             </div>
                         {% endif %}
                     </div>
-                    <!-- End Calendar Tab -->
 
                     <!-- Appointments Tab -->
                     <div class="tab-pane fade" id="appointments" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-12">
                                 <h3 class="mb-4"><i class="fas fa-clock"></i> {{ 'barber.appointments.title' | trans }}</h3>
-
-                                <!-- Filters -->
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <form method="GET" action="{{ path('profile_edit', {id: user.id}) }}" id="appointmentsFilterForm">
-                                            <input type="hidden" name="tab" value="appointments">
-
-                                            <div class="row">
-                                                <!-- Date From -->
-                                                <div class="col-md-3">
-                                                    <label for="date_from">{{ 'barber.appointments.filters.from_date' | trans }}:</label>
-                                                    <input type="date"
-                                                           class="form-control"
-                                                           id="date_from"
-                                                           name="date_from"
-                                                           value="{{ filters.date_from }}">
-                                                </div>
-
-                                                <!-- Date To -->
-                                                <div class="col-md-3">
-                                                    <label for="date_to">{{ 'barber.appointments.filters.to_date' | trans }}:</label>
-                                                    <input type="date"
-                                                           class="form-control"
-                                                           id="date_to"
-                                                           name="date_to"
-                                                           value="{{ filters.date_to }}">
-                                                </div>
-
-                                                <!-- Status Filter -->
-                                                <div class="col-md-3">
-                                                    <label>{{ 'barber.appointments.filters.status' | trans }}:</label>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="statuses[]" value="pending" id="status_pending" {{ 'pending' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_pending">{{ 'barber.appointments.status.pending' | trans }}</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="statuses[]" value="confirmed" id="status_confirmed" {{ 'confirmed' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_confirmed">{{ 'barber.appointments.status.confirmed' | trans }}</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="statuses[]" value="completed" id="status_completed" {{ 'completed' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_completed">{{ 'barber.appointments.status.completed' | trans }}</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="statuses[]" value="cancelled" id="status_cancelled" {{ 'cancelled' in filters.statuses ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="status_cancelled">{{ 'barber.appointments.status.cancelled' | trans }}</label>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Search -->
-                                                <div class="col-md-3">
-                                                    <label for="search">{{ 'barber.appointments.search.label' | trans }}:</label>
-                                                    <input type="text"
-                                                           class="form-control"
-                                                           id="search"
-                                                           name="search"
-                                                           placeholder="{{ 'barber.appointments.search.placeholder' | trans }}"
-                                                           value="{{ filters.search }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mt-3">
-                                                <div class="col-md-12">
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="fas fa-filter"></i> {{ 'barber.appointments.actions.filter' | trans }}
-                                                    </button>
-                                                    <a href="{{ path('profile_edit', {id: user.id, tab: 'appointments'}) }}" class="btn btn-secondary ml-2">
-                                                        <i class="fas fa-undo"></i> {{ 'barber.appointments.actions.clear' | trans }}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <!-- Results count and items per page -->
-                                {% if appointmentsPagination %}
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <p class="text-muted mb-0">
-                                            {{ 'barber.appointments.results' | trans({
-                                                '%shown%': barberAppointments|length,
-                                                '%total%': appointmentsPagination.total
-                                            }) }}
-                                        </p>
-                                        <form method="GET" action="{{ path('profile_edit', {id: user.id}) }}" class="form-inline">
-                                            <input type="hidden" name="tab" value="appointments">
-                                            <input type="hidden" name="date_from" value="{{ filters.date_from }}">
-                                            <input type="hidden" name="date_to" value="{{ filters.date_to }}">
-                                            {% for status in filters.statuses %}
-                                                <input type="hidden" name="statuses[]" value="{{ status }}">
-                                            {% endfor %}
-                                            <input type="hidden" name="search" value="{{ filters.search }}">
-                                            <input type="hidden" name="page" value="{{ appointmentsPagination.page }}">
-
-                                            <label class="mr-2 mb-0">{{ 'barber.appointments.per_page' | trans }}:</label>
-                                            <select name="limit" class="form-control form-control-sm" onchange="this.form.submit()">
-                                                <option value="10" {{ filters.limit == 10 ? 'selected' : '' }}>10</option>
-                                                <option value="20" {{ filters.limit == 20 ? 'selected' : '' }}>20</option>
-                                                <option value="50" {{ filters.limit == 50 ? 'selected' : '' }}>50</option>
-                                            </select>
-                                        </form>
-                                    </div>
-                                {% endif %}
-
-                                <!-- Appointments Table -->
                                 {% include 'shared/_appointment_table.html.twig' %}
-
-                                <!-- Pagination -->
-                                {% if appointmentsPagination and appointmentsPagination.totalPages > 1 %}
-                                    <nav aria-label="Appointments pagination" class="mt-4">
-                                        <ul class="pagination justify-content-center">
-                                            <!-- Previous -->
-                                            {% if appointmentsPagination.page > 1 %}
-                                                <li class="page-item">
-                                                    <a class="page-link" href="{{ path('profile_edit', {id: user.id, tab: 'appointments', page: appointmentsPagination.page - 1, date_from: filters.date_from, date_to: filters.date_to, statuses: filters.statuses, search: filters.search, limit: filters.limit}) }}">
-                                                        <i class="fas fa-chevron-left"></i>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-
-                                            <!-- Page numbers -->
-                                            {% for i in 1..appointmentsPagination.totalPages %}
-                                                {% if i == appointmentsPagination.page %}
-                                                    <li class="page-item active">
-                                                        <span class="page-link">{{ i }}</span>
-                                                    </li>
-                                                {% elseif i == 1 or i == appointmentsPagination.totalPages or (i >= appointmentsPagination.page - 2 and i <= appointmentsPagination.page + 2) %}
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="{{ path('profile_edit', {id: user.id, tab: 'appointments', page: i, date_from: filters.date_from, date_to: filters.date_to, statuses: filters.statuses, search: filters.search, limit: filters.limit}) }}">
-                                                            {{ i }}
-                                                        </a>
-                                                    </li>
-                                                {% elseif i == appointmentsPagination.page - 3 or i == appointmentsPagination.page + 3 %}
-                                                    <li class="page-item disabled">
-                                                        <span class="page-link">...</span>
-                                                    </li>
-                                                {% endif %}
-                                            {% endfor %}
-
-                                            <!-- Next -->
-                                            {% if appointmentsPagination.page < appointmentsPagination.totalPages %}
-                                                <li class="page-item">
-                                                    <a class="page-link" href="{{ path('profile_edit', {id: user.id, tab: 'appointments', page: appointmentsPagination.page + 1, date_from: filters.date_from, date_to: filters.date_to, statuses: filters.statuses, search: filters.search, limit: filters.limit}) }}">
-                                                        <i class="fas fa-chevron-right"></i>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
-                    <!-- End Appointments Tab -->
 
                     <!-- Procedures Tab -->
                     <div class="tab-pane fade" id="procedures" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-10">
                                 <h3 class="mb-4"><i class="fas fa-cut"></i> {{ 'barber.procedures.title' | trans }}</h3>
-                                <p class="text-muted">{{ 'barber.procedures.description' | trans }}</p>
-
                                 <div class="card shadow-sm border-0 mt-4">
                                     <div class="card-body p-4">
-                                        <form method="post" action="{{ path('barber_procedures_save') }}" id="proceduresForm">
+                                        <form method="post" action="{{ path('barber_procedures_save') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token('barber_procedures') }}">
-
                                             <div class="row">
                                                 {% for procedure in allProcedures %}
                                                     <div class="col-md-6 mb-3">
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox"
-                                                                   class="custom-control-input"
-                                                                   id="procedure_{{ procedure.id }}"
-                                                                   name="procedures[]"
-                                                                   value="{{ procedure.id }}"
-                                                                   {% if procedure.id in barberProcedureIds %}checked{% endif %}>
+                                                            <input type="checkbox" class="custom-control-input" id="procedure_{{ procedure.id }}" name="procedures[]" value="{{ procedure.id }}" {% if procedure.id in barberProcedureIds %}checked{% endif %}>
                                                             <label class="custom-control-label" for="procedure_{{ procedure.id }}">
                                                                 <strong>{{ procedure.type }}</strong>
-                                                                <br>
-                                                                <small class="text-muted">
-                                                                    {% if user.isBarberJunior %}
-                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceJunior }} {{ 'barber.procedures.currency' | trans }} |
-                                                                        {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationJunior }} {{ 'barber.procedures.minutes' | trans }}
-                                                                    {% else %}
-                                                                        {{ 'barber.procedures.price' | trans }}: {{ procedure.priceMaster }} {{ 'barber.procedures.currency' | trans }} |
-                                                                        {{ 'barber.procedures.duration' | trans }}: {{ procedure.durationMaster }} {{ 'barber.procedures.minutes' | trans }}
-                                                                    {% endif %}
-                                                                </small>
                                                             </label>
                                                         </div>
                                                     </div>
                                                 {% endfor %}
                                             </div>
-
-                                            <div class="text-center mt-4">
-                                                <button type="submit" class="btn btn-primary btn-lg">
-                                                    <i class="fas fa-save"></i> {{ 'barber.procedures.actions.save' | trans }}
-                                                </button>
-                                            </div>
+                                            <button type="submit" class="btn btn-primary mt-3">{{ 'barber.procedures.actions.save' | trans }}</button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- End Procedures Tab -->
 
                     <!-- History Tab -->
                     <div class="tab-pane fade" id="history" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-10">
                                 <h3 class="mb-4"><i class="fas fa-history"></i> {{ 'barber.history.title' | trans }}</h3>
-
-                                <!-- Appointments History Section -->
-                                <div class="card shadow-sm border-0">
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>{{ 'barber.history.table.date' | trans }}</th>
-                                                        <th>{{ 'barber.history.table.time' | trans }}</th>
-                                                        <th>{{ 'barber.history.table.barber' | trans }}</th>
-                                                        <th>{{ 'barber.history.table.service' | trans }}</th>
-                                                        <th>{{ 'barber.history.table.status' | trans }}</th>
-                                                        <th class="text-right">{{ 'barber.history.table.price' | trans }}</th>
-                                                        <th class="text-center">{{ 'barber.history.table.actions' | trans }}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% set historyAppointments = barberAppointments|filter(a => a.status in ['completed', 'cancelled', 'no_show']) %}
-                                                    {% if historyAppointments is empty %}
-                                                        <tr>
-                                                            <td colspan="7" class="text-center py-4 text-muted">
-                                                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                                                                <p class="mb-0">{{ 'barber.history.empty' | trans }}</p>
-                                                            </td>
-                                                        </tr>
-                                                    {% else %}
-                                                        {% for appointment in historyAppointments %}
-                                                            {% set appointmentDateTime = appointment.date %}
-                                                            {% set now = "now"|date('U') %}
-                                                            {% set appointmentTimestamp = appointmentDateTime|date('U') %}
-                                                            {% set isFuture = appointmentTimestamp > now %}
-
-                                                            <tr>
-                                                                <td>{{ appointment.date|date('d.m.Y') }}</td>
-                                                                <td>{{ appointment.date|date('H:i') }}</td>
-                                                                <td>
-                                                                    {{ ('roles.' ~ appointment.barber.barberRole) | trans }} {{ appointment.barber.firstName }}
-                                                                </td>
-                                                                <td>{{ appointment.procedureType.type }}</td>
-                                                                <td>
-                                                                    {% if appointment.statusValue == 'confirmed' %}
-                                                                        <span class="badge badge-primary">{{ 'barber.history.status.confirmed' | trans }}</span>
-                                                                    {% elseif appointment.statusValue == 'completed' %}
-                                                                        <span class="badge badge-success">{{ 'barber.history.status.completed' | trans }}</span>
-                                                                    {% elseif appointment.statusValue == 'cancelled' %}
-                                                                        <span class="badge badge-danger">{{ 'barber.history.status.cancelled' | trans }}</span>
-                                                                    {% elseif appointment.statusValue == 'no_show' %}
-                                                                        <span class="badge badge-warning">{{ 'barber.history.status.no_show' | trans }}</span>
-                                                                    {% else %}
-                                                                        <span class="badge badge-secondary">{{ appointment.statusValue }}</span>
-                                                                    {% endif %}
-                                                                </td>
-                                                                <td class="text-right">
-                                                                    {% if appointment.barber.isBarberJunior %}
-                                                                        {{ appointment.procedureType.priceJunior }} {{ 'barber.history.currency' | trans }}
-                                                                    {% else %}
-                                                                        {{ appointment.procedureType.priceMaster }} {{ 'barber.history.currency' | trans }}
-                                                                    {% endif %}
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    <span class="text-muted">—</span>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p class="text-muted">{{ 'barber.history.empty' | trans }}</p>
                             </div>
                         </div>
                     </div>
-                    <!-- End History Tab -->
 
                     <!-- Profile Tab -->
                     <div class="tab-pane fade" id="profile" role="tabpanel">
                         <div class="row justify-content-center">
                             <div class="col-xl-8 col-lg-10">
-                    <!-- User Info Card -->
-                    <div class="card user-profile-card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <h4 class="mb-0 text-center">
-                                <i class="fas fa-user-edit"></i>
-                                {% if user.nickName %}
-                                    {{ user.nickName }}
-                                {% else %}
-                                    {{ user.email }}
-                                {% endif %}
-                            </h4>
-                        </div>
-                        <div class="card-body p-4">
-                            {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                            {{ form_widget(form._token) }}
-
-                            <div class="row">
-                                <!-- Email -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-envelope text-muted mr-2"></i>Email
-                                        </label>
-                                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'example@email.com'}}) }}
-                                        {{ form_errors(form.email) }}
+                                <div class="card user-profile-card shadow-sm border-0">
+                                    <div class="card-header bg-white border-bottom py-3">
+                                        <h4 class="mb-0 text-center">
+                                            <i class="fas fa-user-edit"></i> {{ user.nickName ?: user.email }}
+                                        </h4>
                                     </div>
-                                </div>
+                                    <div class="card-body p-4">
+                                        {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
+                                        
+                                        {{ form_widget(form._token) }}
 
-                                <!-- First Name -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.first_name' | trans }}
-                                        </label>
-                                        {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        {{ form_errors(form.first_name) }}
-                                    </div>
-                                </div>
-
-                                <!-- Last Name -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.last_name' | trans }}
-                                        </label>
-                                        {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        {{ form_errors(form.last_name) }}
-                                    </div>
-                                </div>
-
-                                <!-- Nickname -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        {{ form_label(form.nick_name) }}
-                                        {{ form_widget(form.nick_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        {{ form_errors(form.nick_name) }}
-                                        <small class="form-text text-muted">{{ 'profile.form.nickname_help' | trans }}</small>
-                                    </div>
-                                </div>
-
-                                <!-- Phone -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-phone text-muted mr-2"></i>{{ 'profile.form.phone' | trans }}
-                                        </label>
-                                        {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        {{ form_errors(form.phone) }}
-                                    </div>
-                                </div>
-
-                                <!-- Date Added (readonly) -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="text-muted">
-                                            <i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}
-                                        </label>
-                                        {{ form_widget(form.date_added, {'attr': {'class': 'form-control', 'readonly': true}}) }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Password Change Section -->
-                            <hr class="my-4">
-                            <h5 class="mb-3">
-                                <i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}
-                            </h5>
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                <strong>{{ 'profile.password.important' | trans }}:</strong> {{ 'profile.password.info' | trans }}
-                            </div>
-
-                            <div class="row">
-                                <!-- Current Password -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.current' | trans }}
-                                        </label>
-                                        <div class="password-field-wrapper">
-                                            {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                            <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label><i class="fas fa-envelope text-muted mr-2"></i>Email</label>
+                                                    {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.email) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label><i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.first_name' | trans }}</label>
+                                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label><i class="fas fa-user text-muted mr-2"></i>{{ 'profile.form.last_name' | trans }}</label>
+                                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                </div>
+                                            </div>
                                         </div>
-                                        {{ form_errors(form.current_password) }}
-                                    </div>
-                                </div>
 
-                                <!-- New Password -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.new' | trans }}
-                                        </label>
-                                        <div class="password-field-wrapper">
-                                            {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                            <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+                                        <hr class="my-4">
+                                        <h5 class="mb-3"><i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}</h5>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.current' | trans }}</label>
+                                                    {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.current_password) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.new' | trans }}</label>
+                                                    {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.repeat' | trans }}</label>
+                                                    {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                </div>
+                                            </div>
                                         </div>
-                                        {{ form_errors(form.new_password) }}
-                                        <small class="form-text text-muted">{{ 'profile.password.hint' | trans }}</small>
-                                    </div>
-                                </div>
 
-                                <!-- Repeat New Password -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>
-                                            <i class="fas fa-lock text-muted mr-2"></i>{{ 'profile.password.repeat' | trans }}
-                                        </label>
-                                        <div class="password-field-wrapper">
-                                            {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg password-field'}}) }}
-                                            <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
+                                        <div class="text-center mt-4">
+                                            <button type="submit" class="btn btn-primary btn-lg">{{ 'profile.actions.save' | trans }}</button>
                                         </div>
-                                        {{ form_errors(form.new_password_repeat) }}
+
+                                        {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
+                                        {{ form_end(form) }}
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Action Buttons -->
-                            <div class="text-center mt-4">
-                                <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg mr-2" id="backButton">
-                                    <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
-                                </a>
-{#                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': ('profile.actions.save' | trans)}) }}#}
-                                {{ form_widget(form.save, {'attr': {'class': 'btn btn-outline-secondary btn-lg mr-2'}, 'label': ('profile.actions.save' | trans)}) }}
-                            </div>
-
-                            {{ form_end(form, {'render_rest': false}) }}
                         </div>
                     </div>
-
-                        </div>
-                    </div>
-
-            {% if user.isBarber %}
-                    </div>
-                    <!-- End Profile Tab -->
                 </div>
-                <!-- End Tab Content -->
             {% endif %}
         </div>
     </section>
-    <!-- User Profile Section End -->
 
     {% if user.isBarber %}
         <!-- Day Schedule Modal -->
@@ -630,22 +261,14 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fas fa-calendar-day"></i>
-                            <span id="modalDate"></span> - <span id="modalDayName"></span>
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                        <h5 class="modal-title"><i class="fas fa-calendar-day"></i> <span id="modalDate"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <div id="modalLoading" class="text-center py-5">
                             <i class="fas fa-spinner fa-spin fa-3x"></i>
-                            <p class="mt-3">{{ 'barber.schedule.loading' | trans }}</p>
                         </div>
-
                         <div id="modalContent">
-                            <!-- Working checkbox -->
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="workingCheckbox" checked>
@@ -654,33 +277,18 @@
                                     </label>
                                 </div>
                             </div>
-
                             <div id="workingHoursSection">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label>{{ 'barber.schedule.start' | trans }}:</label>
-                                        <input type="time" class="form-control" id="startTime" value="09:00">
+                                        <input type="time" class="form-control" id="startTime">
                                     </div>
                                     <div class="col-md-6">
                                         <label>{{ 'barber.schedule.end' | trans }}:</label>
-                                        <input type="time" class="form-control" id="endTime" value="18:00">
+                                        <input type="time" class="form-control" id="endTime">
                                     </div>
                                 </div>
-
-                                <!-- Time slots -->
-                                <div class="mb-3">
-                                    <label><strong>{{ 'barber.schedule.slots' | trans }}:</strong></label>
-                                    <div id="timeSlotsContainer" class="time-slots-grid">
-                                        <!-- Will be populated by JS -->
-                                    </div>
-                                </div>
-
-                                <!-- Reason -->
-                                <div class="form-group">
-                                    <label>{{ 'barber.schedule.reason' | trans }}:</label>
-                                    <input type="text" class="form-control" id="scheduleReason"
-                                           placeholder="{{ 'barber.schedule.reason_placeholder' | trans }}">
-                                </div>
+                                <div id="timeSlotsContainer" class="time-slots-grid"></div>
                             </div>
                         </div>
                     </div>
@@ -694,7 +302,6 @@
             </div>
         </div>
     {% endif %}
-
 {% endblock %}
 
 {% block stylesheets %}
@@ -710,7 +317,6 @@
     {{ parent() }}
     <script src="{{ asset('js/client_profile.js') }}"></script>
     {% if user.isBarber %}
-        <script src="{{ asset('js/barber_appointments.js') }}"></script>
         <script src="{{ asset('js/barber_calendar.js') }}"></script>
         <script src="{{ asset('js/barber_profile.js') }}"></script>
     {% endif %}

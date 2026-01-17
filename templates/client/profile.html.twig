@@ -66,7 +66,7 @@
                                     {# Display form-level errors #}
                                     {% if form.vars.errors|length > 0 %}
                                         <div class="alert alert-danger">
-                                            <strong>Грешка:</strong>
+                                            <strong>{{ 'profile.form.error' | trans }}:</strong>
                                             {{ form_errors(form) }}
                                         </div>
                                     {% endif %}
@@ -244,20 +244,21 @@
                                                     <!-- Status Filter -->
                                                     <div class="col-md-4">
                                                         <label>{{ 'profile.appointments.filters.status' | trans }}:</label>
+                                                        {% set selectedStatuses = clientFilters.statuses ?? [] %}
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="pending" id="status_pending" {{ 'pending' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="pending" id="status_pending" {{ 'pending' in selectedStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="status_pending">{{ 'profile.appointments.status.pending' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="confirmed" id="status_confirmed" {{ 'confirmed' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="confirmed" id="status_confirmed" {{ 'confirmed' in selectedStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="status_confirmed">{{ 'profile.appointments.status.confirmed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="completed" id="status_completed" {{ 'completed' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="completed" id="status_completed" {{ 'completed' in selectedStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="status_completed">{{ 'profile.appointments.status.completed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="cancelled" id="status_cancelled" {{ 'cancelled' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="statuses[]" value="cancelled" id="status_cancelled" {{ 'cancelled' in selectedStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="status_cancelled">{{ 'profile.appointments.status.cancelled' | trans }}</label>
                                                         </div>
                                                     </div>
@@ -290,16 +291,16 @@
                                                 <input type="hidden" name="tab" value="appointments">
                                                 <input type="hidden" name="date_from" value="{{ clientFilters.date_from ?? '' }}">
                                                 <input type="hidden" name="date_to" value="{{ clientFilters.date_to ?? '' }}">
-                                                {% for status in clientFilters.statuses %}
+                                                {% for status in clientFilters.statuses ?? [] %}
                                                     <input type="hidden" name="statuses[]" value="{{ status }}">
                                                 {% endfor %}
                                                 <input type="hidden" name="page" value="{{ clientAppointmentsPagination.page }}">
 
                                                 <label class="mr-2 mb-0">{{ 'profile.appointments.per_page' | trans }}:</label>
                                                 <select name="limit" class="form-control form-control-sm" onchange="this.form.submit()">
-                                                    <option value="10" {{ clientFilters.limit == 10 ? 'selected' : '' }}>10</option>
-                                                    <option value="20" {{ clientFilters.limit == 20 ? 'selected' : '' }}>20</option>
-                                                    <option value="50" {{ clientFilters.limit == 50 ? 'selected' : '' }}>50</option>
+                                                    <option value="10" {{ (clientFilters.limit ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                                                    <option value="20" {{ (clientFilters.limit ?? 10) == 20 ? 'selected' : '' }}>20</option>
+                                                    <option value="50" {{ (clientFilters.limit ?? 10) == 50 ? 'selected' : '' }}>50</option>
                                                 </select>
                                             </form>
                                         </div>
@@ -448,20 +449,21 @@
                                                     <!-- Status Filter -->
                                                     <div class="col-md-4">
                                                         <label>{{ 'profile.history.filters.status' | trans }}:</label>
+                                                        {% set selectedHistoryStatuses = clientFilters.statuses ?? [] %}
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="pending" id="client_status_pending" {{ 'pending' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="pending" id="client_status_pending" {{ 'pending' in selectedHistoryStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="client_status_pending">{{ 'profile.history.status.pending' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="confirmed" id="client_status_confirmed" {{ 'confirmed' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="confirmed" id="client_status_confirmed" {{ 'confirmed' in selectedHistoryStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="client_status_confirmed">{{ 'profile.history.status.confirmed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="completed" id="client_status_completed" {{ 'completed' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="completed" id="client_status_completed" {{ 'completed' in selectedHistoryStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="client_status_completed">{{ 'profile.history.status.completed' | trans }}</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="cancelled" id="client_status_cancelled" {{ 'cancelled' in clientFilters.statuses ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox" name="client_statuses[]" value="cancelled" id="client_status_cancelled" {{ 'cancelled' in selectedHistoryStatuses ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="client_status_cancelled">{{ 'profile.history.status.cancelled' | trans }}</label>
                                                         </div>
                                                     </div>
@@ -494,16 +496,16 @@
                                                 <input type="hidden" name="tab" value="history">
                                                 <input type="hidden" name="client_date_from" value="{{ clientFilters.date_from ?? '' }}">
                                                 <input type="hidden" name="client_date_to" value="{{ clientFilters.date_to ?? '' }}">
-                                                {% for status in clientFilters.statuses %}
+                                                {% for status in clientFilters.statuses ?? [] %}
                                                     <input type="hidden" name="client_statuses[]" value="{{ status }}">
                                                 {% endfor %}
                                                 <input type="hidden" name="client_page" value="{{ clientAppointmentsPagination.page }}">
 
                                                 <label class="mr-2 mb-0">{{ 'profile.history.per_page' | trans }}:</label>
                                                 <select name="client_limit" class="form-control form-control-sm" onchange="this.form.submit()">
-                                                    <option value="10" {{ clientFilters.limit == 10 ? 'selected' : '' }}>10</option>
-                                                    <option value="20" {{ clientFilters.limit == 20 ? 'selected' : '' }}>20</option>
-                                                    <option value="50" {{ clientFilters.limit == 50 ? 'selected' : '' }}>50</option>
+                                                    <option value="10" {{ (clientFilters.limit ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                                                    <option value="20" {{ (clientFilters.limit ?? 10) == 20 ? 'selected' : '' }}>20</option>
+                                                    <option value="50" {{ (clientFilters.limit ?? 10) == 50 ? 'selected' : '' }}>50</option>
                                                 </select>
                                             </form>
                                         </div>
