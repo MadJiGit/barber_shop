@@ -58,61 +58,106 @@
                         <div class="tab-pane fade show active" id="profile" role="tabpanel">
                             <div class="card shadow-sm border-0">
                                 <div class="card-body p-4">
-                                    {{ form_start(form, {'attr': {'class': 'user-profile-form', 'id': 'profileForm'}}) }}
                                     
-                                    <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
+                                    {% for label, messages in app.flashes %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                                                {{ message }}
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
 
-                                    <div class="row">
-                                        <div class="col-md-12 form-group">
-                                            <label>{{ 'profile.form.email' | trans }}</label>
-                                            {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        </div>
-                                        {# ... имената ... #}
-                                        <div class="col-md-12 form-group">
-                                            <label class="text-muted">{{ 'profile.form.member_since' | trans }}</label>
-                                            <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
-                                            {% do form.date_added.setRendered %}
-                                        </div>
-                                    </div>
+                                    {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
+                                    
+                                    {{ form_widget(form._token) }}
+                                    <input type="hidden" name="tab" value="profile">
 
-                                    <hr class="my-4">
-                                    <h5 class="mb-3">{{ 'profile.password.title' | trans }}</h5>
-                                    <div class="row">
-                                        <!-- ОЧИЧКИ ЗА ПАРОЛА ВЪЗСТАНОВЕНИ -->
-                                        <div class="col-md-12 form-group">
-                                            <label>{{ 'profile.password.current' | trans }}</label>
-                                            <div class="password-field-wrapper">
-                                                {{ form_widget(form.current_password, {'attr': {'class': 'form-control password-field'}}) }}
-                                                <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                        <div class="row">
+                                            <!-- Email -->
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.form.email' | trans }}</label>
+                                                    {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.email) }}
+                                                </div>
+                                            </div>
+                                            {# ... имената ... #}
+                                            <!-- Date Added (readonly) -->
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="text-muted">
+                                                        <i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}
+                                                    </label>
+                                                    <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 form-group">
-                                            <label>{{ 'profile.password.new' | trans }}</label>
-                                            <div class="password-field-wrapper">
-                                                {{ form_widget(form.new_password, {'attr': {'class': 'form-control password-field'}}) }}
-                                                <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+
+                                        <!-- Password Change Section -->
+                                        <hr class="my-4">
+                                        <h5 class="mb-3">
+                                            <i class="fas fa-key text-warning mr-2"></i>{{ 'profile.password.title' | trans }}
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <!-- Current Password -->
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.current' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.current_password, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.current_placeholder'|trans}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="current_password"></i>
+                                                    </div>
+                                                    {{ form_errors(form.current_password) }}
+                                                </div>
+                                            </div>
+
+                                            <!-- New Password -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.new' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.new_password, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.new_placeholder'|trans}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="new_password"></i>
+                                                    </div>
+                                                    {{ form_errors(form.new_password) }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Repeat New Password -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.password.repeat' | trans }}</label>
+                                                    <div class="password-field-wrapper">
+                                                        {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control form-control-lg password-field', 'placeholder': 'profile.password.repeat_placeholder'|trans}}) }}
+                                                        <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
+                                                    </div>
+                                                    {{ form_errors(form.new_password_repeat) }}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 form-group">
-                                            <label>{{ 'profile.password.repeat' | trans }}</label>
-                                            <div class="password-field-wrapper">
-                                                {{ form_widget(form.new_password_repeat, {'attr': {'class': 'form-control password-field'}}) }}
-                                                <i class="fas fa-eye password-toggle-icon" data-target="new_password_repeat"></i>
-                                            </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="text-center mt-4">
+                                            <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg px-5 mr-2" id="backButton">
+                                                <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
+                                            </a>
+                                            {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
                                         </div>
-                                    </div>
 
-                                    <div class="text-center mt-4">
-                                        <button type="submit" class="btn btn-primary btn-lg px-5">{{ 'profile.actions.save' | trans }}</button>
-                                    </div>
+                                        {# ИЗОЛИРАНЕ НА ПРОБЛЕМНИТЕ ПОЛЕТА #}
+                                        {% do form.date_added.setRendered %}
+                                        {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
+                                        {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
+                                        {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
 
-                                    {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
-                                    {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
-                                    {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
-                                    {{ form_end(form, {'render_rest': false}) }}
+                                        {{ form_end(form, {'render_rest': false}) }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
                         <!-- Appointments Tab (with filters) -->
                         <div class="tab-pane fade" id="appointments" role="tabpanel">
