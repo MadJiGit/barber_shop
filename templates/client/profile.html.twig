@@ -71,9 +71,7 @@
                                     {% endfor %}
 
                                     {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-                                    
-                                    {{ form_widget(form._token) }}
-                                    <input type="hidden" name="tab" value="profile">
+                                        <input type="hidden" name="tab" value="profile">
 
                                         <div class="row">
                                             <!-- Email -->
@@ -84,7 +82,6 @@
                                                     {{ form_errors(form.email) }}
                                                 </div>
                                             </div>
-                                            {# ... имената ... #}
                                             <!-- Date Added (readonly) -->
                                             <div class="col-md-12">
                                                 <div class="form-group">
@@ -153,7 +150,16 @@
                                         {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
                                         {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
                                         {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
+                                        {% if form.token_expires_at is defined %}{% do form.token_expires_at.setRendered %}{% endif %}
+                                        {# Маркираме останалите полета като изобразени, за да не се рендерират като hidden #}
+                                        {% do form.password.setRendered %}
+                                        {% do form.first_name.setRendered %}
+                                        {% do form.last_name.setRendered %}
+                                        {% do form.nick_name.setRendered %}
+                                        {% do form.phone.setRendered %}
 
+                                        {# form_rest рендерира само CSRF token, без останалите полета #}
+                                        {{ form_rest(form) }}
                                         {{ form_end(form, {'render_rest': false}) }}
                                     </div>
                                 </div>

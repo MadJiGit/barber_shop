@@ -177,8 +177,7 @@
                                         <h4 class="mb-0 text-center"><i class="fas fa-user-edit"></i> {{ user.nickName ?: user.email }}</h4>
                                     </div>
                                     <div class="card-body p-4">
-                                        
-                                        {# --- ДОБАВИ ТОЗИ БЛОК ТУК --- #}
+
                                         {% for label, messages in app.flashes %}
                                             {% for message in messages %}
                                                 <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
@@ -189,11 +188,9 @@
                                                 </div>
                                             {% endfor %}
                                         {% endfor %}
-                                        {# ---------------------------- #}
 
                                         {{ form_start(form, {'attr': {'class': 'user-profile-form', 'novalidate': 'novalidate', 'id': 'profileForm'}}) }}
-
-                                        <input type="hidden" name="{{ form._token.vars.full_name }}" value="{{ form._token.vars.value }}">
+                                            <input type="hidden" name="tab" value="profile">
 
                                         <div class="row">
                                             <div class="col-md-12 form-group">
@@ -246,10 +243,19 @@
                                             <button type="submit" class="btn btn-primary btn-lg px-5">{{ 'profile.actions.save' | trans }}</button>
                                         </div>
 
+                                        {# ИЗОЛИРАНЕ НА ПРОБЛЕМНИТЕ ПОЛЕТА #}
                                         {% do form.date_added.setRendered %}
                                         {% if form.roles is defined %}{% do form.roles.setRendered %}{% endif %}
                                         {% if form.date_last_update is defined %}{% do form.date_last_update.setRendered %}{% endif %}
                                         {% if form.date_banned is defined %}{% do form.date_banned.setRendered %}{% endif %}
+                                        {% if form.token_expires_at is defined %}{% do form.token_expires_at.setRendered %}{% endif %}
+                                        {# Маркираме останалите полета като изобразени, за да не се рендерират като hidden #}
+                                        {% do form.password.setRendered %}
+                                        {% do form.nick_name.setRendered %}
+                                        {% do form.phone.setRendered %}
+
+                                        {# form_rest рендерира само CSRF token, без останалите полета #}
+                                        {{ form_rest(form) }}
                                         {{ form_end(form, {'render_rest': false}) }}
                                     </div>
                                 </div>
