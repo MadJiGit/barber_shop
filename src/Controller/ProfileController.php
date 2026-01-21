@@ -196,11 +196,9 @@ class ProfileController extends AbstractController
                 $expiresAt = DateTimeHelper::now()->modify('+1 hour');
                 $user->setTokenExpiresAt($expiresAt);
 
-                // Hash the new password and store it temporarily in a session or temp field
-                // We'll store the hashed password in the confirmation_token field temporarily
-                // Actually, we need a better approach - let's store it in session
+                // Hash the new password and store it temporarily in pending_password field
                 $newPasswordHashed = $this->passwordHasher->hashPassword($user, $newPassword);
-                $request->getSession()->set('pending_password_change_'.$user->getId(), $newPasswordHashed);
+                $user->setPendingPassword($newPasswordHashed);
 
                 $user->setDateLastUpdate(DateTimeHelper::now());
 

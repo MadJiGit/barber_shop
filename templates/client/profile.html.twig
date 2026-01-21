@@ -91,6 +91,33 @@
                                                     <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
                                                 </div>
                                             </div>
+
+                                            <!-- First Name -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.form.first_name' | trans }}</label>
+                                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.first_name) }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Last Name -->
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.form.last_name' | trans }}</label>
+                                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.last_name) }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Phone -->
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>{{ 'profile.form.phone' | trans }}</label>
+                                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_errors(form.phone) }}
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Password Change Section -->
@@ -153,10 +180,7 @@
                                         {% if form.token_expires_at is defined %}{% do form.token_expires_at.setRendered %}{% endif %}
                                         {# Маркираме останалите полета като изобразени, за да не се рендерират като hidden #}
                                         {% do form.password.setRendered %}
-                                        {% do form.first_name.setRendered %}
-                                        {% do form.last_name.setRendered %}
                                         {% do form.nick_name.setRendered %}
-                                        {% do form.phone.setRendered %}
 
                                         {# form_rest рендерира само CSRF token, без останалите полета #}
                                         {{ form_rest(form) }}

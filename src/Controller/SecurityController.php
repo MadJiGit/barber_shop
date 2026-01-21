@@ -174,11 +174,11 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Get hashed password from session
-        $newPasswordHashed = $request->getSession()->get('pending_password_change_' . $user->getId());
+        // Get hashed password from pending_password field
+        $newPasswordHashed = $user->getPendingPassword();
 
         if (!$newPasswordHashed) {
-            $this->addFlash('error', $this->translator->trans('security.error.session_expired', [], 'flash_messages'));
+            $this->addFlash('error', $this->translator->trans('security.error.password_change_expired', [], 'flash_messages'));
             return $this->redirectToRoute('app_login');
         }
 
@@ -186,11 +186,9 @@ class SecurityController extends AbstractController
         $user->setPassword($newPasswordHashed);
         $user->setConfirmationToken(null);
         $user->setTokenExpiresAt(null);
+        $user->setPendingPassword(null);
 
         $entityManager->flush();
-
-        // Remove from session
-        $request->getSession()->remove('pending_password_change_' . $user->getId());
 
         // Send notification email
         $emailService->sendPasswordChangedNotification($user);

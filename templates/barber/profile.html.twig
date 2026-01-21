@@ -198,6 +198,10 @@
                                                 {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                                 {{ form_errors(form.email) }}
                                             </div>
+                                            <div class="col-md-12 form-group">
+                                                <label class="text-muted"><i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}</label>
+                                                <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
+                                            </div>
                                             <div class="col-md-6 form-group">
                                                 <label>{{ 'profile.form.first_name' | trans }}</label>
                                                 {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
@@ -207,8 +211,9 @@
                                                 {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
                                             </div>
                                             <div class="col-md-12 form-group">
-                                                <label class="text-muted"><i class="fas fa-calendar-plus mr-2"></i>{{ 'profile.form.member_since' | trans }}</label>
-                                                <input type="text" class="form-control" readonly value="{{ user.dateAdded|date('d.m.Y H:i') }}">
+                                                <label>{{ 'profile.form.phone' | trans }}</label>
+                                                {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                {{ form_errors(form.phone) }}
                                             </div>
                                         </div>
 
@@ -239,8 +244,12 @@
                                             </div>
                                         </div>
 
+                                        <!-- Action Buttons -->
                                         <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary btn-lg px-5">{{ 'profile.actions.save' | trans }}</button>
+                                            <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg px-5 mr-2" id="backButton">
+                                                <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
+                                            </a>
+                                            {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
                                         </div>
 
                                         {# ИЗОЛИРАНЕ НА ПРОБЛЕМНИТЕ ПОЛЕТА #}
@@ -252,7 +261,6 @@
                                         {# Маркираме останалите полета като изобразени, за да не се рендерират като hidden #}
                                         {% do form.password.setRendered %}
                                         {% do form.nick_name.setRendered %}
-                                        {% do form.phone.setRendered %}
 
                                         {# form_rest рендерира само CSRF token, без останалите полета #}
                                         {{ form_rest(form) }}

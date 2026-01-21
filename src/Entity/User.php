@@ -78,6 +78,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $token_expires_at = null;
 
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $pending_password = null;
+
     public function __construct()
     {
         $this->setDateAdded();
@@ -369,6 +372,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTokenExpiresAt(?\DateTimeInterface $token_expires_at): static
     {
         $this->token_expires_at = $token_expires_at;
+
+        return $this;
+    }
+
+    public function getPendingPassword(): ?string
+    {
+        return $this->pending_password;
+    }
+
+    public function setPendingPassword(?string $pending_password): static
+    {
+        $this->pending_password = $pending_password;
 
         return $this;
     }
