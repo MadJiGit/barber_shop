@@ -557,9 +557,12 @@ profile:
     form:
         email: "Имейл"
         first_name: "Име"
+        first_name_placeholder: "Вашето име"
         last_name: "Фамилия"
+        last_name_placeholder: "Вашата фамилия"
         nickname_help: "По желание. Ако е празно ще използваме вашето име."
         phone: "Телефон"
+        phone_placeholder: "+359 888 123 456"
         member_since: "Член от"
         error: "Грешка"
     password:

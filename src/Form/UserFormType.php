@@ -47,15 +47,15 @@ class UserFormType extends AbstractType
             ->add('password', HiddenType::class, ['mapped' => false])
             ->add('first_name', TextType::class,
                 [
-                    'label' => 'Собствено име',
+                    'label' => 'profile.form.first_name',
+                    'translation_domain' => 'messages',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Вашето име'],
                 ])
             ->add('last_name', TextType::class,
                 [
-                    'label' => 'Фамилно име',
+                    'label' => 'profile.form.last_name',
+                    'translation_domain' => 'messages',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Вашата фамилия'],
                 ])
             ->add('nick_name', TextType::class,
                 [
@@ -65,9 +65,9 @@ class UserFormType extends AbstractType
                 ])
             ->add('phone', TextType::class,
                 [
-                    'label' => 'Телефон',
+                    'label' => 'profile.form.phone',
+                    'translation_domain' => 'messages',
                     'required' => true,
-                    'attr' => ['placeholder' => '+359 888 123 456'],
                 ])
             ->add('date_added', DateTimeType::class, [
                 'label' => 'Създаден на: ',
@@ -89,7 +89,7 @@ class UserFormType extends AbstractType
                 'label' => 'Текуща парола',
                 'required' => false,
                 'attr' => [
-                    'autocomplete' => 'current-password',
+                    'autocomplete' => 'off',
                     'placeholder' => 'Само ако искате да смените паролата'
                 ],
             ])

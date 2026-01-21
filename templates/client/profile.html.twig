@@ -96,7 +96,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ 'profile.form.first_name' | trans }}</label>
-                                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_widget(form.first_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.form.first_name_placeholder'|trans}}) }}
                                                     {{ form_errors(form.first_name) }}
                                                 </div>
                                             </div>
@@ -105,7 +105,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ 'profile.form.last_name' | trans }}</label>
-                                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_widget(form.last_name, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.form.last_name_placeholder'|trans}}) }}
                                                     {{ form_errors(form.last_name) }}
                                                 </div>
                                             </div>
@@ -114,7 +114,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>{{ 'profile.form.phone' | trans }}</label>
-                                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                                    {{ form_widget(form.phone, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'profile.form.phone_placeholder'|trans}}) }}
                                                     {{ form_errors(form.phone) }}
                                                 </div>
                                             </div>

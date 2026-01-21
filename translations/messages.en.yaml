@@ -557,9 +557,12 @@ profile:
     form:
         email: "Email"
         first_name: "First name"
+        first_name_placeholder: "Your first name"
         last_name: "Last name"
+        last_name_placeholder: "Your last name"
         nickname_help: "Optional. If left empty, we will use your name."
         phone: "Phone"
+        phone_placeholder: "+359 888 123 456"
         member_since: "Member since"
         error: "Error"
     password:
