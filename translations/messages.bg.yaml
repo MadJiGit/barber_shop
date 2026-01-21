@@ -811,6 +811,26 @@ admin:
     users:
         actions:
             edit: "Редакция"
+    barber_schedule_exception:
+        singular: "Изключение"
+        plural: "Изключения от график"
+        for_all_barbers: "За всички барбъри"
+        for_all_barbers_help: "Ако е чекнато, изключението важи за ВСИЧКИ барбъри в салона"
+        barber: "Барбър"
+        barber_help: "Избери барбър ИЛИ чекни 'За всички барбъри'"
+        date: "Дата"
+        is_available: "Работи"
+        is_available_help: "Чекнато = работи с променени часове/изключени слотове. Нечекнато = пълен почивен ден"
+        start_time: "Начален час"
+        start_time_help: "Само ако 'Работи' е чекнато и искаш да промениш работното време"
+        end_time: "Краен час"
+        end_time_help: "Само ако 'Работи' е чекнато и искаш да промениш работното време"
+        excluded_slots: "Изключени часове"
+        excluded_slots_help: "Масив от часове в формат [\"15:00\", \"15:30\", \"16:00\"] - само ако 'Работи' е чекнато"
+        reason: "Причина"
+        reason_help: "Задължително: причина за изключението (напр. 'Отпуск', 'Болничен', 'Празник')"
+        created_by: "Създадено от"
+        created_at: "Създадено"
 
 # Roles (used throughout the application)
 
@@ -1013,3 +1033,5 @@ barber_schedules:
 
 
 
+
+# Admin Panel

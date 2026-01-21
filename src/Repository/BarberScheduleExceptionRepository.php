@@ -19,11 +19,32 @@ class BarberScheduleExceptionRepository extends ServiceEntityRepository
 
     /**
      * Find exception for specific barber and date
+     * Returns barber-specific exception OR global exception (barber = NULL)
+     * Priority: barber-specific > global
      */
     public function findByBarberAndDate(User $barber, \DateTimeImmutable $date): ?BarberScheduleException
     {
-        return $this->findOneBy([
+        // First check for barber-specific exception
+        $barberException = $this->findOneBy([
             'barber' => $barber,
+            'date' => $date,
+        ]);
+
+        if ($barberException) {
+            return $barberException;
+        }
+
+        // If no barber-specific exception, check for global exception
+        return $this->findGlobalByDate($date);
+    }
+
+    /**
+     * Find global exception (barber = NULL) for specific date
+     */
+    public function findGlobalByDate(\DateTimeImmutable $date): ?BarberScheduleException
+    {
+        return $this->findOneBy([
+            'barber' => null,
             'date' => $date,
         ]);
     }
@@ -47,13 +68,25 @@ class BarberScheduleExceptionRepository extends ServiceEntityRepository
 
     /**
      * Find all exceptions for barber in specific month
+     * Includes both barber-specific AND global exceptions
+     * Returns global exceptions FIRST, then barber-specific (so barber-specific can override)
      */
     public function findByBarberAndMonth(User $barber, int $year, int $month): array
     {
         $startDate = new \DateTimeImmutable("$year-$month-01");
         $endDate = $startDate->modify('last day of this month');
 
-        return $this->findByBarberAndDateRange($barber, $startDate, $endDate);
+        return $this->createQueryBuilder('e')
+            ->where('(e.barber = :barber OR e.barber IS NULL)')
+            ->andWhere('e.date >= :startDate')
+            ->andWhere('e.date <= :endDate')
+            ->setParameter('barber', $barber)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->orderBy('e.date', 'ASC')
+            ->addOrderBy('e.barber', 'ASC')  // NULL first (global), then specific barber
+            ->getQuery()
+            ->getResult();
     }
 
     /**

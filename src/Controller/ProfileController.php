@@ -84,53 +84,6 @@ class ProfileController extends AbstractController
             echo 'failed : '.$e->getMessage();
         }
 
-        // DEBUG: Log form submission
-        error_log('=== PROFILE FORM DEBUG ===');
-        error_log('Request method: ' . $request->getMethod());
-        error_log('Form submitted: ' . ($form->isSubmitted() ? 'YES' : 'NO'));
-        error_log('APP_ENV: ' . ($_ENV['APP_ENV'] ?? 'NOT SET'));
-
-        // Log expected CSRF token from form
-        $csrfTokenId = $form->getConfig()->getOption('csrf_token_id') ?? 'user_form';
-        error_log('CSRF token ID: ' . $csrfTokenId);
-        error_log('Form name: ' . $form->getName());
-
-        // Generate what the CSRF token SHOULD be
-        $csrfTokenManager = $this->container->get('security.csrf.token_manager');
-        $expectedToken = $csrfTokenManager->getToken($csrfTokenId)->getValue();
-        error_log('Expected CSRF token (generated): ' . $expectedToken);
-        error_log('Expected token length: ' . strlen($expectedToken));
-
-        // Log CSRF token info
-        $postData = $request->request->all();
-        error_log('POST data keys: ' . json_encode(array_keys($postData)));
-
-        // Safely access nested form data
-        $userFormData = $postData['user_form'] ?? null;
-        if ($userFormData && is_array($userFormData)) {
-            error_log('user_form is array: YES');
-            error_log('user_form keys: ' . json_encode(array_keys($userFormData)));
-            $submittedToken = $userFormData['_token'] ?? 'NOT FOUND';
-            error_log('Submitted CSRF token (received): ' . $submittedToken);
-            error_log('Submitted token length: ' . strlen($submittedToken));
-            error_log('Tokens match: ' . ($submittedToken === $expectedToken ? 'YES' : 'NO'));
-        } else {
-            error_log('user_form is array: NO');
-            error_log('user_form type: ' . gettype($userFormData));
-            error_log('user_form value: ' . json_encode($userFormData));
-        }
-
-        if ($form->isSubmitted()) {
-            error_log('Form valid: ' . ($form->isValid() ? 'YES' : 'NO'));
-
-            if (!$form->isValid()) {
-                error_log('FORM ERRORS:');
-                foreach ($form->getErrors(true) as $error) {
-                    error_log('  - ' . $error->getMessage());
-                }
-            }
-        }
-
         if ($form->isSubmitted() && $form->isValid()) {
             // Check if user wants to change password
             $currentPassword = $form->get('current_password')->getData();
@@ -139,16 +92,9 @@ class ProfileController extends AbstractController
 
             $passwordChangeRequested = !empty($currentPassword) || !empty($newPassword) || !empty($newPasswordRepeat);
 
-            // DEBUG: Log password fields
-            error_log('Password change requested: ' . ($passwordChangeRequested ? 'YES' : 'NO'));
-            error_log('Current password filled: ' . (!empty($currentPassword) ? 'YES' : 'NO'));
-            error_log('New password filled: ' . (!empty($newPassword) ? 'YES' : 'NO'));
-            error_log('Repeat password filled: ' . (!empty($newPasswordRepeat) ? 'YES' : 'NO'));
-
             if ($passwordChangeRequested) {
                 // Validate password change fields
                 if (empty($currentPassword)) {
-                    error_log('ERROR: Current password is empty');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_current_password', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -156,7 +102,6 @@ class ProfileController extends AbstractController
                 }
 
                 if (empty($newPassword) || empty($newPasswordRepeat)) {
-                    error_log('ERROR: New password or repeat is empty');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -164,7 +109,6 @@ class ProfileController extends AbstractController
                 }
 
                 if ($newPassword !== $newPasswordRepeat) {
-                    error_log('ERROR: Passwords do not match');
                     $this->addFlash('error', $this->translator->trans('profile.error.enter_new_password_twice', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -172,7 +116,6 @@ class ProfileController extends AbstractController
                 }
 
                 if (strlen($newPassword) < 6) {
-                    error_log('ERROR: Password too short');
                     $this->addFlash('error', $this->translator->trans('profile.error.password_min_length', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 
@@ -181,7 +124,6 @@ class ProfileController extends AbstractController
 
                 // Verify current password
                 if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
-                    error_log('ERROR: Current password is wrong');
                     $this->addFlash('error', $this->translator->trans('profile.error.current_password_wrong', [], 'flash_messages'));
                     $tab = $request->query->get('tab', 'profile');
 

@@ -810,6 +810,26 @@ admin:
     users:
         actions:
             edit: "Edit"
+    barber_schedule_exception:
+        singular: "Exception"
+        plural: "Schedule Exceptions"
+        for_all_barbers: "For all barbers"
+        for_all_barbers_help: "If checked, the exception applies to ALL barbers in the salon"
+        barber: "Barber"
+        barber_help: "Choose a barber OR check 'For all barbers'"
+        date: "Date"
+        is_available: "Working"
+        is_available_help: "Checked = working with modified hours/excluded slots. Unchecked = full day off"
+        start_time: "Start time"
+        start_time_help: "Only if 'Working' is checked and you want to change working hours"
+        end_time: "End time"
+        end_time_help: "Only if 'Working' is checked and you want to change working hours"
+        excluded_slots: "Excluded hours"
+        excluded_slots_help: "Array of hours in format [\"15:00\", \"15:30\", \"16:00\"] - only if 'Working' is checked"
+        reason: "Reason"
+        reason_help: "Required: reason for the exception (e.g. 'Vacation', 'Sick leave', 'Holiday')"
+        created_by: "Created by"
+        created_at: "Created at"
 
 # Roles (used throughout the application)
 
@@ -1028,3 +1048,5 @@ barber_schedules:
 
 
 
+
+# Admin Panel

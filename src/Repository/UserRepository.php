@@ -130,6 +130,39 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $result->fetchAllAssociative();
     }
 
+    /**
+     * Get all active barbers (returns User entities, not arrays)
+     */
+    public function getAllActiveBarbers(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id FROM "user"
+                WHERE CAST(roles AS text) LIKE :role
+                AND is_active = :active
+                ORDER BY email ASC';
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery([
+            'role' => '%ROLE_BARBER%',
+            'active' => true
+        ]);
+
+        $ids = $result->fetchAllAssociative();
+
+        // Return User entities by IDs
+        if (empty($ids)) {
+            return [];
+        }
+
+        $barberIds = array_column($ids, 'id');
+
+        return $this->createQueryBuilder('u')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', $barberIds)
+            ->orderBy('u.email', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function isUserIsAdmin($id): bool
     {
         $user = $this->findOneById($id);

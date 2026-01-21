@@ -42,11 +42,23 @@ class BarberScheduleService
         // Get or create barber schedule
         $schedule = $this->scheduleRepository->findOrCreateForBarber($barber);
 
-        // Get all exceptions for this month
+        // Get all exceptions for this month (includes global + barber-specific)
         $exceptions = $this->exceptionRepository->findByBarberAndMonth($barber, $year, $month);
         $exceptionsMap = [];
         foreach ($exceptions as $exception) {
-            $exceptionsMap[$exception->getDate()->format('Y-m-d')] = $exception;
+            $dateStr = $exception->getDate()->format('Y-m-d');
+
+            // If there's already an exception for this date, give priority to barber-specific
+            if (isset($exceptionsMap[$dateStr])) {
+                // If new exception is barber-specific (not global), override global one
+                if ($exception->getBarber() !== null) {
+                    $exceptionsMap[$dateStr] = $exception;
+                }
+                // Otherwise keep existing (barber-specific has priority)
+            } else {
+                // No exception yet for this date, add it
+                $exceptionsMap[$dateStr] = $exception;
+            }
         }
 
         // Get first and last day of month

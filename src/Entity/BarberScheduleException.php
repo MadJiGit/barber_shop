@@ -66,7 +66,7 @@ class BarberScheduleException
         return $this->barber;
     }
 
-    public function setBarber(User $barber): static
+    public function setBarber(?User $barber): static
     {
         $this->barber = $barber;
 
@@ -204,8 +204,12 @@ class BarberScheduleException
 
     public function __toString(): string
     {
+        $barberName = $this->barber
+            ? $this->barber->getEmail()
+            : '🌐 ВСИЧКИ БАРБЪРИ';
+
         return sprintf('%s - %s',
-            $this->barber?->getEmail() ?? 'N/A',
+            $barberName,
             $this->date?->format('d.m.Y') ?? ''
         );
     }
