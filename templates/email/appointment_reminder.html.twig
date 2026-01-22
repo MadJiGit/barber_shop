@@ -84,9 +84,9 @@
         <strong>{{ 'reminder.team' | trans }}</strong>
     </p>
 
-    <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-        📧 За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a><br>
-        📞 Телефон: +359 XXX XXX XXX
+    <p style="font-size: 14px; color: #666;">
+        📧 <a href="mailto:{{ contact_email }}" style="color: #d4a024;">{{ contact_email }}</a><br>
+        📞 <a href="tel:{{ contact_phone|replace({' ': ''}) }}" style="color: #d4a024;">{{ contact_phone }}</a>
     </p>
 
     <p style="font-size: 11px; color: #aaa; margin-top: 15px; text-align: center;">

@@ -43,9 +43,9 @@
         {{ 'welcome.contact_intro' | trans }}
     </p>
     <p style="font-size: 14px; color: #666;">
-        📧 <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a>
+        📧 <a href="mailto:{{ contact_email }}" style="color: #d4a024;">{{ contact_email }}</a><br>
+        📞 <a href="tel:{{ contact_phone|replace({' ': ''}) }}" style="color: #d4a024;">{{ contact_phone }}</a>
     </p>
-
     <p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 30px;">
         {{ 'welcome.regards' | trans }}<br>
         <strong>{{ 'welcome.team' | trans }}</strong>

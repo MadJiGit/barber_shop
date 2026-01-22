@@ -14,6 +14,7 @@ use App\Repository\UserRepository;
 use App\Service\AppointmentService;
 use App\Service\AppointmentValidator;
 use App\Service\BarberScheduleService;
+use App\Service\CalendarService;
 use App\Service\DateTimeHelper;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,6 +42,7 @@ class AppointmentController extends AbstractController
     private EmailService $emailService;
     private AppointmentService $appointmentService;
     private TranslatorInterface $translator;
+    private CalendarService $calendarService;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -53,6 +55,7 @@ class AppointmentController extends AbstractController
         EmailService $emailService,
         AppointmentService $appointmentService,
         TranslatorInterface $translator,
+        CalendarService $calendarService,
     ) {
         $this->em = $em;
         $this->appointmentsRepository = $appointmentsRepository;
@@ -64,6 +67,7 @@ class AppointmentController extends AbstractController
         $this->emailService = $emailService;
         $this->appointmentService = $appointmentService;
         $this->translator = $translator;
+        $this->calendarService = $calendarService;
     }
 
     // ========================================
@@ -327,6 +331,27 @@ class AppointmentController extends AbstractController
 
         $this->addFlash('success', $this->translator->trans('appointment.success.cancelled_by_guest', [], 'flash_messages'));
         return $this->redirectToRoute('main');
+    }
+
+    /**
+     * Download ICS calendar file for appointment
+     */
+    #[Route('/calendar/{id}.ics', name: 'appointment_download_ics', methods: ['GET'])]
+    public function downloadIcs(int $id): Response
+    {
+        $appointment = $this->appointmentsRepository->find($id);
+
+        if (!$appointment) {
+            throw $this->createNotFoundException('Appointment not found');
+        }
+
+        $icsContent = $this->calendarService->generateIcsContent($appointment);
+
+        $response = new Response($icsContent);
+        $response->headers->set('Content-Type', 'text/calendar; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="appointment.ics"');
+
+        return $response;
     }
 
     /**

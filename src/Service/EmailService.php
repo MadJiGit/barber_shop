@@ -20,17 +20,20 @@ class EmailService
     private LoggerInterface $logger;
     private string $senderEmail;
     private string $senderName;
+    private CalendarService $calendarService;
 
     public function __construct(
         MailerInterface $mailer,
         LoggerInterface $logger,
         string $senderEmail,
-        string $senderName
+        string $senderName,
+        CalendarService $calendarService
     ) {
         $this->mailer = $mailer;
         $this->logger = $logger;
         $this->senderEmail = $senderEmail;
         $this->senderName = $senderName;
+        $this->calendarService = $calendarService;
     }
 
     /**
@@ -103,6 +106,10 @@ class EmailService
             $client = $appointment->getClient();
             $barber = $appointment->getBarber();
 
+            // Generate ICS calendar file
+            $icsContent = $this->calendarService->generateIcsContent($appointment);
+            $googleCalendarUrl = $this->calendarService->getGoogleCalendarUrl($appointment);
+
             $email = (new TemplatedEmail())
                 ->from(new Address($this->senderEmail, $this->senderName))
                 ->to(new Address($client->getEmail(), $client->getFirstName() ?: ''))
@@ -112,7 +119,9 @@ class EmailService
                     'appointment' => $appointment,
                     'client' => $client,
                     'barber' => $barber,
-                ]);
+                    'googleCalendarUrl' => $googleCalendarUrl,
+                ])
+                ->attach($icsContent, 'appointment.ics', 'text/calendar');
 
             $this->mailer->send($email);
             $this->logger->info('Appointment confirmation email sent', [
@@ -140,6 +149,10 @@ class EmailService
             $client = $appointment->getClient();
             $barber = $appointment->getBarber();
 
+            // Generate ICS calendar file
+            $icsContent = $this->calendarService->generateIcsContent($appointment);
+            $googleCalendarUrl = $this->calendarService->getGoogleCalendarUrl($appointment);
+
             $email = (new TemplatedEmail())
                 ->from(new Address($this->senderEmail, $this->senderName))
                 ->to(new Address($client->getEmail(), $client->getFirstName() ?: ''))
@@ -151,7 +164,9 @@ class EmailService
                     'barber' => $barber,
                     'confirmUrl' => $confirmUrl,
                     'cancelUrl' => $cancelUrl,
-                ]);
+                    'googleCalendarUrl' => $googleCalendarUrl,
+                ])
+                ->attach($icsContent, 'appointment.ics', 'text/calendar');
 
             $this->mailer->send($email);
             $this->logger->info('Guest appointment confirmation email sent', [

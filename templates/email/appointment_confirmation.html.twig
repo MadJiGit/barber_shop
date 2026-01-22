@@ -44,6 +44,26 @@
         </table>
     </div>
 
+    <div style="background-color: #f0f8ff; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
+        <h4 style="color: #0066cc; margin-top: 0; margin-bottom: 15px;">
+            {{ 'confirm.add_to_calendar' | trans }}
+        </h4>
+        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+            {{ 'confirm.add_to_calendar_text' | trans }}
+        </p>
+        <div style="display: inline-block;">
+            <a href="{{ googleCalendarUrl }}"
+               target="_blank"
+               style="display: inline-block; padding: 12px 25px; background-color: #4285f4; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold; margin: 5px;">
+                Google Calendar
+            </a>
+            <a href="{{ url('appointment_download_ics', {id: appointment.id}) }}"
+               style="display: inline-block; padding: 12px 25px; background-color: #4285f4; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 14px; font-weight: bold; margin: 5px;">
+                Outlook / Apple Calendar
+            </a>
+        </div>
+    </div>
+
     <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 25px 0;">
         <p style="margin: 0; color: #0c5460; font-size: 14px; line-height: 1.6;">
             <strong>{{ 'confirm.important' | trans }}:</strong> {{ 'confirm.important_text' | trans }}
@@ -66,7 +86,8 @@
         <strong>{{ 'confirm.team' | trans }}</strong>
     </p>
 
-    <p style="font-size: 12px; color: #999; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
-        📧 За въпроси: <a href="mailto:contact@barber.com" style="color: #d4a024;">contact@barber.com</a>
+    <p style="font-size: 14px; color: #666;">
+        📧 <a href="mailto:{{ contact_email }}" style="color: #d4a024;">{{ contact_email }}</a><br>
+        📞 <a href="tel:{{ contact_phone|replace({' ': ''}) }}" style="color: #d4a024;">{{ contact_phone }}</a>
     </p>
 {% endblock %}

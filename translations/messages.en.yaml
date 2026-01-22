@@ -449,6 +449,9 @@ guest_confirm:
     team: "The Barber Shop Team"
     validity: "This confirmation link is valid for 24 hours."
     question: "For questions: "
+    add_to_calendar: "Add to Calendar"
+    add_to_calendar_text: "Don't miss your appointment! Add it to your calendar with one click."
+    or_download_ics: "or download ICS file for Outlook/Apple Calendar"
 
 # base.html.twig
 
@@ -509,6 +512,9 @@ confirm:
     see_you: "We're looking forward to seeing you!"
     regards: "Regards,"
     team: "The Barber Shop Team"
+    add_to_calendar: "Add to Calendar"
+    add_to_calendar_text: "Don't miss your appointment! Add it to your calendar with one click."
+    or_download_ics: "or download ICS file for Outlook/Apple Calendar"
 
 # appointment_cancellation.html.twig
 

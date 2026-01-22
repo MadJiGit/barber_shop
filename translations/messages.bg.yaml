@@ -448,6 +448,9 @@ guest_confirm:
     team: "Екипът на Barber Shop"
     validity: "Този линк за потвърждение е валиден 24 часа."
     question: "За въпроси: "
+    add_to_calendar: "Добавете в календара"
+    add_to_calendar_text: "Не пропускайте вашия час! Добавете го в календара си с един клик."
+    or_download_ics: "или свалете ICS файл за Outlook/Apple Calendar"
 
 
 # base.html.twig
@@ -509,6 +512,9 @@ confirm:
     see_you: "Очакваме ви с нетърпение!"
     regards: "Поздрави,"
     team: "Екипът на Barber Shop"
+    add_to_calendar: "Добавете в календара"
+    add_to_calendar_text: "Не пропускайте вашия час! Добавете го в календара си с един клик."
+    or_download_ics: "или свалете ICS файл за Outlook/Apple Calendar"
 
 # appointment_cancellation.html.twig
 

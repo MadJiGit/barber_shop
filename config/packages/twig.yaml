@@ -1,6 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
-
+    globals:
+        contact_email: '%env(CONTACT_EMAIL)%'
+        contact_phone: '%env(CONTACT_PHONE)%'
 when@test:
     twig:
         strict_variables: true
