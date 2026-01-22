@@ -134,7 +134,7 @@
                             <div class="col-lg-6 col-md-8 col-sm-10">
                                 <div class="single-footer-caption text-center">
                                     <!-- Logo -->
-                                    <div class="footer-logo">
+                                    <div class="footer-logo" style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; display: inline-block;">
                                         <a href="{{ path('main') }}">
                                             <img src="{{ asset('assets/img/logos/logo2_footer.png') }}" alt="Barber Shop">
                                         </a>
@@ -145,6 +145,15 @@
                                         <a href="#"><i class="fab fa-twitter"></i></a>
                                         <a href="#"><i class="fab fa-instagram"></i></a>
                                         <a href="#"><i class="fas fa-globe"></i></a>
+                                    </div>
+                                    <!-- Contact -->
+                                    <div class="footer-contact text-center mt-4" style="color: #999;">
+                                        <p style="font-size: 14px; margin: 5px 0;">
+                                            <a href="mailto:{{ contact_email }}" style="color: #d4a024; text-decoration: none;">{{ contact_email }}</a>
+                                        </p>
+                                        <p style="font-size: 14px; margin: 5px 0;">
+                                            <a href="tel:{{ contact_phone_link }}" style="color: #d4a024; text-decoration: none;">{{ contact_phone }}</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -157,11 +166,10 @@
                                 <div class="footer-copy-right">
                                     <p>&copy; {{ 'now'|date('Y') }} {{ 'base.footer.text' | trans }}</p>
                                 </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-4">
-                                <!-- Back to top -->
-                                <div class="footer-back-link text-right">
-                                <a href="#" class="back-link">{{ 'base.footer.back_to_top' | trans }} <i class="ti-angle-up"></i></a>
+                                <div class="footer-legal text-center mt-2">
+                                    <a href="{{ path('privacy_policy') }}" style="color: #999; font-size: 13px; margin: 0 10px; text-decoration: none;">{{ 'legal.privacy_policy.title' | trans }}</a>
+                                    <span style="color: #666;">|</span>
+                                    <a href="{{ path('terms_of_service') }}" style="color: #999; font-size: 13px; margin: 0 10px; text-decoration: none;">{{ 'legal.terms.title' | trans }}</a>
                                 </div>
                             </div>
                             <!-- Developer credit (centered) -->

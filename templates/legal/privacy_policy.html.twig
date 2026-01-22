@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'legal.privacy_policy.title' | trans }}{% endblock %}
+
+{% block body %}
+    <div class="container" style="padding: 80px 0 60px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="mb-4" style="color: #d4a024;">{{ 'legal.privacy_policy.title' | trans }}</h1>
+                <p class="text-muted mb-4"><small>{{ 'legal.last_updated' | trans }}: {{ 'now'|date('d.m.Y') }}</small></p>
+
+                <div class="content" style="line-height: 1.8; color: #333;">
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section1.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section1.content' | trans }}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section2.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section2.intro' | trans }}</p>
+                        <ul>
+                            <li>{{ 'legal.privacy_policy.section2.item1' | trans }}</li>
+                            <li>{{ 'legal.privacy_policy.section2.item2' | trans }}</li>
+                            <li>{{ 'legal.privacy_policy.section2.item3' | trans }}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section3.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section3.content' | trans }}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section4.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section4.intro' | trans }}</p>
+                        <ul>
+                            <li>{{ 'legal.privacy_policy.section4.item1' | trans }}</li>
+                            <li>{{ 'legal.privacy_policy.section4.item2' | trans }}</li>
+                            <li>{{ 'legal.privacy_policy.section4.item3' | trans }}</li>
+                            <li>{{ 'legal.privacy_policy.section4.item4' | trans }}</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section5.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section5.content' | trans }}</p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">{{ 'legal.privacy_policy.section6.title' | trans }}</h2>
+                        <p>{{ 'legal.privacy_policy.section6.content' | trans({
+                            '%contact_email%': contact_email,
+                            '%contact_phone%': contact_phone,
+                            '%contact_phone_link%': contact_phone_link
+                        })|raw }}</p>
+                    </section>
+                </div>
+
+                <div class="mt-5 text-center">
+                    <a href="{{ path('main') }}" class="btn" style="background-color: #d4a024; color: white; padding: 12px 30px;">{{ 'legal.back_to_home' | trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

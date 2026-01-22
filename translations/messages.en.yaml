@@ -660,7 +660,7 @@ appointment:
         email: "Email"
         phone: "Phone"
         phone_placeholder: "+359 888 123 456"
-        gdpr: "I agree to the processing of my personal data in accordance with the <a href=\"#\" target=\"_blank\">Privacy Policy</a>"
+        gdpr: "I agree to the processing of my personal data in accordance with the <a href=\"/privacy-policy\" target=\"_blank\">Privacy Policy</a> and <a href=\"/terms-of-service\" target=\"_blank\">Terms of Service</a>"
     procedure:
         title: "Select a service"
         placeholder: "Select a service..."
@@ -1054,5 +1054,67 @@ barber_schedules:
 
 
 
+
+# Legal Pages
+
+legal:
+    last_updated: "Last Updated"
+    back_to_home: "Back to Home"
+    privacy_policy:
+        title: "Privacy Policy"
+        section1:
+            title: "1. Introduction"
+            content: "Barber Shop (\"we\", \"our\" or \"the company\") respects your privacy and is committed to protecting your personal data. This privacy policy will inform you how we process your personal data when you visit our website and book appointments, as well as your privacy rights."
+        section2:
+            title: "2. What Personal Data We Collect"
+            intro: "We collect the following personal data when you use our online booking service:"
+            item1: "First and last name"
+            item2: "Email address"
+            item3: "Phone number"
+        section3:
+            title: "3. How We Use Your Data"
+            content: "We use your personal data solely for the purposes of managing your appointments - confirming bookings, sending reminders, and communicating about your scheduled services. We DO NOT share your data with third parties and DO NOT use it for marketing purposes without your explicit consent."
+        section4:
+            title: "4. Your Rights (GDPR)"
+            intro: "Under the General Data Protection Regulation (GDPR), you have the following rights:"
+            item1: "Right of access - you can request a copy of your personal data"
+            item2: "Right to rectification - you can correct inaccurate data"
+            item3: "Right to erasure - you can request deletion of your data"
+            item4: "Right to restrict processing - you can limit how we process your data"
+        section5:
+            title: "5. Data Security"
+            content: "Your data is stored securely in our database with appropriate technical and organizational measures to protect against unauthorized access, loss, or deletion. Only authorized staff who need the data to perform their duties have access to your information."
+        section6:
+            title: "6. Contact Us"
+            content: "If you have questions about this privacy policy or wish to exercise your rights, please contact us at: <a href=\"mailto:%contact_email%\" style=\"color: #d4a024;\">%contact_email%</a> or <a href=\"tel:%contact_phone_link%\" style=\"color: #d4a024;\">%contact_phone%</a>"
+    terms:
+        title: "Terms of Service"
+        section1:
+            title: "1. Acceptance of Terms"
+            content: "By using our website and appointment booking services, you agree to these Terms of Service. If you do not agree with these terms, please do not use our services."
+        section2:
+            title: "2. Booking Services"
+            intro: "Our platform allows online booking of appointments for barber services. By making a booking, you agree to:"
+            item1: "Provide accurate and up-to-date information"
+            item2: "Respect scheduled appointments and arrive on time"
+            item3: "Notify us in advance if you need to cancel or reschedule"
+        section3:
+            title: "3. Cancellation Policy"
+            intro: "To ensure quality service for all clients, we apply the following rules:"
+            item1_title: "Client cancellations:"
+            item1_content: "You may cancel your bookings free of charge up to 24 hours before the appointment. Last-minute cancellations may result in restrictions on future bookings."
+            item2_title: "No-shows:"
+            item2_content: "If you fail to show up for your scheduled appointment without notice, we reserve the right to restrict your future bookings or require prepayment."
+            item3_title: "Barber cancellations:"
+            item3_content: "In rare cases, we may need to cancel your appointment due to unforeseen circumstances. In such cases, we will notify you as soon as possible and offer an alternative appointment time."
+        section4:
+            title: "4. Pricing and Payment"
+            content: "Prices for our services are listed on the website and may change without notice. Payment is made on-site at the salon after the service is provided. Online bookings DO NOT require prepayment unless otherwise specified."
+        section5:
+            title: "5. Limitation of Liability"
+            content: "Barber Shop is not liable for indirect or incidental damages arising from the use of our services. We strive to ensure smooth operation of the system, but we do not guarantee that the service will always be available or error-free."
+        section6:
+            title: "6. Contact"
+            content: "For questions about the Terms of Service, please contact us at: <a href=\"mailto:%contact_email%\" style=\"color: #d4a024;\">%contact_email%</a> or <a href=\"tel:%contact_phone_link%\" style=\"color: #d4a024;\">%contact_phone%</a>"
 
 # Admin Panel
