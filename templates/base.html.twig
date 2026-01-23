@@ -32,7 +32,7 @@
         <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
     {% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <!-- Preloader Start -->
     <div id="preloader-active">
         <div class="preloader d-flex align-items-center justify-content-center">
@@ -134,7 +134,7 @@
                             <div class="col-lg-6 col-md-8 col-sm-10">
                                 <div class="single-footer-caption text-center">
                                     <!-- Logo -->
-                                    <div class="footer-logo" style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; display: inline-block;">
+                                    <div class="footer-logo">
                                         <a href="{{ path('main') }}">
                                             <img src="{{ asset('assets/img/logos/logo2_footer.png') }}" alt="Barber Shop">
                                         </a>
@@ -147,12 +147,12 @@
                                         <a href="#"><i class="fas fa-globe"></i></a>
                                     </div>
                                     <!-- Contact -->
-                                    <div class="footer-contact text-center mt-4" style="color: #999;">
-                                        <p style="font-size: 14px; margin: 5px 0;">
-                                            <a href="mailto:{{ contact_email }}" style="color: #d4a024; text-decoration: none;">{{ contact_email }}</a>
+                                    <div class="footer-contact">
+                                        <p>
+                                            <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
                                         </p>
-                                        <p style="font-size: 14px; margin: 5px 0;">
-                                            <a href="tel:{{ contact_phone_link }}" style="color: #d4a024; text-decoration: none;">{{ contact_phone }}</a>
+                                        <p>
+                                            <a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a>
                                         </p>
                                     </div>
                                 </div>
@@ -160,25 +160,24 @@
                         </div>
                     </div>
                     <div class="footer-bottom">
-{#                        <div class="row d-flex justify-content-between align-items-center">#}
-                        <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col-xl-9 col-lg-8">
-                                <div class="footer-copy-right">
-                                    <p>&copy; {{ 'now'|date('Y') }} {{ 'base.footer.text' | trans }}</p>
-                                </div>
-                                <div class="footer-legal text-center mt-2">
-                                    <a href="{{ path('privacy_policy') }}" style="color: #999; font-size: 13px; margin: 0 10px; text-decoration: none;">{{ 'legal.privacy_policy.title' | trans }}</a>
-                                    <span style="color: #666;">|</span>
-                                    <a href="{{ path('terms_of_service') }}" style="color: #999; font-size: 13px; margin: 0 10px; text-decoration: none;">{{ 'legal.terms.title' | trans }}</a>
-                                </div>
+                        <div class="row">
+                            <!-- Copyright - Right -->
+                            <div class="footer-copy-right">
+                                <p>&copy; {{ 'now'|date('Y') }} {{ 'base.footer.text' | trans }}</p>
                             </div>
-                            <!-- Developer credit (centered) -->
-                            <div class="col-xl-12 col-lg-12 text-center mt-3">
-                                <div class="d-inline-flex align-items-center gap-2">
-                                    {{ 'footer.developed_by'|trans }}&nbsp;&nbsp;<a href="https://mladenraykov.com" target="_blank">
-                                        <img class="madji-img-footer" src="{{ asset('assets/img/logos/logo-no-background.png') }}" alt="MADJI logo">
-                                    </a>
-                                </div>
+
+                            <!-- Developer credit - Left -->
+                            <div class="footer-developer">
+                                {{ 'footer.developed_by'|trans }}&nbsp;&nbsp;<a href="https://mladenraykov.com" target="_blank">
+                                    <img class="madji-img-footer" src="{{ asset('assets/img/logos/logo-no-background.png') }}" alt="MADJI logo">
+                                </a>
+                            </div>
+
+                            <!-- Legal links - Center (or below on mobile) -->
+                            <div class="footer-legal">
+                                <a href="{{ path('privacy_policy') }}">{{ 'legal.privacy_policy.title' | trans }}</a>
+                                <span>|</span>
+                                <a href="{{ path('terms_of_service') }}">{{ 'legal.terms.title' | trans }}</a>
                             </div>
                         </div>
                     </div>

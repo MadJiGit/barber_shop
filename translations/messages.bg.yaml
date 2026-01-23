@@ -57,7 +57,7 @@ homepage:
         track_button: 'Създайте акаунт'
         book_now_button: 'ЗАПАЗИ СЕГА!'
     pricing:
-        subtitle: 'Ценови планове'
+        subtitle: 'Ценови предложения'
         title: 'Нашите достъпни цени'
         book_now: 'Запази час'
         basic:
