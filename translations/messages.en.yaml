@@ -90,10 +90,6 @@ homepage:
     testimonials:
         subtitle: 'Testimonials'
         title: 'What Our Clients Say'
-        client1:
-            text: 'Excellent service! The barbers are highly skilled and the atmosphere is very professional. I''ve been a regular customer for over a year now.'
-            name: 'John Smith'
-            role: 'Regular Client'
     team:
         subtitle: 'Our Team'
         title: 'Meet Our Experts'

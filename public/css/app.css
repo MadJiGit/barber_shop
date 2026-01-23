@@ -67,7 +67,7 @@
     flex-wrap: wrap;
 }
 
-.pricing-area .row > [class*="col-"] {
+.pricing-area .row:not(.justify-content-center) > [class*="col-"] {
     display: flex;
 }
 
@@ -247,9 +247,135 @@
     object-fit: contain;
 }
 
+/* Icon Attribution */
+.icon-attribution {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 0;
+}
+
+.icon-attribution a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.icon-attribution a:hover {
+    color: #d4a024;
+}
+
 /* Homepage - Small text */
 .text-small {
     font-size: 12px;
+}
+
+/* Testimonials Carousel */
+.testimonial-area {
+    padding: 80px 0;
+    background-color: #f8f9fa;
+}
+
+.testimonial-active {
+    position: relative;
+    padding: 20px 60px;
+}
+
+.testimonial-active .slick-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: transparent;
+    border: none;
+    font-size: 30px;
+    color: #d4a024;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.testimonial-active .slick-arrow:hover {
+    color: #b8892a;
+}
+
+.testimonial-active .slick-prev {
+    left: 0;
+}
+
+.testimonial-active .slick-next {
+    right: 0;
+}
+
+.testimonial-active .slick-dots {
+    display: flex !important;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.testimonial-active .slick-dots li {
+    margin: 0 5px;
+}
+
+.testimonial-active .slick-dots li button {
+    border: none;
+    background: #ccc;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.testimonial-active .slick-dots li.slick-active button {
+    background: #d4a024;
+    width: 14px;
+    height: 14px;
+}
+
+.single-testimonial {
+    padding: 40px 20px;
+}
+
+.testimonial-top-cap p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+.founder-text span {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    color: #d4a024;
+    margin-bottom: 5px;
+}
+
+.founder-text p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* Responsive testimonials */
+@media (max-width: 768px) {
+    .testimonial-active {
+        padding: 20px 10px;
+    }
+
+    .testimonial-top-cap p {
+        font-size: 16px;
+    }
+
+    .founder-text span {
+        font-size: 18px;
+    }
 }
 
 /* Team Section */

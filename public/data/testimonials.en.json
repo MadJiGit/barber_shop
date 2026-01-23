@@ -1,0 +1,32 @@
+[
+  {
+    "text": "Excellent service! The barbers are highly skilled and the atmosphere is very professional. I've been a regular customer for over a year.",
+    "name": "Ivan Petrov",
+    "role": "Manager"
+  },
+  {
+    "text": "The best barbershop in town! I always leave satisfied with the haircut and shaving services. Highly recommend!",
+    "name": "Georgi Dimitrov",
+    "role": "Entrepreneur"
+  },
+  {
+    "text": "Professional attitude and attention to detail. My barber gave me excellent advice on beard maintenance.",
+    "name": "Stoyan Kolev",
+    "role": "Architect"
+  },
+  {
+    "text": "Great atmosphere and top-notch services. Booking an appointment is easy and convenient. They're always punctual and fast.",
+    "name": "Martin Todorov",
+    "role": "IT Specialist"
+  },
+  {
+    "text": "I've been coming here for months and I'm impressed every time. The quality of service is exceptionally high.",
+    "name": "Nikolay Stoyanov",
+    "role": "Lawyer"
+  },
+  {
+    "text": "Modern establishment with a classic approach to customer service. I recommend it to all my friends!",
+    "name": "Petar Ivanov",
+    "role": "Business Consultant"
+  }
+]
