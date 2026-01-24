@@ -46,5 +46,9 @@ nelmio_security:
                 - 'https://fonts.gstatic.com' # Google Fonts
             connect-src:
                 - 'self'
+            frame-src:
+                - 'self'
+                - 'https://www.google.com'
+                - 'https://maps.google.com'
             frame-ancestors:
                 - 'none'
