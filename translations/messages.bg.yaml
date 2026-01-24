@@ -99,6 +99,20 @@ homepage:
         member2:
             name: 'Тони Монтана'
             role: 'Barber'
+    contact:
+        subtitle: 'Контакти'
+        title: 'Посети ни'
+        address_label: 'Адрес'
+        address: 'ул. Примерна 123, София 1000'
+        phone_label: 'Телефон'
+        email_label: 'Имейл'
+        hours_label: 'Работно време'
+        hours_workday: 'Понеделник - Петък: 09:00 - 19:00'
+        hours_saturday: 'Събота: 10:00 - 18:00'
+        hours_sunday: 'Неделя: Почивен ден'
+        social_label: 'Последвайте ни'
+        view_map: 'Вижте на картата'
+        click_to_open: 'Кликнете за да отворите в Google Maps'
 
 
 # base_iframe.html.twig

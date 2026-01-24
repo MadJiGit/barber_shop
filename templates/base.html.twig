@@ -27,7 +27,7 @@
 
         <!-- Custom CSS overrides -->
         <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/custom_styles.css') }}">
         <link rel="stylesheet" href="{{ asset('css/loading.css') }}">
         <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
     {% endblock %}
@@ -138,22 +138,6 @@
                                         <a href="{{ path('main') }}">
                                             <img src="{{ asset('assets/img/logos/logo2_footer.png') }}" alt="Barber Shop">
                                         </a>
-                                    </div>
-                                    <!-- Social -->
-                                    <div class="footer-social">
-                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                                        <a href="#"><i class="fab fa-twitter"></i></a>
-                                        <a href="#"><i class="fab fa-instagram"></i></a>
-                                        <a href="#"><i class="fas fa-globe"></i></a>
-                                    </div>
-                                    <!-- Contact -->
-                                    <div class="footer-contact">
-                                        <p>
-                                            <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
-                                        </p>
-                                        <p>
-                                            <a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a>
-                                        </p>
                                     </div>
                                 </div>
                             </div>

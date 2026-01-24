@@ -99,6 +99,18 @@ homepage:
         member2:
             name: 'Tony Montana'
             role: 'Barber'
+    contact:
+        subtitle: 'Contact'
+        title: 'Visit Us'
+        address_label: 'Address'
+        address: '123 Example Street, Sofia 1000'
+        phone_label: 'Phone'
+        email_label: 'Email'
+        hours_label: 'Working Hours'
+        hours: 'Monday - Friday: 09:00 - 19:00<br>Saturday: 10:00 - 18:00<br>Sunday: Closed'
+        social_label: 'Follow Us'
+        view_map: 'View on Map'
+        click_to_open: 'Click to open in Google Maps'
 
 
 # base_iframe.html.twig

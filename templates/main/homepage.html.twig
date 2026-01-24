@@ -339,4 +339,82 @@
     </div>
     <!-- Testimonials Area End -->
 
+    <!--? Contact Section Start -->
+    <section class="contact-section section-padding30">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-55">
+                        <span>{{ 'homepage.contact.subtitle' | trans }}</span>
+                        <h2>{{ 'homepage.contact.title' | trans }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-12 mb-30">
+                    <div class="contact-map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d23633.63297939591!2d23.31971!3d42.69771!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40aa8682cb317bf5%3A0x400a01269bf5e60!2sSofia%2C%20Bulgaria!5e0!3m2!1sen!2sbg!4v1234567890" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-30">
+                    <div class="contact-info">
+                        <div class="contact-info-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>{{ 'homepage.contact.address_label' | trans }}</h4>
+                                <p>{{ 'homepage.contact.address' | trans }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>{{ 'homepage.contact.phone_label' | trans }}</h4>
+                                <p><a href="tel:{{ contact_phone_link }}">{{ contact_phone }}</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>{{ 'homepage.contact.email_label' | trans }}</h4>
+                                <p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>{{ 'homepage.contact.hours_label' | trans }}</h4>
+                                <p>{{ 'homepage.contact.hours_workday' | trans }}</p>
+                                <p>{{ 'homepage.contact.hours_saturday' | trans }}</p>
+                                <p>{{ 'homepage.contact.hours_sunday' | trans }}</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>{{ 'homepage.contact.social_label' | trans }}</h4>
+                                <div class="contact-social">
+                                    <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                                    <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                                    <a href="#" target="_blank"><i class="fas fa-globe"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section End -->
+
 {% endblock %}
