@@ -8,7 +8,7 @@ use App\Form\UserFormType;
 use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\BarberScheduleService;
-use App\Service\DateTimeHelper;
+use App\Helper\DateTimeHelper;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -331,7 +331,7 @@ class ProfileController extends AbstractController
             $calendarMonth = $request->query->get('month');
 
             if (!$calendarYear || !$calendarMonth) {
-                $now = new \DateTime('now');
+                $now = DateTimeHelper::now();
                 $calendarYear = (int) $now->format('Y');
                 $calendarMonth = (int) $now->format('m');
             } else {

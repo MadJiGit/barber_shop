@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Procedure;
 use App\Entity\User;
+use App\Helper\DateTimeHelper;
 use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
 use App\Repository\ProcedureRepository;
@@ -133,7 +134,7 @@ class AdminController extends AbstractController
             $user->setNickName($form->get('nick_name')->getData());
             $user->setPhone($form->get('phone')->getData());
             $user->setRoles($temp_roles);
-            $user->setDateLastUpdate(new \DateTime('now'));
+            $user->setDateLastUpdate(DateTimeHelper::now());
 
             $this->em->persist($user);
             $this->em->flush();

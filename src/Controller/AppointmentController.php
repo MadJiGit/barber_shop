@@ -210,6 +210,12 @@ class AppointmentController extends AbstractController
 
             $duration = $this->getDurationOfProcedure($procedure, $barber);
 
+            if ($duration === false) {
+                $this->addFlash('error', $this->translator->trans('appointment.error.invalid_service_or_barber', [], 'flash_messages'));
+
+                return $this->redirectToRoute('appointment_book', $redirectParams);
+            }
+
             // Validate appointment using AppointmentValidator
             $validationErrors = $this->appointmentValidator->validateAppointment(
                 $client,
