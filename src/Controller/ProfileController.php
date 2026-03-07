@@ -8,7 +8,7 @@ use App\Form\UserFormType;
 use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\BarberScheduleService;
-use App\Helper\DateTimeHelper;
+use App\Service\DateTimeHelper;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
