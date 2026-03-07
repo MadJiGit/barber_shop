@@ -44,7 +44,7 @@ class BarberScheduleException
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $reason = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

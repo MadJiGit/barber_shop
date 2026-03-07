@@ -37,7 +37,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
-                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+                FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
@@ -66,7 +66,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $barber = 'ROLE_BARBER';
 
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT * FROM "user" WHERE CAST(roles AS text) LIKE :role';
+        $sql = 'SELECT * FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%'.$barber.'%']);
 
@@ -123,7 +123,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
-                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+                FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
@@ -136,7 +136,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getAllActiveBarbers(): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT id FROM "user"
+        $sql = 'SELECT id FROM `user`
                 WHERE CAST(roles AS text) LIKE :role
                 AND is_active = :active
                 ORDER BY email ASC';

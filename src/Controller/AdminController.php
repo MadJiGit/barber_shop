@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Procedure;
 use App\Entity\User;
-use App\Helper\DateTimeHelper;
+use App\Service\DateTimeHelper;
 use App\Form\ProcedureFormType;
 use App\Form\UserFormType;
 use App\Repository\ProcedureRepository;
