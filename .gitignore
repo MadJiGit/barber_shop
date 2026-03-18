@@ -4,6 +4,7 @@
 .env.local.php
 .env.*.local
 .env.docker
+.env.jethost
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
