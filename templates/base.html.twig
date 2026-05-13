@@ -7,6 +7,13 @@
     <meta name="description" content="{{ 'base.header.description' | trans }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/favicon.png') }}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Barber Shop">
+    <link rel="apple-touch-icon" href="{{ asset('assets/icon-192.png') }}">
 
     {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -239,5 +246,10 @@
             });
         </script>
     {% endblock %}
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
 </body>
 </html>

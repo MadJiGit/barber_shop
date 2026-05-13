@@ -80,18 +80,26 @@
             <!-- Calendar Header -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: prevYear, month: prevMonth}) }}"
-                           class="btn btn-outline-secondary">
-                            <i class="fas fa-chevron-left"></i> {{ 'barber_schedules.calendar.prev' | trans }}
-                        </a>
-                        <h2 class="mb-0">
-                            <i class="fas fa-calendar-alt"></i> {{ monthName }} {{ year }}
-                        </h2>
-                        <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: nextYear, month: nextMonth}) }}"
-                           class="btn btn-outline-secondary">
-                            {{ 'barber_schedules.calendar.next' | trans }} <i class="fas fa-chevron-right"></i>
-                        </a>
+                    <div class="row align-items-center g-0">
+                        <div class="col-4">
+                            <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: prevYear, month: prevMonth}) }}"
+                               class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-chevron-left"></i>
+                                <span class="d-none d-sm-inline"> {{ 'barber_schedules.calendar.prev' | trans }}</span>
+                            </a>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h4 class="mb-0">
+                                <i class="fas fa-calendar-alt d-none d-sm-inline"></i> {{ monthName }} {{ year }}
+                            </h4>
+                        </div>
+                        <div class="col-4 text-end">
+                            <a href="{{ path('manager_barber_schedules', {barber_id: selectedBarber.id, year: nextYear, month: nextMonth}) }}"
+                               class="btn btn-outline-secondary w-100">
+                                <span class="d-none d-sm-inline">{{ 'barber_schedules.calendar.next' | trans }} </span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -99,19 +107,19 @@
             <!-- Legend -->
             <div class="row mb-3">
                 <div class="col-12">
-                    <div class="calendar-legend d-flex justify-content-center gap-3">
-                        <span class="legend-item">
+                    <div class="row g-2 justify-content-center">
+                        <div class="col-6 col-sm-auto d-flex align-items-center gap-3">
                             <span class="legend-box legend-available"></span> {{ 'barber_schedules.legend.available' | trans }}
-                        </span>
-                        <span class="legend-item">
+                        </div>
+                        <div class="col-6 col-sm-auto d-flex align-items-center gap-3">
                             <span class="legend-box legend-partial"></span> {{ 'barber_schedules.legend.partial' | trans }}
-                        </span>
-                        <span class="legend-item">
+                        </div>
+                        <div class="col-6 col-sm-auto d-flex align-items-center gap-3">
                             <span class="legend-box legend-full"></span> {{ 'barber_schedules.legend.full' | trans }}
-                        </span>
-                        <span class="legend-item">
+                        </div>
+                        <div class="col-6 col-sm-auto d-flex align-items-center gap-3">
                             <span class="legend-box legend-unavailable"></span> {{ 'barber_schedules.legend.unavailable' | trans }}
-                        </span>
+                        </div>
                     </div>
                 </div>
             </div>

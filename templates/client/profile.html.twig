@@ -165,11 +165,18 @@
                                         </div>
 
                                         <!-- Action Buttons -->
-                                        <div class="text-center mt-4">
-                                            <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg px-5 mr-2" id="backButton">
-                                                <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
-                                            </a>
-                                            {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary btn-lg px-5'}, 'label': 'profile.actions.save'|trans}) }}
+                                        <div class="row mt-4">
+                                            <div class="col-6">
+                                                <a href="{{ path('main') }}" class="btn btn-outline-secondary btn-lg" id="backButton" style="display:block;width:100%;box-sizing:border-box;">
+                                                    <i class="fas fa-arrow-left"></i> {{ 'profile.actions.back' | trans }}
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                {% do form.save.setRendered %}
+                                                <button type="submit" class="btn btn-primary btn-lg" style="display:block;width:100%;box-sizing:border-box;">
+                                                    {{ 'profile.actions.save'|trans }}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {# ИЗОЛИРАНЕ НА ПРОБЛЕМНИТЕ ПОЛЕТА #}

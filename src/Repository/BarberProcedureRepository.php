@@ -50,6 +50,45 @@ class BarberProcedureRepository extends ServiceEntityRepository
     }
 
     /**
+     * Get all active procedures for multiple barbers in a single query.
+     * Returns a map: [barberId => [procedureId, ...]]
+     *
+     * @param User[] $barbers
+     * @return array<int, int[]>
+     */
+    public function findAllProceduresIndexedByBarber(array $barbers): array
+    {
+        if (empty($barbers)) {
+            return [];
+        }
+
+        $now = DateTimeHelper::now();
+
+        $results = $this->createQueryBuilder('bp')
+            ->select('bp, p, u')
+            ->join('bp.procedure', 'p')
+            ->join('bp.barber', 'u')
+            ->where('bp.barber IN (:barbers)')
+            ->andWhere('bp.can_perform = :can_perform')
+            ->andWhere('bp.valid_from <= :now')
+            ->andWhere('bp.valid_until IS NULL OR bp.valid_until >= :now')
+            ->setParameter('barbers', $barbers)
+            ->setParameter('can_perform', true)
+            ->setParameter('now', $now)
+            ->orderBy('p.type', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $map = [];
+        foreach ($results as $bp) {
+            $barberId = $bp->getBarber()->getId();
+            $map[$barberId][] = $bp->getProcedure()->getId();
+        }
+
+        return $map;
+    }
+
+    /**
      * Get all barbers who can perform a specific procedure
      *
      * @param Procedure $procedure

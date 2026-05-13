@@ -63,19 +63,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getAllBarbers(): array
     {
-        $barber = 'ROLE_BARBER';
-
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT * FROM `user` WHERE roles LIKE :role';
+        $sql = 'SELECT id FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery(['role' => '%'.$barber.'%']);
+        $result = $stmt->executeQuery(['role' => '%ROLE_BARBER%']);
 
-        $users = [];
-        foreach ($result->fetchAllAssociative() as $row) {
-            $users[] = $this->find($row['id']);
+        $ids = array_column($result->fetchAllAssociative(), 'id');
+
+        if (empty($ids)) {
+            return [];
         }
 
-        return $users;
+        return $this->createQueryBuilder('u')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -186,36 +189,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
-    public function findOneById($id): User
+    public function findOneById($id): ?User
     {
-//        echo '<pre>'.var_export($id, true).'</pre>';
-//        exit;
-
-
-
-        if (true) {
-            return $this->createQueryBuilder('u')
-                ->andWhere('u.id = :id')
-                ->setParameter('id', $id)
-                ->getQuery()
-                ->getOneOrNullResult();
-        //                ->getFirstResult();
-        } else {
-            //                    echo '<pre>'.var_export($id, true).'</pre>';
-            //                    exit;
-
-            $a = $this->createQueryBuilder('c')
-                ->select('u')
-                ->from(User::class, 'u')
-                ->innerJoin('u.barber', 'ub')
-                ->andWhere('u.id = :id')
-                ->setParameter('id', $id)
-                ->addSelect('ub')
-                ->getQuery();
-            //                ->getOneOrNullResult();
-
-            return $a->getOneOrNullResult();
-        }
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
