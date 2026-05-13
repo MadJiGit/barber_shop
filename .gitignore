@@ -44,3 +44,4 @@ input_lylin.json
 input_mladost.json
 output_data.json
 run.py
+.env.jethost
