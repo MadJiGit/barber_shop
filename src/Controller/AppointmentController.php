@@ -272,10 +272,11 @@ class AppointmentController extends AbstractController
 
         // Prepare barber data for JavaScript
         $barbersData = [];
-        $barberProcedureMap = [];
+
+        // Single query for all barbers instead of N queries
+        $barberProcedureMap = $this->barberProcedureRepository->findAllProceduresIndexedByBarber($barbers);
 
         foreach ($barbers as $barber) {
-            // Serialize barber for JavaScript
             $barbersData[] = [
                 'id' => $barber->getId(),
                 'firstName' => $barber->getFirstName(),
@@ -284,9 +285,10 @@ class AppointmentController extends AbstractController
                 'isBarberJunior' => $barber->isBarberJunior(),
             ];
 
-            // Get procedure mapping
-            $barberProcedures = $this->barberProcedureRepository->findActiveProceduresForBarber($barber);
-            $barberProcedureMap[$barber->getId()] = array_map(fn ($p) => $p->getId(), $barberProcedures);
+            // Ensure entry exists even if barber has no procedures
+            if (!isset($barberProcedureMap[$barber->getId()])) {
+                $barberProcedureMap[$barber->getId()] = [];
+            }
         }
 
         return $this->render('client/appointment.html.twig',

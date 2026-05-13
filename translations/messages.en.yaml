@@ -591,8 +591,8 @@ profile:
         new_placeholder: "Minimum 6 characters"
         repeat_placeholder: "Repeat the new password"
     actions:
-        back: "Back to home"
-        save: "Save changes"
+        back: "Back"
+        save: "Save"
     appointments:
         filters:
             from_date: "From date"

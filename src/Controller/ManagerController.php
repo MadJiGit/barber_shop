@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Appointments;
 use App\Entity\Procedure;
+use App\Enum\AppointmentStatus;
 use App\Repository\AppointmentsRepository;
 use App\Repository\UserRepository;
 use App\Service\AppointmentValidator;
@@ -87,9 +88,9 @@ class ManagerController extends AbstractController
         // Calculate today's stats
         $todayStats = [
             'total' => count($todayAppointments),
-            'confirmed' => count(array_filter($todayAppointments, fn ($a) => 'confirmed' === $a->getStatus())),
-            'completed' => count(array_filter($todayAppointments, fn ($a) => 'completed' === $a->getStatus())),
-            'cancelled' => count(array_filter($todayAppointments, fn ($a) => 'cancelled' === $a->getStatus())),
+            'confirmed' => count(array_filter($todayAppointments, fn ($a) => AppointmentStatus::CONFIRMED === $a->getStatus())),
+            'completed' => count(array_filter($todayAppointments, fn ($a) => AppointmentStatus::COMPLETED === $a->getStatus())),
+            'cancelled' => count(array_filter($todayAppointments, fn ($a) => AppointmentStatus::CANCELLED === $a->getStatus())),
         ];
 
         return $this->render('manager/dashboard.html.twig', [

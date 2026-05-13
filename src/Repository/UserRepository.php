@@ -37,7 +37,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
-                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+                FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
@@ -63,19 +63,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getAllBarbers(): array
     {
-        $barber = 'ROLE_BARBER';
-
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT * FROM "user" WHERE CAST(roles AS text) LIKE :role';
+        $sql = 'SELECT id FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery(['role' => '%'.$barber.'%']);
+        $result = $stmt->executeQuery(['role' => '%ROLE_BARBER%']);
 
-        $users = [];
-        foreach ($result->fetchAllAssociative() as $row) {
-            $users[] = $this->find($row['id']);
+        $ids = array_column($result->fetchAllAssociative(), 'id');
+
+        if (empty($ids)) {
+            return [];
         }
 
-        return $users;
+        return $this->createQueryBuilder('u')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -123,7 +126,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $conn = $this->getEntityManager()->getConnection();
         $sql = 'SELECT id, email, roles, first_name, last_name, nick_name, phone, date_added, date_banned, date_last_update
-                FROM "user" WHERE CAST(roles AS text) LIKE :role';
+                FROM `user` WHERE roles LIKE :role';
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%'.$role.'%']);
 
@@ -136,7 +139,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getAllActiveBarbers(): array
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT id FROM "user"
+        $sql = 'SELECT id FROM `user`
                 WHERE CAST(roles AS text) LIKE :role
                 AND is_active = :active
                 ORDER BY email ASC';
@@ -186,36 +189,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
-    public function findOneById($id): User
+    public function findOneById($id): ?User
     {
-//        echo '<pre>'.var_export($id, true).'</pre>';
-//        exit;
-
-
-
-        if (true) {
-            return $this->createQueryBuilder('u')
-                ->andWhere('u.id = :id')
-                ->setParameter('id', $id)
-                ->getQuery()
-                ->getOneOrNullResult();
-        //                ->getFirstResult();
-        } else {
-            //                    echo '<pre>'.var_export($id, true).'</pre>';
-            //                    exit;
-
-            $a = $this->createQueryBuilder('c')
-                ->select('u')
-                ->from(User::class, 'u')
-                ->innerJoin('u.barber', 'ub')
-                ->andWhere('u.id = :id')
-                ->setParameter('id', $id)
-                ->addSelect('ub')
-                ->getQuery();
-            //                ->getOneOrNullResult();
-
-            return $a->getOneOrNullResult();
-        }
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

@@ -81,7 +81,10 @@ class ProfileController extends AbstractController
         try {
             $form->handleRequest($request);
         } catch (\Exception $e) {
-            echo 'failed : '.$e->getMessage();
+            $this->addFlash('error', $this->translator->trans('profile.error.error_occurred', ['%error%' => ''], 'flash_messages'));
+            $tab = $request->query->get('tab', 'profile');
+
+            return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -153,14 +156,10 @@ class ProfileController extends AbstractController
                 }
 
                 // Send confirmation email
-                error_log('SUCCESS: Password validation passed, sending confirmation email');
-                error_log('Token: ' . $changeToken);
-                error_log('Token expires at: ' . $expiresAt->format('Y-m-d H:i:s'));
                 $this->emailService->sendPasswordChangeConfirmation($user, $changeToken, $newPasswordHashed);
                 $this->addFlash('success', $this->translator->trans('profile.success.password_change_email_sent', [], 'flash_messages'));
                 $tab = $request->query->get('tab', 'profile');
 
-                error_log('Redirecting to profile with success message');
                 return $this->redirect($this->generateUrl('profile_edit', ['id' => $user->getId()]).'?tab='.$tab);
             }
 

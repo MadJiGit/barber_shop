@@ -28,10 +28,10 @@ class BarberProcedure
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $can_perform = true;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $valid_from = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $valid_until = null;
 
     public function __construct()

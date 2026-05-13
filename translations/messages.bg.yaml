@@ -593,8 +593,8 @@ profile:
         new_placeholder: "Минимум 6 символа"
         repeat_placeholder: "Повторете новата парола"
     actions:
-        back: "Обратно към начало"
-        save: "Запази промените"
+        back: "Назад"
+        save: "Запази"
     appointments:
         filters:
             from_date: "От дата"

@@ -51,16 +51,19 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $user = $token->getUser();
         $roles = $user->getRoles();
 
-        // Redirect admin users to EasyAdmin dashboard
+        // Admins → EasyAdmin dashboard
         if (in_array('ROLE_ADMIN', $roles) || in_array('ROLE_SUPER_ADMIN', $roles)) {
             return new RedirectResponse($this->urlGenerator->generate('admin'));
         }
 
-        $id = $request->getSession()->all();
-        $username = $id['_security.last_username'];
+        // Staff (barbers, managers, receptionists) → own profile
+        $staffRoles = ['ROLE_BARBER_SENIOR', 'ROLE_BARBER', 'ROLE_BARBER_JUNIOR', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'];
+        if (array_intersect($staffRoles, $roles)) {
+            return new RedirectResponse($this->urlGenerator->generate('profile_edit', ['id' => $user->getId()]));
+        }
 
-        // Redirect regular users to their profile
-        return new RedirectResponse($this->urlGenerator->generate('user', ['username' => $username]));
+        // Regular clients → homepage
+        return new RedirectResponse($this->urlGenerator->generate('main'));
     }
 
     protected function getLoginUrl(Request $request): string
